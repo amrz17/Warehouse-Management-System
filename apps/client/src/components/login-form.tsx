@@ -1,64 +1,3 @@
-// import { cn } from "@/lib/utils"
-// import { Button } from "@/components/ui/button"
-// import {
-//   Field,
-//   FieldDescription,
-//   FieldGroup,
-//   FieldLabel,
-// } from "@/components/ui/field"
-// import { Input } from "@/components/ui/input"
-
-// export function LoginForm({
-//   className,
-//   ...props
-// }: React.ComponentProps<"form">) {
-//   return (
-//     <form className={cn("flex flex-col gap-6", className)} {...props}>
-//       <FieldGroup>
-//         <div className="flex flex-col items-center gap-1 text-center">
-//           <h1 className="text-2xl font-bold">Login to your account</h1>
-//           <p className="text-muted-foreground text-sm text-balance">
-//             Enter your email below to login to your account
-//           </p>
-//         </div>
-//         <Field>
-//           <FieldLabel htmlFor="email">Email</FieldLabel>
-//           <Input id="email" type="email" placeholder="m@example.com" required />
-//         </Field>
-//         <Field>
-//           <div className="flex items-center">
-//             <FieldLabel htmlFor="password">Password</FieldLabel>
-//             <a
-//               href="#"
-//               className="ml-auto text-sm underline-offset-4 hover:underline"
-//             >
-//               Forgot your password?
-//             </a>
-//           </div>
-//           <Input id="password" type="password" required />
-//         </Field>
-//         <Field>
-//           <Button 
-//             variant="outline" 
-//             type="submit"
-//             className="hover:bg-black hover:text-white"
-//             >
-//             Login
-//           </Button>
-//         </Field>
-//         <Field>
-//           <FieldDescription className="text-center">
-//             Don&apos;t have an account?{" "}
-//             <a href="#" className="underline underline-offset-4">
-//               Sign up
-//             </a>
-//           </FieldDescription>
-//         </Field>
-//       </FieldGroup>
-//     </form>
-//   )
-// }
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -66,6 +5,7 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useLogin } from "@/hooks/useLogin"
@@ -77,37 +17,45 @@ export function LoginForm({
   const { register, handleSubmit, onSubmit, formState } = useLogin()
 
   return (
-    <form
+    <form 
       onSubmit={handleSubmit(onSubmit)}
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex flex-col gap-6", className)} 
       {...props}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm">
-            Enter your email below to login
+          <p className="text-muted-foreground text-sm text-balance">
+            Enter your email below to login to your account
           </p>
         </div>
-
         <Field>
-          <FieldLabel>Email</FieldLabel>
-          <Input
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input 
             {...register("email", { required: true })}
-            type="email"
+            id="email" 
+            type="email" 
+            placeholder="m@example.com" 
           />
         </Field>
-
         <Field>
-          <FieldLabel>Password</FieldLabel>
-          <Input
+          <div className="flex items-center">
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <a
+              href="#"
+              className="ml-auto text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
+            </a>
+          </div>
+          <Input 
             {...register("password", { required: true })}
-            required
-            type="password"
+            id="password" 
+            type="password"  
           />
         </Field>
-
-        <Button
+        <Field>
+          <Button
           type="submit"
           variant="outline"
           className="bg-black text-white font-bold hover:cursor-pointer"
@@ -115,13 +63,16 @@ export function LoginForm({
         >
           {formState.isSubmitting ? "Logging in..." : "Login"}
         </Button>
-
-        <FieldDescription className="text-center">
-          Don&apos;t have an account?{" "}
-          <a href="#" className="underline">
-            Sign up
-          </a>
-        </FieldDescription>
+        </Field>
+        <FieldSeparator>Or continue with</FieldSeparator>
+        <Field>
+          <FieldDescription className="text-center">
+            Don&apos;t have an account?{" "}
+            <a href="/signup" className="underline underline-offset-4">
+              Sign up
+            </a>
+          </FieldDescription>
+        </Field>
       </FieldGroup>
     </form>
   )

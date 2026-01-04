@@ -1,13 +1,10 @@
-import axios from "axios"
+import api from "./axios" 
 
-const api = axios.create({
-    baseURL: "http://localhost:3000",
-});
 
 export const loginApi = (data: {
     email: string,
     password: string
-}) => api.post("/api/users/login", {
+}) => api.post("/users/login", {
     user: data
 });
 
@@ -17,4 +14,4 @@ export const registerApi = (data: {
     email: string,
     password: string,
     role: string,
-}) => api.post("/api/users", data);
+}) => api.post("/users", data);
