@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, NotebookPenIcon, TrashIcon } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -9,22 +9,27 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type PurchaseOrder = {
+  id_po: string
   po_code: string
   id_user: string
   date_po: string
-  po_status: "Pending" | "Approved" | "Rejected"
+  po_status: string
+  note?: string
   update_at: string
-  created_by: string
+  created_at: string
 }
 
-export const columnsOrders: ColumnDef<PurchaseOrder>[] = [
+// Define the columns for the data table.
+export const columnsOrders = ( 
+  onEdit: (order: PurchaseOrder) => void,
+  onDelete: (id_po: string) => void
+): ColumnDef<PurchaseOrder>[] => [
   {
     accessorKey: "po_code",
     header: "PO Code",
@@ -46,24 +51,12 @@ export const columnsOrders: ColumnDef<PurchaseOrder>[] = [
     header: "Updated At",
   },
   {
-    accessorKey: "created_by",
-    header: "Created By",
+    accessorKey: "created_at",
+    header: "Created At",
   },
-  // {
-  //   accessorKey: "amount",
-  //   header: () => <div className="text-right">Amount</div>,
-  //   cell: ({ row }) => {
-  //     const amount = parseFloat(row.getValue("amount"))
-  //     const formatted = new Intl.NumberFormat("en-US", {
-  //       style: "currency",
-  //       currency: "USD",
-  //     }).format(amount)
- 
-  //     return <div className="text-right font-medium">{formatted}</div>
-  //   },
-  // },
   {
   id: "actions",
+    // Define the actions column
     cell: ({ row }) => {
       const purchaseOrder = row.original
  
@@ -78,13 +71,17 @@ export const columnsOrders: ColumnDef<PurchaseOrder>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(purchaseOrder.po_code)}
+              onClick={() => onEdit(purchaseOrder)}
             >
-              Copy payment ID
+              <NotebookPenIcon className="mr-2 h-4 w-4" />
+              Edit
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(purchaseOrder.id_po)}
+            >
+              <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

@@ -1,6 +1,6 @@
 import api from "./axios" 
 
-
+// Login User
 export const loginApi = (data: {
     email: string,
     password: string
@@ -8,6 +8,7 @@ export const loginApi = (data: {
     user: data
 });
 
+// Register User
 export const registerApi = (data: {
     name: string,
     username: string,
