@@ -70,6 +70,7 @@ export class UserService {
     return user;
    }
 
+   // Update User
    async updateUser(id_user: string, updateUserDto: UpdateUserDto) {
     const user = await this.findById(id_user);
     Object.assign(user, updateUserDto);

@@ -8,9 +8,6 @@ export class CreateOrderDto {
     @IsString()
     po_code: string;
 
-    @IsString()
-    po_type: string;
-
     @IsDate()
     date_po: Date;
 

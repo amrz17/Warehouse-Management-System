@@ -1,10 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export enum OrderType {
-    INBOUND = "inbound",
-    OUTBOUND = "outbound", 
-}
-
 export enum OrderStatus {
     PENDING = "pending",
     APPROVED = "approved",
@@ -25,14 +20,6 @@ export class OrderEntity {
 
     @Column()
     po_code: string;
-
-    @Column({
-        type: "enum",
-        enum: OrderType,
-        default: OrderType.INBOUND,
-        nullable: false
-    })
-    po_type: string;
 
     @Column()
     date_po: Date;
