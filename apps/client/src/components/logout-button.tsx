@@ -17,7 +17,7 @@ export function SimpleLogoutButton() {
     setTimeout(() => {
       removeToken();
       
-      toast.info("Berhasil logout. Sampai jumpa kembali!");
+      toast.info("Berhasil logout.");
 
       
       navigate('/login', { replace: true });
@@ -33,7 +33,7 @@ export function SimpleLogoutButton() {
       size="sm"
       onClick={handleLogout}
       disabled={loading}
-      className="text-black hover:text-red-700 hover:bg-red-50"
+      className="hover:cursor-pointer"
     >
       <LogOut className="mr-2 h-4 w-4" />
       {/* {loading ? 'Keluar...' : 'Keluar'} */}

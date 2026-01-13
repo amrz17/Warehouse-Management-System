@@ -6,6 +6,7 @@ import { ItemsEntity } from './items.entity';
 import { CreateItemDto } from './dto/create-item.dto';
 import { IItemResponse } from './types/itemsResponse.interface';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { create } from 'domain';
 
 @Injectable()
 export class ItemsService {
@@ -13,6 +14,15 @@ export class ItemsService {
     @InjectRepository(ItemsEntity)
     private readonly itemRepository: Repository<ItemsEntity>,
   ) {}
+
+  // Get All Items
+  async getAllItems(): Promise<ItemsEntity[]> {
+    return this.itemRepository.find({
+      order: {
+        created_at: 'DESC'
+      }
+    })
+  }
 
   // Create Item
   async createItem(createItemDto: CreateItemDto): Promise<ItemsEntity> {

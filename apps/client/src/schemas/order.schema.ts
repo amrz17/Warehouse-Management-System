@@ -10,3 +10,11 @@ export const orderSchema = z.object({
 })
 
 export type OrderPayload = z.infer<typeof orderSchema>
+
+export const itemSchema = z.object({
+  sku: z.string().min(1, "SKU is required"),
+  name: z.string().min(1, "Item name is required"),
+  price: z.number().min(1, "Price item is required"),
+})
+
+export type ItemPayload = z.infer<typeof itemSchema>

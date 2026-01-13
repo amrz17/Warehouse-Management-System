@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { SimpleLogoutButton } from "./logoutbutton"
+import { SimpleLogoutButton } from "./logout-button"
+import ThemeToggle from "./toggle-mode"
 
 export function SiteHeader() {
   return (
@@ -13,6 +14,7 @@ export function SiteHeader() {
         />
         {/* <h1 className="text-base font-medium">Documnts</h1> */}
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
           <SimpleLogoutButton />
         </div>
       </div>

@@ -12,7 +12,8 @@ import { fetchOrders } from "@/api/order.api"
 import { toast } from "sonner"
 import { useOrders } from "@/hooks/use-orders"
 import { ConfirmDeleteDialog } from "@/components/dialog-delete"
-import { Separator } from "@radix-ui/react-dropdown-menu"
+import { PlusCircle } from "lucide-react"
+// import { Separator } from "@radix-ui/react-dropdown-menu"
 
 
 const Orders = () => {
@@ -47,7 +48,6 @@ const Orders = () => {
   }
 
 
-
   // Load Orders
   const loadOrders = async () => {
     const orders = await fetchOrders()
@@ -73,7 +73,7 @@ const Orders = () => {
             <div>
                 {/* <h1 className="text-5xl font-semibold">Orders</h1> */}
             </div>
-            <div className="flex flex-1 items-center justify-end">
+            <div className="flex flex-1 items-center justify-between">
                 <Input 
                     type="text" 
                     placeholder="Search" 
@@ -84,52 +84,53 @@ const Orders = () => {
         <Card className="@container/card mx-4 mt-4 flex flex-row p-4">
             <div className="w-3/4">
                 <CardHeader>
-                    <CardDescription className="text-black text-3xl font-extrabold">Create Your First Order</CardDescription>
+                  <CardDescription className="text-3xl font-extrabold">Create Your First Order</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                    <div className="text-muted-foreground">
-                    Create your first order by adding customer information, selecting products, and setting quantities. Easily manage and track every order from here
+                    <div className="">
+                      Create your first order by adding customer information, selecting products, and setting quantities. Easily manage and track every order from here
                     </div>
                 </CardFooter>
             </div>
             <div className="flex w-1/4 items-center justify-end">
-            <ResponsiveDialogDrawer
-              open={open}
-              onOpenChange={setOpen}
-              trigger={
-                <Button 
-                  className="ml-4"
-                  onClick={() => {
-                    setMode("create")
-                    setSelectedOrder(null)
-                    setOpen(true)
+              <ResponsiveDialogDrawer
+                open={open}
+                onOpenChange={setOpen}
+                trigger={
+                  <Button 
+                    className="ml-4"
+                    onClick={() => {
+                      setMode("create")
+                      setSelectedOrder(null)
+                      setOpen(true)
+                    }}
+                  >
+                    <PlusCircle />
+                    Create New Sales Order
+                  </Button>
+                }
+                title={
+                  mode === "create"
+                    ? "Create New Sales Order"
+                    : "Edit Sales Order"
+                }
+                description={
+                  mode === "create"
+                    ? "This form is to create a new sales order."
+                    : "Update the selected sales order."
+                }
+              >
+                <OrderForm
+                  mode={mode}
+                  orderId={selectedOrder ? selectedOrder.id_po : undefined}
+                  initialData={selectedOrder}
+                  onSuccess={() => {
+                    loadOrders()
+                    setOpen(false)
                   }}
-                >
-                  Create New Sales Order
-                </Button>
-              }
-              title={
-                mode === "create"
-                  ? "Create New Sales Order"
-                  : "Edit Sales Order"
-              }
-              description={
-                mode === "create"
-                  ? "This form is to create a new sales order."
-                  : "Update the selected sales order."
-              }
-            >
-              <OrderForm
-                mode={mode}
-                orderId={selectedOrder ? selectedOrder.id_po : undefined}
-                initialData={selectedOrder}
-                onSuccess={() => {
-                  loadOrders()
-                  setOpen(false)
-                }}
-              />
+                />
 
-            </ResponsiveDialogDrawer>
+              </ResponsiveDialogDrawer>
 
             </div>
         </Card>

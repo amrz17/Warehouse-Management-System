@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class UpdateItemDto {
     @IsString()
@@ -12,4 +12,7 @@ export class UpdateItemDto {
 
     @IsNumber()
     readonly price: number;
+
+    @IsBoolean()
+    readonly isActive?: boolean;
 }
