@@ -6,7 +6,6 @@ import { ItemsEntity } from './items.entity';
 import { CreateItemDto } from './dto/create-item.dto';
 import { IItemResponse } from './types/itemsResponse.interface';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { create } from 'domain';
 
 @Injectable()
 export class ItemsService {

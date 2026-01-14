@@ -12,8 +12,6 @@ import { InboundController } from './inbound/inbound.controller';
 import { InboundService } from './inbound/inbound.service';
 import { InboundModule } from './inbound/inbound.module';
 import { OutboundModule } from './outbound/outbound.module';
-import { ItemsController } from './items/items.controller';
-import { ItemsService } from './items/items.service';
 import { LocationsModule } from './locations/locations.module';
 import { SalesController } from './sales/sales.controller';
 import { SalesService } from './sales/sales.service';
