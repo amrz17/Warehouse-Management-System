@@ -18,3 +18,19 @@ export const itemSchema = z.object({
 })
 
 export type ItemPayload = z.infer<typeof itemSchema>
+
+export const inventorySchema = z.object({
+  qty_available: z.number().min(1, "Quantity is required"),
+  qty_reserved: z.number(),
+  id_item: z.string().min(1, "ID Item is requeired"),
+  id_location: z.string().min(1, "ID location is required")
+})
+
+export type InventoryPayload = z.infer<typeof inventorySchema>
+
+export const locationSchema = z.object({
+  bin_code: z.string().min(1, "Bin code is required"),
+  description: z.string()
+})
+
+export type LocationPayload = z.infer<typeof locationSchema>

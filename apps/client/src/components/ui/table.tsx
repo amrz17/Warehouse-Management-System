@@ -102,6 +102,43 @@ function TableCaption({
   )
 }
 
+// ... kode komponen Table, TableRow, dll (yang sudah Anda punya)
+
+// TAMBAHKAN INI DI DALAM FILE TERSEBUT
+function TableTabsList({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="table-tabs-list"
+      className={cn(
+        "flex items-center gap-2 border-b border-border mb-4 overflow-x-auto",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function TableTabTrigger({ 
+  className, 
+  isActive, 
+  ...props 
+}: React.ComponentProps<"button"> & { isActive?: boolean }) {
+  return (
+    <button
+      data-slot="table-tab-trigger"
+      type="button"
+      className={cn(
+        "px-4 py-2 text-sm font-medium transition-all relative whitespace-nowrap",
+        "text-muted-foreground hover:text-foreground",
+        isActive && "text-foreground border-b-2 border-green-500",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+// UPDATE BAGIAN EXPORT DI PALING BAWAH
 export {
   Table,
   TableHeader,
@@ -111,4 +148,17 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableTabsList,    // <-- Pastikan ini ada
+  TableTabTrigger,  // <-- Pastikan ini ada
 }
+
+// export {
+//   Table,
+//   TableHeader,
+//   TableBody,
+//   TableFooter,
+//   TableHead,
+//   TableRow,
+//   TableCell,
+//   TableCaption,
+// }

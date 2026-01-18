@@ -1,145 +1,51 @@
-// import { DataTable } from "@/components/data-table"
-// import data from "./data.json"
+"use client"
 
-import { fetchItems } from "@/api/item.api"
-import { DataTable } from "@/components/data-table"
+import { useState } from "react"
 import DahsboardLayout from "@/layout/DashboardLayout"
-import { useEffect, useState } from "react"
+import { TableTabsList, TableTabTrigger } from "@/components/ui/table"
+import InventoryTabContent from "@/components/inventory-components/inventory-tab-content"
+import ItemsTabContent from "@/components/item-components/items-tab-content"
+import LocationTabContent from "@/components/location-components/location-tab-content"
 
-
-import { NotebookPenIcon, PlusCircle, TrashIcon } from "lucide-react"
-import { baseItemColumns } from "@/layout/HeaderLayout"
-import { createActionColumn } from "@/components/action-column"
-import type { ItemsOrder } from "@/types/item.type"
-import { ResponsiveDialogDrawer } from "@/components/drawer-form"
-import { Button } from "@/components/ui/button"
-import { ItemForm } from "@/components/item-form"
-import { useItems } from "@/hooks/use-item"
-import { toast } from "sonner"
-import { ConfirmDeleteDialog } from "@/components/dialog-delete"
-
-export default function Inventory() {
-  const [data, setData] = useState<any>([])
-
-  const [open, setOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<ItemsOrder | null>(null)
-  const [mode, setMode] = useState<"create" | "edit">("create")
-
-  const { deleteItem } = useItems()
-  const [openDelete, setOpenDelete] = useState(false)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
-
-
-
-  const loadDataItem = async () => {
-    const items = await fetchItems()
-    setData(items)
-  }
-
-  // Handle Edit item
-  const handleEdit = async (item: ItemsOrder) => {
-    await setMode("edit")
-    await setSelectedItem(item)
-    await setOpen(true)
-  }
-
-  const handleDelete = async (id: string) => {
-    await setDeleteId(id)
-    await setOpenDelete(true)
-  }
-
-  const confirmDelete = async () => {
-    if (!deleteId) return
-
-    try {
-      await deleteItem(deleteId)
-      toast.success("Item delted")
-      loadDataItem()
-    } catch {
-      toast.error("Failed to delete item")
-    } finally {
-      setOpenDelete(false)
-      setDeleteId(null)
-    }
-  }
-
-  const columns = [
-  ...baseItemColumns,
-  createActionColumn<ItemsOrder>([
-    {
-      label: "Edit",
-      icon: <NotebookPenIcon className="mr-2 h-4 w-4" />,
-      onClick: (item) => handleEdit(item),
-    },
-    {
-      label: "Delete",
-      icon: <TrashIcon className="mr-2 h-4 w-4" />,
-      destructive: true,
-      onClick: (item) => handleDelete(item.id_item),
-    },
-  ]),
-]
-
-  // Initial Load
-  useEffect(() => {
-    loadDataItem()
-  }, [])
+export default function InventoryPage() {
+  const [activeTab, setActiveTab] = useState<"inventory" | "item" | "location">("inventory")
 
   return (
     <DahsboardLayout>
-        <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-col p-4 md:p-6">
+        <div className="flex flex-col gap-4">
+          
+          {/* NAVIGASI TABS */}
+          <TableTabsList>
+            <TableTabTrigger 
+              isActive={activeTab === "inventory"} 
+              onClick={() => setActiveTab("inventory")}
+            >
+              Inventory
+            </TableTabTrigger>
+            <TableTabTrigger 
+              isActive={activeTab === "item"} 
+              onClick={() => setActiveTab("item")}
+            >
+              Items
+            </TableTabTrigger>
+            <TableTabTrigger 
+              isActive={activeTab === "location"} 
+              onClick={() => setActiveTab("location")}
+            >
+              Locations
+            </TableTabTrigger>
+          </TableTabsList>
 
-            {/* <div className="flex w-1/4 items-center justify-end"> */}
-            {/* </div> */}
-            <div className="flex flex-col md:gap-6 md:py-6 justify-end">
-              <ResponsiveDialogDrawer
-                open={open}
-                onOpenChange={setOpen}
-                trigger={
-                  <Button 
-                    className="w-fit ml-4"
-                    onClick={() => {
-                      setMode("create")
-                      setSelectedItem(null)
-                      setOpen(true)
-                    }}
-                  >
-                    <PlusCircle />
-                    Create New Item
-                  </Button>
-                }
-                title={
-                  mode === "create"
-                    ? "Create New Item"
-                    : "Edit Item Information"
-                }
-                description={
-                  mode === "create"
-                    ? "This form is to create a new item."
-                    : "Update the selected item."
-                }
-              >
-                <ItemForm
-                  mode={mode}
-                  itemId={selectedItem ? selectedItem.id_item : undefined}
-                  initialData={selectedItem}
-                  onSuccess={() => {
-                    loadDataItem()
-                    setOpen(false)
-                  }}
-                />
+          {/* KONTEN DINAMIS */}
+          <div className="mt-2 transition-all">
+            {activeTab === "inventory" && <InventoryTabContent />}
+            {activeTab === "item" && <ItemsTabContent />}
+            {activeTab === "location" && <LocationTabContent />}
+          </div>
 
-              </ResponsiveDialogDrawer>
-                <DataTable columns={columns} data={data} />
-              <ConfirmDeleteDialog
-                open={openDelete}
-                onOpenChange={setOpenDelete}
-                onConfirm={confirmDelete}
-              />
-            </div>
         </div>
-        </div>
+      </div>
     </DahsboardLayout>
   )
 }

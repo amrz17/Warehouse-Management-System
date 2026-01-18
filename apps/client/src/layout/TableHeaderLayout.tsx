@@ -1,4 +1,6 @@
+import type { InventoryOrder } from "@/types/inventory.type"
 import type { ItemsOrder } from "@/types/item.type"
+import type { LocationOrder } from "@/types/location.type"
 import type { ColumnDef } from "@tanstack/react-table"
 
 export const baseItemColumns: ColumnDef<ItemsOrder>[] = [
@@ -42,4 +44,39 @@ export const baseItemColumns: ColumnDef<ItemsOrder>[] = [
     })
   },
   },
+]
+
+export const baseInventoryColumns: ColumnDef<InventoryOrder>[] = [
+  {
+    accessorKey: "id_item",
+    header: "Item Name",
+  },
+  {
+    accessorKey: "id_location",
+    header: "Location",
+  },
+  {
+    accessorKey: "qty_available",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "qty_reserved",
+    header: "Reserved",
+  },
+]
+
+export const baseLocationColumns: ColumnDef<LocationOrder>[] = [
+  {
+    accessorKey: "bin_code",
+    header: "Code Location"
+  },
+  {
+    accessorKey: "description",
+    header: "Description"
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At"
+  },
+
 ]

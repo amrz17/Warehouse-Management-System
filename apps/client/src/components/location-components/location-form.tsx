@@ -1,38 +1,31 @@
-"use client"
-
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { itemSchema, type ItemPayload } from "@/schemas/order.schema"
+import { locationSchema, type LocationPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { useItems } from "@/hooks/use-item"
+import { useLocation } from "@/hooks/use-location"
 
 type Props = {
   mode: "create" | "edit"
-  initialData?: ItemPayload | null
-  itemId?: string
+  initialData?: LocationPayload | null
+  locId?: string
   onSuccess?: () => void
 }
 
-export function ItemForm({
+export function LocationForm({
   mode,
   initialData,
-  itemId,
+  locId,
   onSuccess,
 }: Props) {
 
   // Initialize the form with react-hook-form and zod validation
-  const form = useForm<ItemPayload>({
-    resolver: zodResolver(itemSchema),
-    defaultValues: {
-      sku: "",
-      name: "",
-      price: 0
-    },
+  const form = useForm<LocationPayload>({
+    resolver: zodResolver(locationSchema),
   })
 
   // Destructure necessary methods and state from the form
@@ -44,7 +37,7 @@ export function ItemForm({
   } = form
 
   // Use the custom hook for order operations
-  const { createItem, updateItem, isLoading } = useItems()
+  const { createLocation, updateLocation, isLoading } = useLocation()
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -53,57 +46,53 @@ export function ItemForm({
       })
     }
 
+
     if (mode === "create") {
       reset()
     }
   }, [mode, initialData, reset])
 
 
-  const onSubmit = async (values: ItemPayload) => {
+  const onSubmit = async (values: LocationPayload) => {
     try {
       if (mode === "create") {
-        await createItem(values)
-        toast.success("New item created")
+        await createLocation(values)
+        toast.success("New location created")
       } else {
-        if (!itemId) return
-        await updateItem(itemId, values)
-        toast.success("Item updated")
+        if (!locId) return
+        await updateLocation(locId, values)
+        toast.success("Location updated")
       }
 
       onSuccess?.()
       reset()
     } catch {
-      toast.error("Failed to save item")
+      toast.error("Failed to save location")
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
-        <Label>SKU</Label>
+        <Label>Code Location</Label>
         <Input
-          {...register("sku")}
-          disabled={mode === "edit"}
+          {...register("bin_code")}
+        //   disabled={mode === "edit"}
         />
-        {errors.sku && (
+        {/* {errors.id_item && (
           <p className="text-sm text-red-500">
-            {errors.sku.message}
+            {errors.id_item.message}
           </p>
-        )}
+        )} */}
       </div>
 
       <div>
-        <Label>Item Name</Label>
-        <Input {...register("name")} />
-      </div>
-
-      <div>
-        <Label>Price Item</Label>
-        <Input type="number" {...register("price", { valueAsNumber: true })} />
+        <Label>Description</Label>
+        <Input {...register("description")} />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        {mode === "create" ? "Create item" : "Update item"}
+        {mode === "create" ? "Create location" : "Update location"}
       </Button>
     </form>
   )

@@ -4,36 +4,34 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { orderSchema, type OrderPayload } from "@/schemas/schema"
-import { useOrders } from "@/hooks/use-orders"
+import { itemSchema, type ItemPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+import { useItems } from "@/hooks/use-item"
 
 type Props = {
   mode: "create" | "edit"
-  initialData?: OrderPayload | null
-  orderId?: string
+  initialData?: ItemPayload | null
+  itemId?: string
   onSuccess?: () => void
 }
 
-export function OrderForm({
+export function ItemForm({
   mode,
   initialData,
-  orderId,
+  itemId,
   onSuccess,
 }: Props) {
 
   // Initialize the form with react-hook-form and zod validation
-  const form = useForm<OrderPayload>({
-    resolver: zodResolver(orderSchema),
+  const form = useForm<ItemPayload>({
+    resolver: zodResolver(itemSchema),
     defaultValues: {
-      po_code: "",
-      id_user: "",
-      date_po: "",
-      po_status: "",
-      note: "",
+      sku: "",
+      name: "",
+      price: 0
     },
   })
 
@@ -46,13 +44,12 @@ export function OrderForm({
   } = form
 
   // Use the custom hook for order operations
-  const { createOrder, updateOrder, isLoading } = useOrders()
+  const { createItem, updateItem, isLoading } = useItems()
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
       reset({
         ...initialData,
-        date_po: initialData.date_po?.slice(0, 10),
       })
     }
 
@@ -62,61 +59,51 @@ export function OrderForm({
   }, [mode, initialData, reset])
 
 
-  const onSubmit = async (values: OrderPayload) => {
+  const onSubmit = async (values: ItemPayload) => {
     try {
       if (mode === "create") {
-        await createOrder(values)
-        toast.success("Purchase order created")
+        await createItem(values)
+        toast.success("New item created")
       } else {
-        if (!orderId) return
-        await updateOrder(orderId, values)
-        toast.success("Purchase order updated")
+        if (!itemId) return
+        await updateItem(itemId, values)
+        toast.success("Item updated")
       }
 
       onSuccess?.()
       reset()
     } catch {
-      toast.error("Failed to save purchase order")
+      toast.error("Failed to save item")
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
-        <Label>PO Code</Label>
+        <Label>SKU</Label>
         <Input
-          {...register("po_code")}
+          {...register("sku")}
           disabled={mode === "edit"}
         />
-        {errors.po_code && (
+        {errors.sku && (
           <p className="text-sm text-red-500">
-            {errors.po_code.message}
+            {errors.sku.message}
           </p>
         )}
       </div>
 
       <div>
-        <Label>Company</Label>
-        <Input {...register("id_user")} />
+        <Label>Item Name</Label>
+        <Input {...register("name")} />
       </div>
 
       <div>
-        <Label>Date PO</Label>
-        <Input type="date" {...register("date_po")} />
-      </div>
-
-      <div>
-        <Label>Status</Label>
-        <Input {...register("po_status")} />
-      </div>
-
-      <div>
-        <Label>Note</Label>
-        <Input {...register("note")} />
+        <Label>Price Item</Label>
+        <Input type="number" {...register("price", { valueAsNumber: true })} />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        {mode === "create" ? "Create Order" : "Update Order"}
+        {mode === "create" ? "Create item" : "Update item"}
       </Button>
     </form>
   )
