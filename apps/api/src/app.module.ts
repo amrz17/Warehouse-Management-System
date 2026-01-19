@@ -67,7 +67,7 @@ import { ItemsModule } from './items/items.module';
     SuppliersModule,
     SalesModule
   ],
-  controllers: [AppController, InboundController, SalesController, PurchaseOrderItemsController, SaleOrderItemsController, CustomersController, SuppliersController],
-  providers: [AppService, InboundService, SalesService, PurchaseOrderItemsService, SaleOrderItemsService, SuppliersService],
+  controllers: [AppController, InboundController, SalesController, PurchaseOrderItemsController, SaleOrderItemsController, CustomersController],
+  providers: [AppService, InboundService, SalesService, PurchaseOrderItemsService, SaleOrderItemsService],
 })
 export class AppModule {}
