@@ -2,6 +2,7 @@ import { SupplierEntity } from "../suppliers/suppliers.entity";
 import { PurchaseOrderItemsEntity } from "../purchase-order-items/order-items.entity";
 import { UserEntity } from "../user/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { InboundEntity } from "../inbound/inbound.entity";
 
 export enum PurchaseOrderStatus {
   PENDING = 'PENDING',     // Baru dibuat, menunggu persetujuan manager
@@ -18,18 +19,20 @@ export class OrderEntity {
     @PrimaryGeneratedColumn('uuid')
     id_po: string;
 
-    @ManyToOne(() => UserEntity)
-    created_by: UserEntity;
+    @Column()
+    id_user: string;
+    @ManyToOne(() => UserEntity, (user) => user.order)
+    @JoinColumn({ name: 'id_user' })
+    createdBy: UserEntity;
 
     @Column({ unique: true })
     po_number: string;
 
-    @ManyToOne(() => SupplierEntity, (supplier) => supplier.purchase_order)
+    @Column()
+    id_supplier: string;
+    @ManyToOne(() => SupplierEntity, (supplier) => supplier.purchaseOrder)
     @JoinColumn({ name: 'id_supplier' })
     supplier: SupplierEntity;
-
-    @OneToMany(() => PurchaseOrderItemsEntity, (item) => item.purchaseOrder, { cascade: true })
-    items: PurchaseOrderItemsEntity[];
 
     @Column({ type: 'date', nullable: true })
     expected_delivery_date: Date;
@@ -52,4 +55,12 @@ export class OrderEntity {
         type: "timestamp"
     })
     created_at: Date;
+
+    @OneToMany(() => PurchaseOrderItemsEntity, (poi) => poi.purchaseOrder, { cascade: true })
+    @JoinColumn({ name: 'id_poi' })
+    items: PurchaseOrderItemsEntity[];
+
+    // Di dalam OrderEntity
+    @OneToMany(() => InboundEntity, (inbound) => inbound.purchaseOrder)
+    inbound_shipments: InboundEntity[];
 }

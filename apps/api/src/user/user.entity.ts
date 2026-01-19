@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcryptjs';
 import { InboundEntity } from "../inbound/inbound.entity";
+import { OrderEntity } from "../orders/orders.entity";
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -59,7 +60,10 @@ export class UserEntity {
         type: "timestamp"
     })
     created_at: Date;
+    
+    @OneToMany(() => OrderEntity, (order) => order.createdBy)
+    order: OrderEntity[];  
 
-    @OneToMany(() => InboundEntity, (inbound) => inbound.received_by)
+    @OneToMany(() => InboundEntity, (inbound) => inbound.receivedBy)
     inbounds: InboundEntity[];  
 }

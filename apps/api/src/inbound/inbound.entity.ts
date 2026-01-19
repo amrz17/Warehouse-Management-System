@@ -12,21 +12,26 @@ export class InboundEntity {
     @Column({ unique: true })
     inbound_number: string;
 
-    @ManyToOne(() => OrderEntity)
+    @Column()
+    id_po: string;
+    @ManyToOne(() => OrderEntity, (order) => order.inbound_shipments)
     @JoinColumn( { name: 'id_po' } )
-    purchase_order: OrderEntity;
+    purchaseOrder: OrderEntity;
 
-
-    @ManyToOne(() => UserEntity)
+    @Column()
+    id_user: string;
+    @ManyToOne(() => UserEntity, (user) => user.inbounds)
     @JoinColumn( { name: 'id_user' } )
-    received_by: UserEntity;
+    receivedBy: UserEntity;
 
     @Column()
     received_at: Date;
 
-    @ManyToOne(() => SupplierEntity)
+    @Column()
+    id_supplier: string;
+    @ManyToOne(() => SupplierEntity, (supplier) => supplier.inbound)
     @JoinColumn({ name: 'id_supplier' })
-    supplier_name: SupplierEntity;
+    supplierName: SupplierEntity;
 
     @Column()
     total_items: number;

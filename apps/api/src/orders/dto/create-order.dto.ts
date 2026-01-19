@@ -1,15 +1,17 @@
-import { IsString, IsDate, IsUUID, IsNotEmpty } from 'class-validator';
+import { IsString, IsDate } from 'class-validator';
 
 export class CreateOrderDto {
-    // @IsNotEmpty()
-    // @IsUUID()
-    // id_user: string;
+    @IsString()
+    po_number: string;
 
     @IsString()
-    po_code: string;
+    createdByIdUser: string;
 
     @IsDate()
-    date_po: Date;
+    expected_delivery_date: Date;
+
+    @IsString()
+    id_supplier: string;
 
     @IsString()
     po_status: string;

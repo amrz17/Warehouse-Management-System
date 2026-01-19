@@ -5,10 +5,12 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { InboundEntity } from "../inbound/inbound.entity";
+import { OrderEntity } from "../orders/orders.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
         UserEntity,
+        OrderEntity,
         InboundEntity
     ])],
     controllers: [UserContainerOptions],

@@ -1,3 +1,4 @@
+import { PurchaseOrderItemsEntity } from "../purchase-order-items/order-items.entity";
 import { InventoryEntity } from "../inventory/inventory.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -24,6 +25,9 @@ export class ItemsEntity {
 
     @OneToMany(() => InventoryEntity, (inventory) => inventory.item) 
     inventories: InventoryEntity[];
+
+    @OneToMany(() => PurchaseOrderItemsEntity, (poi) => poi.item) 
+    poItem: PurchaseOrderItemsEntity[];
 
     @CreateDateColumn()
     created_at: Date;

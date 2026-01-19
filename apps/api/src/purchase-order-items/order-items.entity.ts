@@ -1,6 +1,6 @@
 import { ItemsEntity } from "../items/items.entity";
 import { OrderEntity } from "../orders/orders.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'purchase_order_items' })
 export class PurchaseOrderItemsEntity {
@@ -8,10 +8,16 @@ export class PurchaseOrderItemsEntity {
     @PrimaryGeneratedColumn('uuid')
     id_poi: string;
 
+    @Column()
+    id_po: string;
     @ManyToOne(() => OrderEntity, (purchaseOrder) => purchaseOrder.items)
+    @JoinColumn({ name: 'id_po' })
     purchaseOrder: OrderEntity;
 
-    @ManyToOne(() => ItemsEntity)
+    @Column()
+    id_item: string;
+    @ManyToOne(() => ItemsEntity, (poi) => poi.poItem)
+    @JoinColumn({ name: 'id_item' })
     item: ItemsEntity;
 
     @Column()

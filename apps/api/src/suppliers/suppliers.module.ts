@@ -3,12 +3,14 @@ import { SuppliersService } from './suppliers.service';
 import { SuppliersController } from './suppliers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SupplierEntity } from './suppliers.entity';
-import { OrderEntity } from 'src/orders/orders.entity';
+import { OrderEntity } from '../orders/orders.entity';
+import { InboundEntity } from '../inbound/inbound.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([
     SupplierEntity,
-    OrderEntity
+    OrderEntity,
+    InboundEntity
   ])],
   providers: [SuppliersService],
   controllers: [SuppliersController]

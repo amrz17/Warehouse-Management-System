@@ -1,3 +1,4 @@
+import { InboundEntity } from "../inbound/inbound.entity";
 import { OrderEntity } from "../orders/orders.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -16,5 +17,8 @@ export class SupplierEntity {
     pic_name: string;
 
     @OneToMany(() => OrderEntity, (order) => order.supplier)
-    purchase_order: OrderEntity[];
+    purchaseOrder: OrderEntity[];
+
+    @OneToMany(() => InboundEntity, (inbound) => inbound.supplierName)
+    inbound: InboundEntity[];
 }

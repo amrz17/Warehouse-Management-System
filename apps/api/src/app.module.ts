@@ -24,8 +24,6 @@ import { SaleOrderItemsService } from './sale-order-items/sale-order-items.servi
 import { CustomersController } from './customers/customers.controller';
 import { CustomersModule } from './customers/customers.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
-import { SuppliersController } from './suppliers/suppliers.controller';
-import { SuppliersService } from './suppliers/suppliers.service';
 import { SalesModule } from './sales/sales.module';
 import { ItemsModule } from './items/items.module';
 
