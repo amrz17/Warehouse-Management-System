@@ -1,21 +1,31 @@
-import { IsString, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsDate, IsOptional, IsUUID, IsArray, ValidateNested } from 'class-validator';
+import { CreatePOIDto } from 'src/purchase-order-items/dto/create-poitem.dto';
 
 export class CreateOrderDto {
+    @IsOptional()
     @IsString()
     po_number: string;
 
-    @IsString()
-    createdByIdUser: string;
+    @IsUUID()
+    id_user: string;
 
+    @Type(() => Date)
     @IsDate()
     expected_delivery_date: Date;
 
-    @IsString()
+    @IsUUID()
     id_supplier: string;
 
     @IsString()
     po_status: string;
     
+    @IsOptional()
     @IsString()
     note: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CreatePOIDto)
+    items: CreatePOIDto[];
 }

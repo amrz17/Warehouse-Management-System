@@ -1,23 +1,14 @@
-import { IsNumber, IsString, IsUUID } from "class-validator";
+import { IsNumber, IsUUID, Min } from "class-validator";
 
 export class CreatePOIDto {
     @IsUUID()
-    @IsString()
-    id_po: string;    
-
-    @IsUUID()
-    @IsString()
     id_item: string;
 
     @IsNumber()
+    @Min(1)
     qty_ordered: number;
 
     @IsNumber()
+    @Min(0)
     price_per_unit: number;
-
-    @IsNumber()
-    qty_received: number;
-
-    @IsNumber()
-    total_price: number;
 }
