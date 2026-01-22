@@ -5,8 +5,7 @@ import { OrderEntity, PurchaseOrderStatus } from './entities/orders.entity';
 import { DataSource, Repository } from 'typeorm';
 import { IOrdersResponse } from './types/ordersResponse.interface';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { PurchaseOrderItemsEntity } from 'src/orders/entities/order-items.entity';
-import { CreatePOIDto } from 'src/orders/dto/create-poitem.dto';
+import { PurchaseOrderItemsEntity } from './entities/order-items.entity';
 
 @Injectable()
 export class OrdersService {

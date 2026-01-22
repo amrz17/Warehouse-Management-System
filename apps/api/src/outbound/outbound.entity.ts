@@ -1,4 +1,4 @@
-import { SalesOrderEntity } from "../sales/sales-order.entity";
+import { SalesOrderEntity } from "../sales/entities/sales-order.entity";
 import { UserEntity } from "../user/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 

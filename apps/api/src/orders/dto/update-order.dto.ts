@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { CreatePOIDto } from 'src/orders/dto/create-poitem.dto';
+import { UpdatePOIDto } from './update-poitem.dto';
 
 export class UpdateOrderDto {
     @IsOptional()
@@ -28,6 +28,6 @@ export class UpdateOrderDto {
     @IsOptional()
     @IsArray()
     @ValidateNested()
-    @Type(() => CreatePOIDto)
-    readonly items?: CreatePOIDto[];
+    @Type(() => UpdatePOIDto)
+    readonly items?: UpdatePOIDto[];
 }

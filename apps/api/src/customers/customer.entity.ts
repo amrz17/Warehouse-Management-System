@@ -1,4 +1,4 @@
-import { SalesOrderEntity } from "../sales/sales-order.entity";
+import { SalesOrderEntity } from "../sales/entities/sales-order.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'customers' })

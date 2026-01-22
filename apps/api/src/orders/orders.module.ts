@@ -20,10 +20,3 @@ import { InboundEntity } from '../inbound/entities/inbound.entity';
   providers: [OrdersService],
 })
 export class OrdersModule {}
-
-// @Module({
-//     imports: [TypeOrmModule.forFeature([UserEntity])],
-//     controllers: [UserContainerOptions],
-//     providers: [UserService],
-//     exports: [UserService],
-// })

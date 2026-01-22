@@ -1,5 +1,5 @@
-import { InboundEntity } from "../inbound/inbound.entity";
-import { OrderEntity } from "../orders/orders.entity";
+import { InboundEntity } from "../inbound/entities/inbound.entity";
+import { OrderEntity } from "../orders/entities/orders.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'suppliers'})

@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcryptjs';
-import { InboundEntity } from "../inbound/inbound.entity";
-import { OrderEntity } from "../orders/orders.entity";
+import { InboundEntity } from "../inbound/entities/inbound.entity";
+import { OrderEntity } from "../orders/entities/orders.entity";
 
 export enum UserRole {
   ADMIN = 'ADMIN',

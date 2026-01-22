@@ -1,4 +1,4 @@
-import { InboundItemEntity } from "src/inbound/entities/inbound-item.entity";
+import { InboundItemEntity } from "../../inbound/entities/inbound-item.entity";
 import { ItemsEntity } from "../../items/items.entity";
 import { OrderEntity } from "./orders.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";

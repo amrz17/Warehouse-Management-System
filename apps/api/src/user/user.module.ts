@@ -4,8 +4,8 @@ import { UserService } from "./user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
 import { AuthMiddleware } from "./middleware/auth.middleware";
-import { InboundEntity } from "../inbound/inbound.entity";
-import { OrderEntity } from "../orders/orders.entity";
+import { InboundEntity } from "../inbound/entities/inbound.entity";
+import { OrderEntity } from "../orders/entities/orders.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([

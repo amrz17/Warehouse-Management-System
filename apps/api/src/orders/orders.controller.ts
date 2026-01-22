@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { IOrdersResponse } from './types/ordersResponse.interface';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('order')
 export class OrdersController {
@@ -35,7 +36,7 @@ export class OrdersController {
     @Put('update/:id_po')
     async updateOrder(
         @Param('id_po', new ParseUUIDPipe()) id_po: string,
-        @Body() updateOrderDto: CreateOrderDto
+        @Body() updateOrderDto: UpdateOrderDto
     ): Promise<IOrdersResponse> {
         const updatedOrder = await this.ordersService.updateOrder(id_po, updateOrderDto);
 

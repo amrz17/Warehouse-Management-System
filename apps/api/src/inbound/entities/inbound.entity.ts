@@ -1,7 +1,8 @@
-import { OrderEntity } from "../orders/orders.entity";
-import { SupplierEntity } from "../suppliers/suppliers.entity";
-import { UserEntity } from "../user/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { OrderEntity } from "../../orders/entities/orders.entity";
+import { SupplierEntity } from "../../suppliers/suppliers.entity";
+import { UserEntity } from "../../user/user.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { InboundItemEntity } from "./inbound-item.entity";
 
 @Entity({ name: 'inbounds' })
 export class InboundEntity {
@@ -33,12 +34,15 @@ export class InboundEntity {
     @JoinColumn({ name: 'id_supplier' })
     supplierName: SupplierEntity;
 
-    @Column()
-    total_items: number;
-
-    @Column()
-    status: string;
-
     @Column({ nullable: true })
     note: string;
+
+    @OneToMany(() => InboundItemEntity, (inboundItem) => inboundItem.inbound)
+    @JoinColumn({ name: 'id_inbound_item' })
+    items: InboundItemEntity[];
+
+    @CreateDateColumn({
+        type: "timestamp"
+    })
+    created_at: Date;
 }
