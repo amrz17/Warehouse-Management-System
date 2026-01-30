@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { SalesOrderEntity } from './entities/sales-order.entity';
+import { SalesOrderEntity, SalesOrderStatus } from './entities/sales-order.entity';
 import { CreateSaleDTO } from './dto/create-sale.dto';
 import { SaleOrderItemsEntity } from './entities/sale-order-items.entity';
 import { ISaleResponse } from './types/salesResponse.interface';
@@ -97,6 +97,46 @@ export class SalesService {
             throw new BadRequestException('Failed make new Sale Order: ' + err.message);
         } finally {
             // disconnect db
+            await queryRunner.release();
+        }
+    }
+
+    async cancelSaleOrder(id_so: string): Promise<any> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            // TODO Make Update and Cancel Sale Order
+            const so = await queryRunner.manager.findOne(SalesOrderEntity, {
+                where: { id_so },
+                relations: ['items']
+            });
+
+            if (!so) throw new NotFoundException('Sale Order Not Found!');
+            if (so.so_status === SalesOrderStatus.CANCELED) throw new BadRequestException('Already canceled!');
+
+            // loop items untuk mengembalikan stock
+            for (const item of so.items) {
+
+                // Kurangi stock reserved in Inventory
+                await queryRunner.manager.decrement(InventoryEntity, 
+                    { id_item: item.id_item },
+                    "qty_reserved",
+                    item.qty_ordered,
+                );
+            }
+
+            // Ubah status SO
+            so.so_status = SalesOrderStatus.CANCELED;
+            await queryRunner.manager.save(so);
+
+            //
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction()
+            throw err;
+        } finally {
             await queryRunner.release();
         }
     }
