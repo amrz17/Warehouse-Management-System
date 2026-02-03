@@ -102,7 +102,6 @@ export class SalesService {
         await queryRunner.startTransaction();
 
         try {
-            // TODO Make Update and Cancel Sale Order
             const so = await queryRunner.manager.findOne(SalesOrderEntity, {
                 where: { id_so },
                 relations: ['items']

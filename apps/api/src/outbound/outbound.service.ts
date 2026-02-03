@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OutboundEntity } from './entities/outbound.entity';
-import { DataSource, Repository } from 'typeorm';
+import { OutboundEntity, StatusOutbound } from './entities/outbound.entity';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { CreateOutbounddDto } from './dto/create-outbound.dto';
 import { OutboundItemEntity } from './entities/outbound-item.entity';
 import { SaleOrderItemsEntity } from 'src/sales/entities/sale-order-items.entity';
@@ -20,7 +20,6 @@ export class OutboundService {
     async createOutbound(
         createOutboundDto: CreateOutbounddDto
     ): Promise<any> {
-        // TODO Create Outbound Service
         const queryRunner = await this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -117,6 +116,89 @@ export class OutboundService {
             await queryRunner.release();
         }
     }
+
+    async cancelOutbound(
+        id_outbound: string
+    ): Promise<any> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            // Ambil data Outbound beserta detailnya
+            const outbound = await queryRunner.manager.findOne(OutboundEntity, {
+                where: { id_outbound },
+                relations: ['items'] 
+            });
+
+            if (!outbound) throw new NotFoundException('Outbound not found');
+            if (outbound.status_outbound === StatusOutbound.CANCELED) throw new BadRequestException('Already cancelled');
+
+            // Loop Items untuk Mengembalikan Stok
+            for (const item of outbound.items) {
+                
+                // Kurangi stok di Inventory
+                await queryRunner.manager.decrement(InventoryEntity,
+                    { id_item: item.id_item },
+                    "qty_available",
+                    item.qty_shipped
+                );
+
+                // Kurangi qty_shipped di Sales Order Item
+                await queryRunner.manager.decrement(SaleOrderItemsEntity,
+                    { id_soi: item.id_soi },
+                    "qty_shipped",
+                    item.qty_shipped
+                );
+            }
+
+            // Ubah status Outbound Header
+            outbound.status_outbound = StatusOutbound.CANCELED;
+            await queryRunner.manager.save(outbound);
+
+            // Update kembali status PO Header ke 'PARTIAL' atau 'OPEN'
+            await this.updateSoStatus(outbound.id_so, queryRunner);
+
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            throw err;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    // 
+    private async updateSoStatus(id_so: string, queryRunner: QueryRunner): Promise<void> {
+        // Ambil semua item dari SO tersebut
+        const allSoItems = await queryRunner.manager.find(SaleOrderItemsEntity, {
+            where: { id_so: id_so }
+        });
+
+        // Hitung status berdasarkan qty
+        let totalOrdered = 0;
+        let totalShipped = 0;
+
+        allSoItems.forEach(item => {
+            totalOrdered += Number(item.qty_ordered);
+            totalShipped += Number(item.qty_shipped);
+        });
+
+        let newStatus = 'OPEN';
+        if (totalShipped >= totalOrdered) {
+            newStatus = 'COMPLETED';
+        } else if (totalShipped > 0) {
+            newStatus = 'SHIPPED';
+        }
+
+        // Update status ke tabel SO Header
+        await queryRunner.manager.update(SalesOrderEntity, 
+            { id_so: id_so }, 
+            { so_status: newStatus as any }
+        );
+    }
+
+
 
 
    // function to generate order response
