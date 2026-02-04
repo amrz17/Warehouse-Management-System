@@ -15,16 +15,16 @@ import type { InventoryOrder } from "@/types/inventory.type"
 import { InventoryForm } from "./inventory-form"
 
 export default function InventoryTabContent() {
-  const [data, setData] = useState<any>([])
+  const [data, setData] = useState<any[]>([])
   const [open, setOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<InventoryOrder | null>(null)// TODO Make Inventory Order
+  const [selectedItem, setSelectedItem] = useState<InventoryOrder | null>(null)
   const [mode, setMode] = useState<"create" | "edit">("create")
   
-  const { deleteInventory } = useInventory() // TODO Create hook for delete inventory
+  const { deleteInventory } = useInventory() 
   const [openDelete, setOpenDelete] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const loadDataInventory = async () => { // TODO Make API for get all inventory 
+  const loadDataInventory = async () => {  
 
     const items = await fetchInventory()
     setData(items)

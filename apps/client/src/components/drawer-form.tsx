@@ -70,7 +70,8 @@ export function ResponsiveDialogDrawer({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent>
+      // TODO : Make drawer scorllable
+      <DrawerContent> 
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
           {description && (
@@ -78,7 +79,9 @@ export function ResponsiveDialogDrawer({
           )}
         </DrawerHeader>
 
-        <div className="px-4">{children}</div>
+        <div className="overflow-y-auto px-4 py-2">
+          {children}
+        </div>
 
         {footer ? (
           <DrawerFooter>{footer}</DrawerFooter>

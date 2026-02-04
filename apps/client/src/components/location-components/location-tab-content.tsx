@@ -17,14 +17,14 @@ import { LocationForm } from "./location-form"
 export default function LocationTabContent() {
   const [data, setData] = useState<any>([])
   const [open, setOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<LocationOrder | null>(null)// TODO Make Inventory Order
+  const [selectedItem, setSelectedItem] = useState<LocationOrder | null>(null)
   const [mode, setMode] = useState<"create" | "edit">("create")
   
-  const { deleteLocation } = useLocation() // TODO Create hook for delete inventory
+  const { deleteLocation } = useLocation()
   const [openDelete, setOpenDelete] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const loadDataLocation = async () => { // TODO Make API for get all inventory 
+  const loadDataLocation = async () => {  
 
     const items = await fetchLocation()
     setData(items)

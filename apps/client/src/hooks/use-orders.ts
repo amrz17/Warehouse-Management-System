@@ -10,13 +10,14 @@ export function useOrders() {
     setIsLoading(true)
     try {
       const res = await createOrderApi({
-        po_code: payload.po_code,
-        id_user: payload.id_user,
-        date_po: payload.date_po,
-        po_status: payload.po_status,
-        note: payload.note,
+        ...payload
       })
       return res
+    } catch (error: any) {
+      // Tangani error spesifik dari backend
+      const message = error.response?.data?.message || "Gagal membuat order"
+      console.error(message)
+      throw new Error(message) // Lempar ke komponen agar bisa ditangkap form
     } finally {
       setIsLoading(false)
     }
@@ -27,11 +28,7 @@ export function useOrders() {
     setIsLoading(true)
     try {
       const res = await updateOrderApi(id, {
-        po_code: payload.po_code,
-        id_user: payload.id_user,
-        date_po: payload.date_po,
-        po_status: payload.po_status,
-        note: payload.note,
+        ...payload
       })
       return res
     } finally {

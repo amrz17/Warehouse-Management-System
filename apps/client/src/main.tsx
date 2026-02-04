@@ -11,13 +11,13 @@ import { isAuthenticated } from './services/auth.service.ts'
 import LoginPage from './pages/Login.tsx'
 import SignupPage from './pages/SignUp.tsx'
 import Inventory from './pages/Inventory.tsx'
-import Orders from './pages/Orders.tsx'
-import Purchase from './pages/Purchase.tsx'
 import Reporting from './pages/Reporting.tsx'
 import Support from './pages/Support.tsx'
 import Settings from './pages/Settings.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import { Toaster } from 'sonner'
+import Sales from './pages/Sales.tsx'
+import Purchase from './pages/Purchase.tsx'
 
 
 function Protected({ children }: { children: ReactNode }) {
@@ -55,18 +55,18 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: "/orders",
-    element: (
-      <Protected>
-         <Orders />
-      </Protected>
-    )
-  },
-  {
     path: "/purchase",
     element: (
       <Protected>
          <Purchase />
+      </Protected>
+    )
+  },
+  {
+    path: "/sales",
+    element: (
+      <Protected>
+         <Sales />
       </Protected>
     )
   },

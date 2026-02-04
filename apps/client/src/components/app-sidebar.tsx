@@ -42,13 +42,13 @@ const data = {
       icon: IconPackages,
     },
     {
-      title: "Orders",
-      url: "/orders",
+      title: "Purchase",
+      url: "/purchase",
       icon: IconListDetails,
     },
     {
-      title: "Purchase",
-      url: "/purchase",
+      title: "Sales",
+      url: "/sales",
       icon: IconReceiptDollar,
     },
     {

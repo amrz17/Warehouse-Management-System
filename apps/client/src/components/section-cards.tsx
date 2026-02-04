@@ -11,25 +11,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useEffect, useState } from "react";
+import { fetchItems } from "@/api/item.api";
+import { fetchInventory } from "@/api/inventory.api";
 
 // import { useEffect, useState } from "react";
 
 
 export function SectionCards() {
-  // const [totalProducts, setTotalProducts] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalStock, setTotalStock] = useState(0);
+  const [totalOutStock, setTotalOutStock] = useState(0);
 
-  // useEffect(() => {
-  //   async function fetchTotalProducts() {
-  //     try {
-  //       const products = await getTotalProducts(); // ambil data dari fungsi async
-  //       setTotalProducts(products.length); // contoh: menampilkan jumlah produk
-  //     } catch (error) {
-  //       console.error("Error fetching total products:", error);
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchTotalProducts() {
+      try {
+        const products = await fetchItems(); // ambil data dari fungsi async
+        setTotalProducts(products.length); // contoh: menampilkan jumlah produk
+        const stock = await fetchInventory();
+        const total = stock.reduce((sum: number, item: any) => sum + item.qty_available, 0);
+        const totalOutStock = stock.filter((item: any) => item.qty_available === 0).length;
+        setTotalStock(total);
+        setTotalOutStock(totalOutStock);
+      } catch (error) {
+        console.error("Error fetching total products:", error);
+      }
+    }
 
-  //   fetchTotalProducts();
-  // }, []);
+    fetchTotalProducts();
+  }, []);
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
@@ -43,7 +53,7 @@ export function SectionCards() {
             {/* <ProductCountCard /> */}
           {/* </CardTitle> */}
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            {totalProducts}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -57,7 +67,7 @@ export function SectionCards() {
           <CardAction>
             <IconListDetails />
           </CardAction>
-          <CardDescription>Orders</CardDescription>
+          <CardDescription>Purchase Order</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
           0
           </CardTitle>
@@ -79,7 +89,7 @@ export function SectionCards() {
           <CardDescription>Total Stock</CardDescription>
           {/* <StockCountCard /> */}
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            {totalStock}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -95,7 +105,7 @@ export function SectionCards() {
           </CardAction>
           <CardDescription>Out Of Stock</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            {totalOutStock}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">

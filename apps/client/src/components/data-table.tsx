@@ -39,7 +39,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  // 1. Tambahkan state untuk filter kolom
+  // State untuk filter kolom
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [activeTab, setActiveTab] = React.useState("all")
 
@@ -50,54 +50,20 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    // 2. Tambahkan pengatur filter
+    // Pengatur filter
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters, // Daftarkan state filter di sini
+      columnFilters, 
     },
   })
 
-  // 3. Fungsi untuk menangani perubahan tab
-  // const handleTabChange = (status: string) => {
-  //   setActiveTab(status)
-  //   if (status === "all") {
-  //     // Reset filter untuk kolom 'status'
-  //     table.getColumn("status")?.setFilterValue("")
-  //   } else {
-  //     // Set filter kolom 'status' sesuai nilai tab
-  //     table.getColumn("status")?.setFilterValue(status)
-  //   }
-  // }
-
   return (
     <div className="p-4 space-y-4">
-      {/* 4. Implementasi Tabs UI */}
-      {/* <TableTabsList>
-        <TableTabTrigger 
-          isActive={activeTab === "all"} 
-          onClick={() => handleTabChange("all")}
-        >
-          Inventory
-        </TableTabTrigger>
-        <TableTabTrigger 
-          isActive={activeTab === "active"} 
-          onClick={() => handleTabChange("active")}
-        >
-          Items
-        </TableTabTrigger>
-        <TableTabTrigger 
-          isActive={activeTab === "archived"} 
-          onClick={() => handleTabChange("archived")}
-        >
-          Locations
-        </TableTabTrigger>
-      </TableTabsList> */}
-
       <div className="overflow-hidden rounded-md border text-center">
         <Table>
-          <TableHeader className="bg-muted sticky top-0 z-10">
+          <TableHeader className="bg-muted sticky top-0 z-5">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
