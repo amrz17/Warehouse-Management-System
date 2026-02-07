@@ -15,6 +15,17 @@ export class SalesService {
         private readonly dataSource: DataSource
     ) {}
 
+    // Get All Sale Orders
+    async getAllSaleOrders(): Promise<SalesOrderEntity[]> {
+        return this.saleRepo.find({ 
+            relations: [
+                'customer', 
+                'createdBy', 
+                'items'
+            ] });
+    }
+
+    // Create Sale Order
     async createSaleOrder(
         createSaleDTO: CreateSaleDTO
     ): Promise<any> {

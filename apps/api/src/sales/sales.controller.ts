@@ -1,11 +1,18 @@
-import { Body, Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CreateSaleDTO } from './dto/create-sale.dto';
 import { ISaleResponse } from './types/salesResponse.interface';
 
-@Controller('sale')
+@Controller('sale-order')
 export class SalesController {
     constructor(private readonly saleOrderService: SalesService) {}
+
+    // Get All Sale Orders
+    @Get()
+    async getAllSaleOrders(): Promise<ISaleResponse> {
+        const allSales = await this.saleOrderService.getAllSaleOrders();
+        return this.saleOrderService.generateSaleOrderResponse(allSales);
+    }
 
     // 
     @Post()
