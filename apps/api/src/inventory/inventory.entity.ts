@@ -29,6 +29,9 @@ export class InventoryEntity {
     @Column({ type: 'int', default: 0 })
     qty_reserved: number;
 
+    @Column({ type: 'int', default: 0 })
+    qty_ordered: number;
+
     @UpdateDateColumn()
     last_updated: Date;
 

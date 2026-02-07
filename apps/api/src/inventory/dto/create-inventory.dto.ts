@@ -7,6 +7,9 @@ export class CreateInventoryDto {
     @IsNumber()
     qty_reserved: number;
 
+    @IsNumber()
+    qty_ordered: number;
+
     @IsUUID()
     @IsString()
     id_item: string;

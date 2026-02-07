@@ -7,6 +7,9 @@ export class UpdateInventoryDto {
     @IsNumber()
     readonly qty_reserved: number;
 
+    @IsNumber()
+    readonly qty_ordered: number;
+
     @IsUUID()
     @IsString()
     readonly id_item: string;
