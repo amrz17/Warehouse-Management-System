@@ -2,9 +2,8 @@ import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { IOrdersResponse } from './types/ordersResponse.interface';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
-@Controller('order')
+@Controller('purchase-order')
 export class OrdersController {
     constructor(private readonly ordersService: OrdersService) {}
 
@@ -24,6 +23,16 @@ export class OrdersController {
         return this.ordersService.generatedOrderResponse(orders);
     }
 
+    // Cancel Purchase Order
+    @Post('/cancel/:id_po')
+    async cancelPurchaseOrder(
+        @Param('id_po', new ParseUUIDPipe()) id_po: string,
+    ): Promise<any> {
+        const po = await this.ordersService.cancelPurchaseOrder(id_po);
+
+        return await this.ordersService.generatedOrderResponse(po);
+    }
+
     // // Get Orders by User ID
     // @Get(':id_user')
     // async getOrdersByUserId(@Param('id_user', new ParseUUIDPipe()) id_user: string): Promise<IOrdersResponse> {
@@ -32,22 +41,4 @@ export class OrdersController {
     //     return this.ordersService.generatedOrderResponse(order);
     // }
 
-    // Update Order
-    @Put('update/:id_po')
-    async updateOrder(
-        @Param('id_po', new ParseUUIDPipe()) id_po: string,
-        @Body() updateOrderDto: UpdateOrderDto
-    ): Promise<IOrdersResponse> {
-        const updatedOrder = await this.ordersService.updateOrder(id_po, updateOrderDto);
-
-        return this.ordersService.generatedOrderResponse(updatedOrder);
-    }
-
-    // Delete Order
-    @Delete('delete/:id_po')
-    async deleteOrder(
-        @Param('id_po', new ParseUUIDPipe()) id_po: string
-    ): Promise<void> {
-        return this.ordersService.deleteOrder(id_po);
-    }
 }

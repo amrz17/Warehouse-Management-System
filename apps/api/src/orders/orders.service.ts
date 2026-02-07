@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { OrderEntity, PurchaseOrderStatus } from './entities/orders.entity';
 import { DataSource, Repository } from 'typeorm';
 import { IOrdersResponse } from './types/ordersResponse.interface';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { PurchaseOrderItemsEntity } from './entities/order-items.entity';
+import { InventoryEntity } from 'src/inventory/inventory.entity';
 
 @Injectable()
 export class OrdersService {
@@ -35,24 +35,34 @@ export class OrdersService {
             status: PurchaseOrderStatus.PENDING,
             expected_delivery_date: createOrderDto.expected_delivery_date,
             note: createOrderDto.note
-         });
+         } as any);
          const savePO = await queryRunner.manager.save(poHeader);
 
-         const poItems = createOrderDto.items.map((itemDto) => {
-            const item = new PurchaseOrderItemsEntity();
-            item.purchaseOrder = savePO;
-            item.id_item = itemDto.id_item;
-            item.qty_ordered = itemDto.qty_ordered;
-            item.price_per_unit = itemDto.price_per_unit;
+         // Simpan items po dan update inventory
+         for (const itemDto of createOrderDto.items) {
 
-            // Auto logic
-            item.qty_received = 0;
-            item.total_price = itemDto.qty_ordered * itemDto.price_per_unit;
+            // simpan 
+            const poItems = queryRunner.manager.create(PurchaseOrderItemsEntity, {
+                purchaseOrder : savePO,
+                id_item : itemDto.id_item,
+                qty_ordered : itemDto.qty_ordered,
+                price_per_unit : itemDto.price_per_unit,
 
-            return item;
-         })
-         await queryRunner.manager.save(poItems);
+                // Auto logic
+                qty_received : 0,
+                total_price : itemDto.qty_ordered * itemDto.price_per_unit
+            } as any);
+            await queryRunner.manager.save(poItems);
 
+            const poId = itemDto.id_item;
+
+            // Update inventory - tambah qty_ordered di inventory
+            await queryRunner.manager.increment(InventoryEntity, 
+               { id_item: poId },
+               "qty_ordered",
+               itemDto.qty_ordered,
+            );
+         }
 
          // commit 
          await queryRunner.commitTransaction()
@@ -78,28 +88,45 @@ export class OrdersService {
       });
    }
 
-   // Update Order
-   async updateOrder(id_po: string, updateOrderDto: UpdateOrderDto): Promise<OrderEntity> {
+   // Cancel Purchase Order
+   async cancelPurchaseOrder(id_po: string): Promise<any> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
 
-      // Find the order by id_po
-      const order = await this.orderRepository.findOne({ where: { id_po } });
-      
-      // If order not found, throw exception
-      if (!order) {
-         throw new NotFoundException('Order not found');
-      }
+        try {
+            const so = await queryRunner.manager.findOne(OrderEntity, {
+                where: { id_po: id_po },
+                relations: ['items']
+            });
 
-      // Update the order with the provided data
-      Object.assign(order, updateOrderDto);
+            if (!so) throw new NotFoundException('Purchase Order Not Found!');
+            if (so.po_status === PurchaseOrderStatus.CANCELED) throw new BadRequestException('Already canceled!');
 
-      // Save and return the updated order
-      return this.orderRepository.save(order);
-   }
+            // loop items untuk mengembalikan stock
+            for (const item of so.items) {
 
-   // Delete Order
-   async deleteOrder(id_po: string): Promise<void> {
-      await this.orderRepository.delete({ id_po });
-   }
+                // Kurangi stock ordered in Inventory
+                await queryRunner.manager.decrement(InventoryEntity, 
+                    { id_item: item.id_item },
+                    "qty_ordered",
+                    item.qty_ordered,
+                );
+            }
+
+            // Ubah status SO
+            so.po_status = PurchaseOrderStatus.CANCELED;
+            await queryRunner.manager.save(so);
+
+            //
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction()
+            throw err;
+        } finally {
+            await queryRunner.release();
+        }
+    }
 
    // Helper method to generate order response
    generatedOrderResponse(order: OrderEntity | OrderEntity[]): IOrdersResponse {

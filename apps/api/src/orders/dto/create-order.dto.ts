@@ -3,6 +3,7 @@ import { IsString, IsDate, IsOptional, IsUUID, IsArray, ValidateNested } from 'c
 import { CreatePOIDto } from '../dto/create-poitem.dto';
 
 export class CreateOrderDto {
+    @IsOptional()
     @IsString()
     po_number: string;
 
