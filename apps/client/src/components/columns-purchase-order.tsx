@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, NotebookPenIcon, TrashIcon } from "lucide-react"
+import { Ban, MoreHorizontal, NotebookPenIcon, TrashIcon } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -16,8 +16,7 @@ import type { OrderPayload } from "@/schemas/schema"
 
 // Define the columns for the data table.
 export const columnsOrders = ( 
-  onEdit: (order: OrderPayload) => void,
-  onDelete: (id_po: string) => void
+  onCancel: (id_po: string) => void
 ): ColumnDef<OrderPayload>[] => [
   {
     accessorKey: "supplier.name",
@@ -109,17 +108,9 @@ export const columnsOrders = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => onEdit(purchaseOrder)}
-            >
-              <NotebookPenIcon className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(purchaseOrder.id_po!)}
-            >
-              <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
-              Delete
+            <DropdownMenuItem onClick={() => onCancel(purchaseOrder.id_po!)}>
+                <Ban className="h-4 w-4 text-red-500"/>
+                Cancel Order
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

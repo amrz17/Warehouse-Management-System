@@ -5,6 +5,9 @@ import { SectionCards } from "@/components/section-cards"
 // import data from "./data.json"
 import DahsboardLayout from "@/layout/DashboardLayout"
 
+// TODO : Add sales chart
+// TODO : Add recent activities
+// TODO : Make chart dynamic with real data
 export default function Page() {
   return (
     <DahsboardLayout>

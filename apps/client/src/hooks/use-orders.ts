@@ -1,4 +1,4 @@
-import { createOrderApi, deleteOrderApi, updateOrderApi } from "@/api/purchase-order.api"
+import { cancelPurchaseOrderApi, createOrderApi,  } from "@/api/purchase-order.api"
 import type { OrderPayload } from "@/schemas/schema"
 import { useState } from "react"
 
@@ -23,24 +23,14 @@ export function useOrders() {
     }
   }
 
-  // Update Order
-  const updateOrder = async (id: string, payload: OrderPayload) => {
+  async function cancelOrder(id: string): Promise<void> {
     setIsLoading(true)
     try {
-      const res = await updateOrderApi(id, {
-        ...payload
-      })
-      return res
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Delete Order
-  const deleteOrder = async (id: string) => {
-    setIsLoading(true)
-    try {
-      await deleteOrderApi(id)
+      await cancelPurchaseOrderApi(id)
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Failed to cancel order"
+      console.error(message)
+      throw new Error(message)
     } finally {
       setIsLoading(false)
     }
@@ -48,8 +38,7 @@ export function useOrders() {
 
   return {
     createOrder,
-    updateOrder,
-    deleteOrder,
     isLoading,
+    cancelOrder
   }
 }

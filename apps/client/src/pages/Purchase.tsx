@@ -11,42 +11,42 @@ import { OrderForm  } from "@/components/order-form"
 import { fetchOrders } from "@/api/purchase-order.api"
 import { toast } from "sonner"
 import { useOrders } from "@/hooks/use-orders"
-import { ConfirmDeleteDialog } from "@/components/dialog-delete"
 import { PlusCircle } from "lucide-react"
 import type { OrderPayload } from "@/schemas/schema"
+import { ConfirmCancelDialog } from "@/components/dialog-cancel"
 
 
-const Purchase = () => {
+// TODO : Fix responsive issue
+const PurchasePage = () => {
 
   const [data, setData] = useState<OrderPayload[]>([])
   const [open, setOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<OrderPayload | null>(null)
   const [mode, setMode] = useState<"create" | "edit">("create")
-  const { deleteOrder } = useOrders()
+  const { cancelOrder } = useOrders()
 
-  const [openDelete, setOpenDelete] = useState(false)
+  const [openCancel, setOpenCancel] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const handleDelete = (id: string) => {
+  const handleCancel = (id: string) => {
     setDeleteId(id)
-    setOpenDelete(true)
+    setOpenCancel(true)
   }
 
-  const confirmDelete = async () => {
+  const confirmCancel = async () => {
     if (!deleteId) return
 
     try {
-      await deleteOrder(deleteId)
-      toast.success("Order deleted")
+      await cancelOrder(deleteId)
+      toast.success("Order cancelled successfully")
       loadOrders()
     } catch {
-      toast.error("Failed to delete order")
+      toast.error("Failed to cancel order")
     } finally {
-      setOpenDelete(false)
+      setOpenCancel(false)
       setDeleteId(null)
     }
   }
-
 
   // Load Orders
   const loadOrders = async () => {
@@ -59,13 +59,7 @@ const Purchase = () => {
     loadOrders()
   }, [])
 
-  // Handle Edit Order
-  const handleEdit = (order: OrderPayload) => {
-    setMode("edit")
-    setSelectedOrder(order)
-    setOpen(true)
-  }
-
+  
   return (
     <DahsboardLayout>
         <section className="flex flex-1 flex-col">
@@ -136,13 +130,13 @@ const Purchase = () => {
         </Card>
         <div className="w-full flex-col justify-start gap-6"> 
             <DataTable 
-              columns={columnsOrders(handleEdit, handleDelete)} 
+              columns={columnsOrders(handleCancel)} 
               data={data} 
             />
-            <ConfirmDeleteDialog
-              open={openDelete}
-              onOpenChange={setOpenDelete}
-              onConfirm={confirmDelete}
+            <ConfirmCancelDialog
+              open={openCancel}
+              onOpenChange={setOpenCancel}
+              onConfirm={confirmCancel}
             />
         </div>
         </section>
@@ -150,4 +144,4 @@ const Purchase = () => {
   )
 }
 
-export default Purchase
+export default PurchasePage

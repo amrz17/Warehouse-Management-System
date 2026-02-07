@@ -16,6 +16,6 @@ export const createSaleOrderApi = (
 // Cancel Sale Order
 export const cancelSaleOrderApi = (
     id: string,
-): Promise<void> => api.delete(`/sale-order/cancel/${id}`);
+): Promise<void> => api.post(`/sale-order/cancel/${id}`);
 
 

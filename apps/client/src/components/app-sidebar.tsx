@@ -33,7 +33,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "/",
       icon: IconDashboard,
     },
     {
@@ -46,11 +46,13 @@ const data = {
       url: "/purchase",
       icon: IconListDetails,
     },
+    // TODO : Add menu inbound
     {
       title: "Sales",
       url: "/sales",
       icon: IconReceiptDollar,
     },
+    // TODO : Add menu outbound
     {
       title: "Reporting",
       url: "/reporting",

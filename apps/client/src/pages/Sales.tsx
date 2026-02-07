@@ -1,7 +1,7 @@
 import { cancelSaleOrderApi, fetchSaleOrders } from "@/api/sale-order.api"
 import { columnsSaleOrders } from "@/components/columns-sale-order";
 import { DataTable } from "@/components/data-table";
-import { ConfirmDeleteDialog } from "@/components/dialog-delete";
+import { ConfirmCancelDialog } from "@/components/dialog-cancel";
 import { ResponsiveDialogDrawer } from "@/components/drawer-form";
 import { SaleForm } from "@/components/sale-form";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,9 @@ import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function Sales() {
+
+// TODO : Fix responsive issue
+export default function SalesPage() {
   const [data, setData] = useState<SaleOrderPayload[]>([]);
   const [openCancel, setOpenCancel] = useState(false)
   const [cancelId, setCancelId] = useState<string | null>(null)
@@ -100,7 +102,7 @@ export default function Sales() {
               columns={columnsSaleOrders(handleCancelOrder)} 
               data={data} 
             />
-            <ConfirmDeleteDialog
+            <ConfirmCancelDialog
               open={openCancel}
               onOpenChange={setOpenCancel}
               onConfirm={confirmCancel}
