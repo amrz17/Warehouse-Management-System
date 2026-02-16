@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddQtyOrderdInInventory1770491579868 implements MigrationInterface {
-    name = 'AddQtyOrderdInInventory1770491579868'
+export class AddActivityLogsEntity1771235368163 implements MigrationInterface {
+    name = 'AddActivityLogsEntity1771235368163'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "suppliers" ("id_supplier" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "suppliers_address" text NOT NULL, "pic_name" character varying NOT NULL, CONSTRAINT "UQ_5b5720d9645cee7396595a16c93" UNIQUE ("name"), CONSTRAINT "PK_f2dc88217f64de773c2b5680f7a" PRIMARY KEY ("id_supplier"))`);
         await queryRunner.query(`CREATE TABLE "locations" ("id_location" uuid NOT NULL DEFAULT uuid_generate_v4(), "bin_code" character varying NOT NULL, "description" text, "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_ae0f70d0e42f6e577a17d048510" UNIQUE ("bin_code"), CONSTRAINT "PK_2e73b1fc5b967273d2c7dd853b7" PRIMARY KEY ("id_location"))`);
-        await queryRunner.query(`CREATE TABLE "inventory" ("id_inventory" uuid NOT NULL DEFAULT uuid_generate_v4(), "id_item" uuid NOT NULL, "id_location" uuid NOT NULL, "qty_available" integer NOT NULL DEFAULT '0', "qty_reserved" integer NOT NULL DEFAULT '0', "qty_ordered" integer NOT NULL DEFAULT '0', "last_updated" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_954acca8e3bbb4d268b98e6ed12" UNIQUE ("id_item", "id_location"), CONSTRAINT "PK_2cdc32684ad0baa9e8d3971b8fe" PRIMARY KEY ("id_inventory"))`);
+        await queryRunner.query(`CREATE TABLE "inventory" ("id_inventory" uuid NOT NULL DEFAULT uuid_generate_v4(), "id_user" uuid NOT NULL, "id_item" uuid NOT NULL, "id_location" uuid NOT NULL, "qty_available" integer NOT NULL DEFAULT '0', "qty_reserved" integer NOT NULL DEFAULT '0', "qty_ordered" integer NOT NULL DEFAULT '0', "last_updated" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_954acca8e3bbb4d268b98e6ed12" UNIQUE ("id_item", "id_location"), CONSTRAINT "PK_2cdc32684ad0baa9e8d3971b8fe" PRIMARY KEY ("id_inventory"))`);
         await queryRunner.query(`CREATE TABLE "customers" ("id_customer" uuid NOT NULL DEFAULT uuid_generate_v4(), "customer_name" character varying NOT NULL, "customer_address" text, "customer_phone" character varying NOT NULL, "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_a1dded0c9e77a3e62a09d20ed88" UNIQUE ("customer_name"), CONSTRAINT "PK_5bb1d14d487c9a2f298ed76a3f9" PRIMARY KEY ("id_customer"))`);
         await queryRunner.query(`CREATE TYPE "public"."outbound_status_outbound_enum" AS ENUM('OPEN', 'PICKING', 'PACKING', 'SHIPPED', 'COMPLETED', 'CANCELED')`);
         await queryRunner.query(`CREATE TABLE "outbound" ("id_outbound" uuid NOT NULL DEFAULT uuid_generate_v4(), "outbound_number" character varying NOT NULL, "id_so" uuid NOT NULL, "id_user" uuid NOT NULL, "id_customer" uuid NOT NULL, "shipped_at" TIMESTAMP NOT NULL, "carrier_name" character varying NOT NULL, "tracking_number" character varying NOT NULL, "status_outbound" "public"."outbound_status_outbound_enum" NOT NULL DEFAULT 'OPEN', "note" character varying, "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_33be109921055f53d126502493c" UNIQUE ("outbound_number"), CONSTRAINT "PK_6de34e699fe8365906a46c5600e" PRIMARY KEY ("id_outbound"))`);
@@ -21,8 +21,11 @@ export class AddQtyOrderdInInventory1770491579868 implements MigrationInterface 
         await queryRunner.query(`CREATE TABLE "purchase_orders" ("id_po" uuid NOT NULL DEFAULT uuid_generate_v4(), "id_user" uuid NOT NULL, "po_number" character varying NOT NULL, "id_supplier" uuid NOT NULL, "expected_delivery_date" date, "po_status" "public"."purchase_orders_po_status_enum" NOT NULL DEFAULT 'PENDING', "note" character varying NOT NULL, "last_updated" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_74065a5d2b8c4c14b8b8fcf0159" UNIQUE ("po_number"), CONSTRAINT "PK_66ea391e379c6cf276f73f9512a" PRIMARY KEY ("id_po"))`);
         await queryRunner.query(`CREATE TYPE "public"."inbounds_status_inbound_enum" AS ENUM('CANCELED', 'DRAFT', 'PARTIAL', 'RECEIVED')`);
         await queryRunner.query(`CREATE TABLE "inbounds" ("id_inbound" uuid NOT NULL DEFAULT uuid_generate_v4(), "inbound_number" character varying NOT NULL, "id_po" uuid NOT NULL, "id_user" uuid NOT NULL, "received_at" TIMESTAMP NOT NULL, "id_supplier" uuid NOT NULL, "note" character varying, "status_inbound" "public"."inbounds_status_inbound_enum" NOT NULL DEFAULT 'RECEIVED', "last_update" TIMESTAMP NOT NULL DEFAULT now(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_9a168f99a44e4e697660d45fd72" UNIQUE ("inbound_number"), CONSTRAINT "PK_10acab85128256e0e493cfc61ed" PRIMARY KEY ("id_inbound"))`);
+        await queryRunner.query(`CREATE TYPE "public"."activity_logs_action_enum" AS ENUM('CREATE', 'UPDATE', 'DELETE', 'CANCEL', 'LOGIN', 'LOGOUT')`);
+        await queryRunner.query(`CREATE TABLE "activity_logs" ("id_logs" uuid NOT NULL DEFAULT uuid_generate_v4(), "id_user" uuid NOT NULL, "action" "public"."activity_logs_action_enum" NOT NULL, "module" character varying NOT NULL, "resource_id" character varying, "description" text, "metadata" json, "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_5bf0ff408b33f487dae921a38d5" PRIMARY KEY ("id_logs"))`);
         await queryRunner.query(`CREATE TYPE "public"."users_role_enum" AS ENUM('ADMIN', 'MANAGER', 'STAFF_GUDANG', 'PICKER')`);
         await queryRunner.query(`CREATE TABLE "users" ("id_user" uuid NOT NULL DEFAULT uuid_generate_v4(), "full_name" character varying(255) NOT NULL, "username" character varying(50) NOT NULL, "email" character varying, "password" character varying NOT NULL, "role" "public"."users_role_enum" NOT NULL DEFAULT 'STAFF_GUDANG', "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"), CONSTRAINT "PK_fbb07fa6fbd1d74bee9782fb945" PRIMARY KEY ("id_user"))`);
+        await queryRunner.query(`ALTER TABLE "inventory" ADD CONSTRAINT "FK_c442a33778a3c2cfa78515816f7" FOREIGN KEY ("id_user") REFERENCES "users"("id_user") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "inventory" ADD CONSTRAINT "FK_c8c4617b0e2d3ed23f646a44dbb" FOREIGN KEY ("id_item") REFERENCES "items"("id_item") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "inventory" ADD CONSTRAINT "FK_2ff5ba049682716af334bce51ee" FOREIGN KEY ("id_location") REFERENCES "locations"("id_location") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "outbound" ADD CONSTRAINT "FK_f62897bfd63fb65538b702cc207" FOREIGN KEY ("id_so") REFERENCES "sales_orders"("id_so") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -45,9 +48,11 @@ export class AddQtyOrderdInInventory1770491579868 implements MigrationInterface 
         await queryRunner.query(`ALTER TABLE "inbounds" ADD CONSTRAINT "FK_66b9ae2a4753bce84c786929f6f" FOREIGN KEY ("id_po") REFERENCES "purchase_orders"("id_po") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "inbounds" ADD CONSTRAINT "FK_2abb154c5ec54ec57b93da0b91b" FOREIGN KEY ("id_user") REFERENCES "users"("id_user") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "inbounds" ADD CONSTRAINT "FK_c88d5fcc81b951ca416c97dd227" FOREIGN KEY ("id_supplier") REFERENCES "suppliers"("id_supplier") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "activity_logs" ADD CONSTRAINT "FK_0d63dc5aaf0ee793c7b98c1f3b7" FOREIGN KEY ("id_user") REFERENCES "users"("id_user") ON DELETE NO ACTION ON UPDATE NO ACTION`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "activity_logs" DROP CONSTRAINT "FK_0d63dc5aaf0ee793c7b98c1f3b7"`);
         await queryRunner.query(`ALTER TABLE "inbounds" DROP CONSTRAINT "FK_c88d5fcc81b951ca416c97dd227"`);
         await queryRunner.query(`ALTER TABLE "inbounds" DROP CONSTRAINT "FK_2abb154c5ec54ec57b93da0b91b"`);
         await queryRunner.query(`ALTER TABLE "inbounds" DROP CONSTRAINT "FK_66b9ae2a4753bce84c786929f6f"`);
@@ -70,8 +75,11 @@ export class AddQtyOrderdInInventory1770491579868 implements MigrationInterface 
         await queryRunner.query(`ALTER TABLE "outbound" DROP CONSTRAINT "FK_f62897bfd63fb65538b702cc207"`);
         await queryRunner.query(`ALTER TABLE "inventory" DROP CONSTRAINT "FK_2ff5ba049682716af334bce51ee"`);
         await queryRunner.query(`ALTER TABLE "inventory" DROP CONSTRAINT "FK_c8c4617b0e2d3ed23f646a44dbb"`);
+        await queryRunner.query(`ALTER TABLE "inventory" DROP CONSTRAINT "FK_c442a33778a3c2cfa78515816f7"`);
         await queryRunner.query(`DROP TABLE "users"`);
         await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
+        await queryRunner.query(`DROP TABLE "activity_logs"`);
+        await queryRunner.query(`DROP TYPE "public"."activity_logs_action_enum"`);
         await queryRunner.query(`DROP TABLE "inbounds"`);
         await queryRunner.query(`DROP TYPE "public"."inbounds_status_inbound_enum"`);
         await queryRunner.query(`DROP TABLE "purchase_orders"`);
