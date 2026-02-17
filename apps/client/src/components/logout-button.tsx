@@ -1,28 +1,33 @@
-// components/SimpleLogoutButton.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner"
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
-import { isAuthenticated, removeToken } from '@/services/auth.service';
+import { getToken, isAuthenticated, removeToken } from '@/services/auth.service';
+import { logoutApi } from '@/api/auth.api';
 
-export function SimpleLogoutButton() {
+export function LogoutButton() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => { 
     setLoading(true);
-    
-    // Simulasi loading
-    setTimeout(() => {
+  
+    try {
+      const token = getToken(); 
+      console.log('token', token)
+        if (token) {
+          await logoutApi(token); 
+        }
+    } catch (error) {
+      console.error("Gagal mencatat log logout di server:", error);
+    } finally {
       removeToken();
-      
       toast.info("Berhasil logout.");
-
       
       navigate('/login', { replace: true });
       setLoading(false);
-    }, 500);
+    }
   };
 
   if (!isAuthenticated()) return null;

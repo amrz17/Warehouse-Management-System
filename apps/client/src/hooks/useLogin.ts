@@ -22,8 +22,8 @@ export function useLogin() {
 
     try {
       const res = await loginApi(data)
-      console.log("Login successful", res.data)
-      login(res.data.access_token)
+      console.log("Login successful")
+      login(res.data.user.token)
       navigate("/")
     } catch (error) {
       console.error("Login failed", error)

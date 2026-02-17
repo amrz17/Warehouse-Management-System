@@ -11,7 +11,8 @@ export function saveToken(token: string): void {
 
 export function getToken(): string | null {
     if (isBrowser) {
-        return localStorage.getItem(TOKEN_KEY);
+        const token = localStorage.getItem(TOKEN_KEY);
+        return token;
     }
     return null;
 }

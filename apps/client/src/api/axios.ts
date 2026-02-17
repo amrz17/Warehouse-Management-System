@@ -13,4 +13,22 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // ambil URL request yang sedang jalan
+      const originalRequestUrl = error.config.url;
+
+      // jangan paksa refresh jika sedang memanggil API logout
+      if (!originalRequestUrl.includes('/logout')) {
+        localStorage.removeItem('token');
+        window.location.href = '/login'; 
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api

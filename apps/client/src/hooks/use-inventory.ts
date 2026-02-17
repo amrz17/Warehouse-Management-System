@@ -10,10 +10,7 @@ export function useInventory() {
 
         try {
             const res = await createInventoryApi({
-                qty_available: payload.qty_available,
-                qty_reserved: payload.qty_reserved,
-                id_item: payload.id_item,
-                id_location: payload.id_location
+                ...payload
             })
             return res
         } finally {
@@ -26,10 +23,7 @@ export function useInventory() {
 
         try {
             const res = await updateInventoryApi(id, {
-                qty_available: payload.qty_available,
-                qty_reserved: payload.qty_reserved,
-                id_item: payload.id_item,
-                id_location: payload.id_location
+                ...payload
             })
             return res
         } finally {
