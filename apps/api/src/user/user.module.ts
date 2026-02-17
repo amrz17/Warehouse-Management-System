@@ -6,13 +6,29 @@ import { UserEntity } from "./user.entity";
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { InboundEntity } from "../inbound/entities/inbound.entity";
 import { OrderEntity } from "../orders/entities/orders.entity";
+import { InventoryEntity } from "../inventory/inventory.entity";
+import { OutboundEntity } from "../outbound/entities/outbound.entity";
+import { SalesOrderEntity } from "../sales/entities/sales-order.entity";
+import { ActivityLogsEntity } from "../activity-logs/entities/activity-logs.entity";
+import { JwtModule } from '@nestjs/jwt';
+import { ActivityLogsModule } from "../activity-logs/activity-logs.module";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
         UserEntity,
         OrderEntity,
-        InboundEntity
-    ])],
+        InboundEntity,
+        InventoryEntity,
+        SalesOrderEntity,
+        OutboundEntity,
+        ActivityLogsEntity
+    ]),
+    JwtModule.register({
+        secret: process.env.JWT_SECRET,
+        signOptions: { expiresIn: '1d' },
+    }),
+    ActivityLogsModule
+    ],
     controllers: [UserContainerOptions],
     providers: [UserService],
     exports: [UserService],

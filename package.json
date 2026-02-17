@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/passport-jwt": "^4.0.1",
     "turbo": "^2.6.3"
   },
   "packageManager": "npm@11.7.0",
@@ -10,5 +11,11 @@
   },
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  }
 }

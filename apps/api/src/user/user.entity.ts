@@ -4,6 +4,8 @@ import { InboundEntity } from "../inbound/entities/inbound.entity";
 import { OrderEntity } from "../orders/entities/orders.entity";
 import { SalesOrderEntity } from "../sales/entities/sales-order.entity";
 import { OutboundEntity } from "../outbound/entities/outbound.entity";
+import { InventoryEntity } from "../inventory/inventory.entity";
+import { ActivityLogsEntity } from "../activity-logs/entities/activity-logs.entity";
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -62,6 +64,9 @@ export class UserEntity {
         type: "timestamp"
     })
     created_at: Date;
+
+    @OneToMany(() => InventoryEntity, (inv) => inv.createdBy)
+    invs: InventoryEntity[];  
     
     @OneToMany(() => OrderEntity, (order) => order.createdBy)
     order: OrderEntity[];  
@@ -74,4 +79,7 @@ export class UserEntity {
 
     @OneToMany(() => OutboundEntity, (outbound) => outbound.shipped_by)
     outbounds: OutboundEntity[];  
+
+    @OneToMany(() => ActivityLogsEntity, (log) => log.createdBy)
+    logs: ActivityLogsEntity[];  
 }

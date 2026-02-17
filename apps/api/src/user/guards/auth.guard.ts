@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate {
 
         const request = context.switchToHttp().getRequest<AuthRequest>()
         
-        if(request.user.id_user) {
+        if(request.user && request.user.id_user) {
             return true;
         }
 
