@@ -83,16 +83,21 @@ export type ItemPayload = z.infer<typeof itemSchema>
 // Inventory Schema
 export const inventorySchema = z.object({
   id_inventory: z.string().optional(),
+  id_user: z.string().optional(),
+  createdBy: z.object({
+    name: z.string().optional()
+  }).optional(),
   id_item: z.string().min(1, "ID Item is requeired"),
   item: z.object({
     name: z.string().optional()
-  }),
+  }).optional(),
   id_location: z.string().min(1, "ID location is required"),
   location: z.object({
     bin_code: z.string().optional()
   }).optional(),
   qty_available: z.number().min(1, "Quantity is required"),
-  qty_reserved: z.number(),
+  qty_ordered: z.number().optional(),
+  qty_reserved: z.number().optional(),
   last_update: z.string().optional(),
   created_at: z.string().optional(),
 })

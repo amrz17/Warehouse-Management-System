@@ -53,6 +53,7 @@ export function InventoryForm({
 
 
   const onSubmit = async (values: InventoryPayload) => {
+    console.log("Data yang akan dikirim:", values); // Apakah ini muncul saat klik submit?
     try {
       if (mode === "create") {
         await createInventory(values)
@@ -93,6 +94,11 @@ export function InventoryForm({
       <div>
         <Label>Quantity Available</Label>
         <Input type="number" {...register("qty_available", { valueAsNumber: true })} />
+      </div>
+
+      <div>
+        <Label>Quantity Ordered</Label>
+        <Input type="number" {...register("qty_ordered", { valueAsNumber: true })} />
       </div>
 
       <div>
