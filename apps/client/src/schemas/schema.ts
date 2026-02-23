@@ -1,4 +1,3 @@
-// schemas/order.schema.ts
 import { z } from "zod"
 
 // Purchase Order Schema
@@ -74,7 +73,7 @@ export const itemSchema = z.object({
   name: z.string().min(1, "Item name is required"),
   description: z.string().optional(),
   price: z.number().min(1, "Price item is required"),
-  isActive: z.string().optional(),
+  isActive: z.boolean().optional(),
   created_at: z.string().optional(),
 })
 
@@ -95,7 +94,7 @@ export const inventorySchema = z.object({
   location: z.object({
     bin_code: z.string().optional()
   }).optional(),
-  qty_available: z.number().min(1, "Quantity is required"),
+  qty_available: z.number().optional(),
   qty_ordered: z.number().optional(),
   qty_reserved: z.number().optional(),
   last_update: z.string().optional(),
@@ -184,3 +183,20 @@ export const OutboundSchema = z.object({
 })
 
 export type OutboundPayload = z.infer<typeof OutboundSchema>
+
+// 
+export const ActivityLogsSchema = z.object({
+  id_logs: z.string().optional(),
+  id_user: z.string().optional(),
+  createdBy: z.object({
+    name: z.string().optional()
+  }).optional(),
+  action: z.enum(['CREATE', 'UPDATE', 'DELETE', 'CANCEL', 'LOGIN', 'LOGOUT' ]).optional(),
+  module: z.string().optional(),
+  resource_id: z.string().optional(),
+  description: z.string().optional(),
+  metadata: z.any().optional(),
+  created_at: z.string().optional()
+});
+
+export type ActivityLogsPayload = z.infer<typeof ActivityLogsSchema>

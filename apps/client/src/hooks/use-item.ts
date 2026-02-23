@@ -10,9 +10,7 @@ export function useItems() {
 
         try {
             const res = await createItemApi({
-                sku: payload.sku,
-                name: payload.name,
-                price: payload.price
+                ...payload
             })
             return res
         } finally {
@@ -22,12 +20,14 @@ export function useItems() {
 
     const updateItem = async (id: string, payload: ItemPayload) => {
         setIsLoading(true)
+        console.log("idItem", id)
 
         try {
             const res = await updateItemApi(id, {
                 sku: payload.sku,
                 name: payload.name,
-                price: payload.price
+                description: payload.description,
+                price: payload.price,
             })
             return res
         } finally {

@@ -23,6 +23,7 @@ export function InventoryForm({
   onSuccess,
 }: Props) {
 
+
   // Initialize the form with react-hook-form and zod validation
   const form = useForm<InventoryPayload>({
     resolver: zodResolver(inventorySchema),
@@ -60,8 +61,10 @@ export function InventoryForm({
         toast.success("New inventory created")
       } else {
         if (!invId) return
+        console.log("id", invId)
         await updateInventory(invId, values)
         toast.success("Inventory updated")
+        console.log("Edit sudah dilakukan")
       }
 
       onSuccess?.()
@@ -71,8 +74,9 @@ export function InventoryForm({
     }
   }
 
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+    <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Validation Errors:", errors))} className="grid gap-4">
       <div>
         <Label>ID Item</Label>
         <Input

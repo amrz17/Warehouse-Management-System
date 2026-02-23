@@ -67,7 +67,7 @@ export default function InventoryTabContent() {
     try {
       await deleteInventory(deleteId)
       toast.success("Item delted")
-    //   loadDataItem()
+      loadDataInventory()
     } catch {
       toast.error("Failed to delete item")
     } finally {
@@ -106,6 +106,7 @@ export default function InventoryTabContent() {
           <InventoryForm 
             mode={mode} 
             initialData={selectedItem} 
+            invId={selectedItem?.id_inventory}
             onSuccess={() => { loadDataInventory(); setOpen(false); }} 
           />
         </ResponsiveDialogDrawer>

@@ -25,14 +25,11 @@ export function ItemForm({
   onSuccess,
 }: Props) {
 
+  console.log("Props itemId:", itemId)
+
   // Initialize the form with react-hook-form and zod validation
   const form = useForm<ItemPayload>({
-    resolver: zodResolver(itemSchema),
-    defaultValues: {
-      sku: "",
-      name: "",
-      price: 0
-    },
+    resolver: zodResolver(itemSchema)
   })
 
   // Destructure necessary methods and state from the form
@@ -60,14 +57,18 @@ export function ItemForm({
 
 
   const onSubmit = async (values: ItemPayload) => {
+    console.log("id item", itemId)
+    console.log("value item", values)
     try {
       if (mode === "create") {
         await createItem(values)
         toast.success("New item created")
       } else {
         if (!itemId) return
+        console.log("id item", itemId)
         await updateItem(itemId, values)
         toast.success("Item updated")
+        console.log("Edit sudah dilakukan")
       }
 
       onSuccess?.()
@@ -100,6 +101,11 @@ export function ItemForm({
       <div>
         <Label>Price Item</Label>
         <Input type="number" {...register("price", { valueAsNumber: true })} />
+      </div>
+
+      <div>
+        <Label>Description</Label>
+        <Input {...register("description")} />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>

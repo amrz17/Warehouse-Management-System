@@ -4,7 +4,6 @@ import api from "./axios"
 export const fetchInventory = async (): Promise<any> => {
     const res = await api.get("/inventory")
 
-    console.log("API Response:", res.data.inventory); // Debugging line
     return res.data.inventory
 }
 

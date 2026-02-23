@@ -109,6 +109,7 @@ export default function LocationTabContent() {
             <LocationForm 
               mode={mode} 
               initialData={selectedItem} 
+              locId={selectedItem?.id_location}
               onSuccess={() => { loadDataLocation(); setOpen(false); }} 
             />
           </ResponsiveDialogDrawer>

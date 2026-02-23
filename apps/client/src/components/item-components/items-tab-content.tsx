@@ -104,6 +104,7 @@ export default function ItemsTabContent() {
             <ItemForm 
               mode={mode} 
               initialData={selectedItem} 
+              itemId={selectedItem?.id_item}
               onSuccess={() => { loadDataItem(); setOpen(false); }} 
             />
           </ResponsiveDialogDrawer>
