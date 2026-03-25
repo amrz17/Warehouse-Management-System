@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
-import { isAuthenticated } from './services/auth.service.ts'
+import { isAuthenticated, hasAnyRole } from './services/auth.service.ts'
 
 import LoginPage from './pages/Login.tsx'
 import SignupPage from './pages/SignUp.tsx'
@@ -20,7 +20,9 @@ import Sales from './pages/Sales.tsx'
 import Purchase from './pages/Purchase.tsx'
 import Inbound from './pages/Inbound.tsx'
 import Outbound from './pages/Outbound.tsx'
+import { UserRoleEnum, type UserRole } from './schemas/schema.ts'
 
+const { ADMIN, MANAGER, STAFF_GUDANG, PICKER } = UserRoleEnum.enum;
 
 function Protected({ children }: { children: ReactNode }) {
 
@@ -28,6 +30,13 @@ function Protected({ children }: { children: ReactNode }) {
     return <Navigate to="/login" replace />;
   }
 
+  return <>{children}</>;
+}
+
+// Ganti type roles dari string[] ke UserRole[]
+function ProtectedRole({ children, roles }: { children: ReactNode, roles: UserRole[] }) {
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  if (!hasAnyRole(roles)) return <Navigate to="/403" replace />;
   return <>{children}</>;
 }
 
@@ -58,11 +67,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/purchase",
-    element: (
-      <Protected>
-         <Purchase />
-      </Protected>
-    )
+    element: <ProtectedRole roles={[ADMIN, MANAGER, STAFF_GUDANG]}><Purchase /></ProtectedRole>
   },
   {
     path: "/inbound",

@@ -26,62 +26,86 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const data = {
-  user: {
-    name: "admin",
-    email: "admin@example.com",
-    avatar: "/avatars/shadcn.jpg",
+import { useAuth } from '../hooks/useAuth.ts'
+import { UserRoleEnum } from '../schemas/schema.ts'
+
+const { ADMIN, MANAGER, STAFF_GUDANG, PICKER } = UserRoleEnum.enum;
+
+const navMain = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: IconDashboard,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG, PICKER], // Semua role
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/",
-      icon: IconDashboard,
-    },
-    {
-      title: "Inventory",
-      url: "/inventory",
-      icon: IconPackages,
-    },
-    {
-      title: "Purchase",
-      url: "/purchase",
-      icon: IconListDetails,
-    },
-    {
-      title: "Inbound",
-      url: "/inbound",
-      icon: IconTransferIn
-    },
-    {
-      title: "Sales",
-      url: "/sales",
-      icon: IconReceiptDollar,
-    },
-    {
-      title: "Outbound",
-      url: "/outbound",
-      icon: IconTransferOut
-    },
-    {
-      title: "Reporting",
-      url: "/reporting",
-      icon:  IconChartBar,
-    },
-    {
-      title: "Support",
-      url: "/support",
-      icon: IconUsers,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
-  ],
-}
+  {
+    title: "Inventory",
+    url: "/inventory",
+    icon: IconPackages,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG],
+  },
+  {
+    title: "Purchase",
+    url: "/purchase",
+    icon: IconListDetails,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG],
+  },
+  {
+    title: "Inbound",
+    url: "/inbound",
+    icon: IconTransferIn,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG],
+  },
+  {
+    title: "Sales",
+    url: "/sales",
+    icon: IconReceiptDollar,
+    roles: [ADMIN, MANAGER, PICKER],
+  },
+  {
+    title: "Outbound",
+    url: "/outbound",
+    icon: IconTransferOut,
+    roles: [ADMIN, MANAGER, PICKER],
+  },
+  {
+    title: "Reporting",
+    url: "/reporting",
+    icon: IconChartBar,
+    roles: [ADMIN, MANAGER],
+  },
+  {
+    title: "Support",
+    url: "/support",
+    icon: IconUsers,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG, PICKER],
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: IconSettings,
+    roles: [ADMIN, MANAGER, STAFF_GUDANG, PICKER],
+  },
+]
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { role } = useAuth();
+  console.log('Role dari useAuth:', role); 
+
+  // Filter nav berdasarkan role user
+  const filteredNav = navMain.filter(item => 
+    role ? item.roles.includes(role) : false
+  );
+
+  const data = {
+    user: {
+      name: "admin",
+      email: "admin@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: filteredNav,
+  }
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

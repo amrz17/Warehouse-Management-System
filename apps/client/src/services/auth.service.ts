@@ -1,3 +1,5 @@
+import { UserRoleEnum ,type UserRole } from '../schemas/schema';
+
 export const TOKEN_KEY = "access_token";
 
 // Helper untuk SSR compatibility
@@ -59,7 +61,7 @@ export function isAuthenticated(): boolean {
 
     // Jika token bukan JWT (tidak ada titik), anggap valid
     if (!token.includes('.')) {
-        return true; // atau false, tergantung kebutuhan
+        return true; 
     }
 
     try {
@@ -83,10 +85,46 @@ export function isAuthenticated(): boolean {
     }
 }
 
-// Optional: Tambahkan fungsi untuk mendapatkan info user dari token
+// Tambahkan fungsi untuk mendapatkan info user dari token
 export function getTokenPayload(): any | null {
     const token = getToken();
     if (!token || !token.includes('.')) return null;
     
     return decodeJWT(token);
+}
+
+export function getUserRole(): UserRole | null {
+    const payload = getTokenPayload();
+    // console.log('Payload JWT:', payload); 
+    
+    const parsed = UserRoleEnum.safeParse(payload?.role); 
+    // console.log('Parse result:', parsed);
+    return parsed.success ? parsed.data : null;
+}
+
+// Cek apakah user punya role tertentu
+export function hasRole(role: UserRole): boolean {
+    return getUserRole() === role;
+}
+
+// Cek apakah user punya salah satu dari beberapa role
+export function hasAnyRole(roles: UserRole[]): boolean {
+    const userRole = getUserRole();
+    if (!userRole) return false;
+    return roles.includes(userRole);
+}
+
+// role
+export const isAdmin = () => hasRole(UserRoleEnum.enum.ADMIN);
+export const isManager = () => hasRole(UserRoleEnum.enum.MANAGER);
+export const isStaffGudang = () => hasRole(UserRoleEnum.enum.STAFF_GUDANG);
+export const isPicker = () => hasRole(UserRoleEnum.enum.PICKER);
+
+// Simpan & hapus role saat login/logout
+export function saveAuth(token: string): void {
+    saveToken(token);
+}
+
+export function clearAuth(): void {
+    removeToken();
 }

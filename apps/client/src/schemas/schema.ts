@@ -1,5 +1,11 @@
 import { z } from "zod"
 
+// Enum USER ROLE
+export const UserRoleEnum = z.enum(['ADMIN', 'MANAGER', 'STAFF_GUDANG', 'PICKER']);
+
+// Type dari enum 
+export type UserRole = z.infer<typeof UserRoleEnum>;
+
 // Purchase Order Schema
 export const orderSchema = z.object({
   id_po: z.string().optional(),
