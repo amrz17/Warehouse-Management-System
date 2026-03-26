@@ -6,6 +6,48 @@ export const UserRoleEnum = z.enum(['ADMIN', 'MANAGER', 'STAFF_GUDANG', 'PICKER'
 // Type dari enum 
 export type UserRole = z.infer<typeof UserRoleEnum>;
 
+export const PurchaseStatusEnum = z.enum([
+  'PENDING',
+  'APPROVED',
+  'SHIPPED',
+  'RECEIVED',
+  'CANCELED',
+  'COMPLETED'
+])
+
+export type PurchaseStatus = z.infer<typeof PurchaseStatusEnum>;
+
+export const SaleStatusEnum = z.enum([
+  'PENDING',
+  'APPROVED',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELED',
+  'COMPLETED'
+])
+
+export type SaleStatus = z.infer<typeof SaleStatusEnum>;
+
+export const InboundStatusEnum = z.enum([
+  'DRAFT',
+  'PARTIAL',
+  'RECEIVED',
+  'CANCELED'
+])
+
+export type InboundStatus = z.infer<typeof InboundStatusEnum>;
+
+export const OutboundStatusEnum = z.enum([
+    "OPEN",
+    "PICKING",
+    "PACKING",
+    "SHIPPED",
+    "COMPLETED",
+    "CANCELED"
+])
+
+export type OutboundStatus = z.infer<typeof OutboundStatusEnum>;
+
 // Purchase Order Schema
 export const orderSchema = z.object({
   id_po: z.string().optional(),

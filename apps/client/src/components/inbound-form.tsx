@@ -4,12 +4,13 @@ import { useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { inboundSchema, type InboundPayload } from "@/schemas/schema"
+import { inboundSchema, InboundStatusEnum, type InboundPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useInbound } from "@/hooks/use-inbound"
+import { useDropdownOptions } from "./order-form"
 
 type Props = {
   mode: "create" | "edit"
@@ -17,6 +18,7 @@ type Props = {
   inboundId?: string
   onSuccess?: () => void
 }
+
 
 export function InboundForm({
   mode,
@@ -34,7 +36,6 @@ export function InboundForm({
       id_supplier: "",
       id_user: "",
       received_at: "",
-      status_inbound: "DRAFT",
       note: "",
       items: [
         {
@@ -45,6 +46,7 @@ export function InboundForm({
       ],
     },
   })
+
 
   // Destructure necessary methods and state from the form
   const {
@@ -96,6 +98,9 @@ export function InboundForm({
     }
   }
 
+
+  const { products, supplier, loading } = useDropdownOptions() 
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
@@ -118,7 +123,24 @@ export function InboundForm({
 
       <div>
         <Label className="mb-2">Company Supplier</Label>
-        <Input {...register("id_supplier")} />
+        {/* <Input {...register("id_supplier")} /> */}
+        <select
+          {...register("id_supplier")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Supplier"}
+          </option>
+          {supplier.map((s: any) => (
+            <option key={s.id_supplier} value={s.id_supplier}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+        {errors.id_supplier && (
+          <p className="text-sm text-red-500">{errors.id_supplier.message}</p>
+        )}
       </div>
 
       <div>
@@ -133,7 +155,20 @@ export function InboundForm({
 
       <div>
         <Label className="mb-2">Status</Label>
-        <Input {...register("status_inbound")} />
+        {/* <Input {...register("status_inbound")} /> */}
+        <select 
+          {...register("status_inbound")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Status"}
+          </option>
+            {InboundStatusEnum.options.map((status) => (
+                <option key={status} value={status}>
+                    {status}
+                </option>
+            ))}
+        </select>
       </div>
 
       <div>
@@ -148,9 +183,26 @@ export function InboundForm({
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
           <div>
             <Label className="mb-2">Item</Label>
-            <Input {...register(`items.${index}.id_item` as const)} />
+            {/* <Input {...register(`items.${index}.id_item` as const)} />
             {errors.items?.[index]?.id_item && (
               <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
+            )} */}
+            <select
+              {...register(`items.${index}.id_item` as const)}
+              className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+              disabled={loading}
+            >
+              <option value="">
+                {loading ? "Loading..." : "Pilih Item"}
+              </option>
+              {products.map((p: any) => (
+                <option key={p.id_item} value={p.id_item}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {errors.items?.[index]?.id_item && (
+              <p className="text-sm text-red-500">{errors.items[index]?.id_item?.message}</p>
             )}
           </div>
 

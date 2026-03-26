@@ -1,15 +1,44 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { saleOrderSchema, type SaleOrderPayload } from "@/schemas/schema"
+import { saleOrderSchema, SaleStatusEnum, type SaleOrderPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useSaleOrders } from "@/hooks/use-sale-order"
+import { fetchCust } from "@/api/customer.api"
+import { fetchItems } from "@/api/item.api"
+
+export const useDropdownOptions = () => {
+    const [products, setProducts] = useState([]);
+    const [customer, SetCustomer] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const [p, c] = await Promise.all([
+                    fetchItems(),
+                    fetchCust(),
+                ]);
+                setProducts(p);
+                SetCustomer(c);
+            } catch (err) {
+                console.error('Gagal fetch dropdown:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAll();
+    }, []);
+
+    return { products, customer, loading };
+};
 
 type Props = {
   mode: "create" | "edit"
@@ -95,18 +124,29 @@ export function SaleForm({
     }
   }
 
+  
+  const { products, customer, loading } = useDropdownOptions() // ← tambahkan
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
         <Label className="mb-2">Customer Name</Label>
-        <Input
+        <select
           {...register("id_customer")}
-          disabled={mode === "edit"}
-        />
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Customer"}
+          </option>
+          {customer.map((c: any) => (
+            <option key={c.id_customer} value={c.id_customer}>
+              {c.name}
+            </option>
+          ))}
+        </select>
         {errors.id_customer && (
-          <p className="text-sm text-red-500">
-            {errors.id_customer.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.id_customer.message}</p>
         )}
       </div>
 
@@ -122,7 +162,18 @@ export function SaleForm({
 
       <div>
         <Label className="mb-2">Status</Label>
-        <Input {...register("so_status")} />
+        {/* <Input {...register("so_status")} /> */}
+        <select 
+          {...register("so_status")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          >
+        <option value="">Pilih Status</option>
+            {SaleStatusEnum.options.map((status) => (
+                <option key={status} value={status}>
+                    {status}
+                </option>
+            ))}
+        </select>
       </div>
 
       <div>
@@ -137,9 +188,26 @@ export function SaleForm({
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
           <div>
             <Label>Item Name</Label>
-            <Input {...register(`items.${index}.id_item` as const)} />
+            {/* <Input {...register(`items.${index}.id_item` as const)} />
             {errors.items?.[index]?.id_item && (
               <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
+            )} */}
+            <select
+              {...register(`items.${index}.id_item` as const)}
+              className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+              disabled={loading}
+            >
+              <option value="">
+                {loading ? "Loading..." : "Pilih Item"}
+              </option>
+              {products.map((p: any) => (
+                <option key={p.id_item} value={p.id_item}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {errors.items?.[index]?.id_item && (
+              <p className="text-sm text-red-500">{errors.items[index]?.id_item?.message}</p>
             )}
           </div>
 

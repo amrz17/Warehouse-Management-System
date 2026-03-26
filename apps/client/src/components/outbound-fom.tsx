@@ -2,12 +2,13 @@ import { useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { OutboundSchema, type OutboundPayload } from "@/schemas/schema"
+import { OutboundSchema, OutboundStatusEnum, type OutboundPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useOutbound } from "@/hooks/use-outbound"
+import { useDropdownOptions } from "./sale-form"
 
 type Props = {
   mode: "create" | "edit"
@@ -32,7 +33,6 @@ export function OutboundForm({
       id_customer: "",
       id_user: "",
       shipped_at: "",
-      status_outbound: "OPEN",
       note: "",
       items: [
         {
@@ -94,6 +94,8 @@ export function OutboundForm({
     }
   }
 
+  const { products, customer, loading } = useDropdownOptions() 
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
@@ -116,7 +118,23 @@ export function OutboundForm({
 
       <div>
         <Label className="mb-2">Company Customer</Label>
-        <Input {...register("id_customer")} />
+        <select
+          {...register("id_customer")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Customer"}
+          </option>
+          {customer.map((c: any) => (
+            <option key={c.id_customer} value={c.id_customer}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+        {errors.id_customer && (
+          <p className="text-sm text-red-500">{errors.id_customer.message}</p>
+        )}
       </div>
 
       <div>
@@ -141,7 +159,20 @@ export function OutboundForm({
 
       <div>
         <Label className="mb-2">Status</Label>
-        <Input {...register("status_outbound")} />
+        {/* <Input {...register("status_outbound")} /> */}
+        <select 
+          {...register("status_outbound")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Status"}
+          </option>
+            {OutboundStatusEnum.options.map((status) => (
+                <option key={status} value={status}>
+                    {status}
+                </option>
+            ))}
+        </select>
       </div>
 
       <div>
@@ -156,11 +187,29 @@ export function OutboundForm({
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
           <div>
             <Label className="mb-2">Item</Label>
-            <Input {...register(`items.${index}.id_item` as const)} />
+            {/* <Input {...register(`items.${index}.id_item` as const)} />
             {errors.items?.[index]?.id_item && (
               <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
+            )} */}
+            <select
+              {...register(`items.${index}.id_item` as const)}
+              className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+              disabled={loading}
+            >
+              <option value="">
+                {loading ? "Loading..." : "Pilih Item"}
+              </option>
+              {products.map((p: any) => (
+                <option key={p.id_item} value={p.id_item}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {errors.items?.[index]?.id_item && (
+              <p className="text-sm text-red-500">{errors.items[index]?.id_item?.message}</p>
             )}
           </div>
+
 
           <div>
             <Label className="mb-2">SO Item</Label>

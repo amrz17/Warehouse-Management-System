@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useInventory } from "@/hooks/use-inventory"
+import { useDropdownOptions } from "@/hooks/use-dropdown"
 
 type Props = {
   mode: "create" | "edit"
@@ -39,6 +40,7 @@ export function InventoryForm({
 
   // Use the custom hook for order operations
   const { createInventory, updateInventory, isLoading } = useInventory()
+  const { products, warehouses, loading } = useDropdownOptions() // ← tambahkan
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -77,41 +79,76 @@ export function InventoryForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit, (errors) => console.log("Validation Errors:", errors))} className="grid gap-4">
-      <div>
-        <Label>ID Item</Label>
-        <Input
+      {/* Dropdown Produk */}
+      <div className="flex flex-col gap-2">
+        <Label>Item</Label>
+        <select
           {...register("id_item")}
-        //   disabled={mode === "edit"}
-        />
-        {/* {errors.id_item && (
-          <p className="text-sm text-red-500">
-            {errors.id_item.message}
-          </p>
-        )} */}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Item"}
+          </option>
+          {products.map((p: any) => (
+            <option key={p.id_item} value={p.id_item}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+        {errors.id_item && (
+          <p className="text-sm text-red-500">{errors.id_item.message}</p>
+        )}
       </div>
 
-      <div>
-        <Label>ID Location</Label>
-        <Input {...register("id_location")} />
+      {/* Dropdown Gudang */}
+      <div className="flex flex-col gap-2">
+        <Label>Lokasi Gudang</Label>
+        <select
+          {...register("id_location")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Lokasi"}
+          </option>
+          {warehouses.map((w: any) => (
+            <option key={w.id_location} value={w.id_location}>
+              {w.bin_code}
+            </option>
+          ))}
+        </select>
+        {errors.id_location && (
+          <p className="text-sm text-red-500">{errors.id_location.message}</p>
+        )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2">
         <Label>Quantity Available</Label>
         <Input type="number" {...register("qty_available", { valueAsNumber: true })} />
+        {errors.qty_available && (
+          <p className="text-sm text-red-500">{errors.qty_available.message}</p>
+        )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2">
         <Label>Quantity Ordered</Label>
         <Input type="number" {...register("qty_ordered", { valueAsNumber: true })} />
+        {errors.qty_ordered && (
+          <p className="text-sm text-red-500">{errors.qty_ordered.message}</p>
+        )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2">
         <Label>Quantity Reserved</Label>
         <Input type="number" {...register("qty_reserved", { valueAsNumber: true })} />
+        {errors.qty_reserved && (
+          <p className="text-sm text-red-500">{errors.qty_reserved.message}</p>
+        )}
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
-        {mode === "create" ? "Create inventory" : "Update inventory"}
+      <Button type="submit" disabled={isSubmitting || loading}>
+        {mode === "create" ? "Create Inventory" : "Update Inventory"}
       </Button>
     </form>
   )

@@ -1,15 +1,45 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { orderSchema, type OrderPayload } from "@/schemas/schema"
+import { orderSchema, PurchaseStatusEnum, type OrderPayload } from "@/schemas/schema"
 import { useOrders } from "@/hooks/use-orders"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+
+import { fetchItems } from '@/api/item.api';
+import { fetchSuppliers } from "@/api/supplier.api"
+
+export const useDropdownOptions = () => {
+    const [products, setProducts] = useState([]);
+    const [supplier, SetSupplier] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const [p, c] = await Promise.all([
+                    fetchItems(),
+                    fetchSuppliers(),
+                ]);
+                setProducts(p);
+                SetSupplier(c);
+            } catch (err) {
+                console.error('Gagal fetch dropdown:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAll();
+    }, []);
+
+    return { products, supplier, loading };
+};
 
 type Props = {
   mode: "create" | "edit"
@@ -94,18 +124,28 @@ export function OrderForm({
     }
   }
 
+  const { products, supplier, loading } = useDropdownOptions() // ← tambahkan
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div>
         <Label className="mb-2">Supplier Name</Label>
-        <Input
+        <select
           {...register("id_supplier")}
-          disabled={mode === "edit"}
-        />
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          disabled={loading}
+        >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Supplier"}
+          </option>
+          {supplier.map((s: any) => (
+            <option key={s.id_supplier} value={s.id_supplier}>
+              {s.name}
+            </option>
+          ))}
+        </select>
         {errors.id_supplier && (
-          <p className="text-sm text-red-500">
-            {errors.id_supplier.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.id_supplier.message}</p>
         )}
       </div>
 
@@ -119,9 +159,22 @@ export function OrderForm({
         <Input type="date" {...register("expected_delivery_date")} />
       </div>
 
-      <div>
-        <Label className="mb-2">Status</Label>
-        <Input {...register("po_status")} />
+      <div className="flex flex-col gap-1">
+        <Label>Status</Label>
+        {/* <Input {...register("po_status")} /> */}
+        <select 
+          {...register("po_status")}
+          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          >
+          <option value="">
+            {loading ? "Loading..." : "Pilih Status"}
+          </option>
+            {PurchaseStatusEnum.options.map((status) => (
+                <option key={status} value={status}>
+                    {status}
+                </option>
+            ))}
+        </select>
       </div>
 
       <div>
@@ -136,9 +189,26 @@ export function OrderForm({
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
           <div>
             <Label>Item Name</Label>
-            <Input {...register(`items.${index}.id_item` as const)} />
+            {/* <Input {...register(`items.${index}.id_item` as const)} />
             {errors.items?.[index]?.id_item && (
               <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
+            )} */}
+            <select
+              {...register(`items.${index}.id_item` as const)}
+              className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+              disabled={loading}
+            >
+              <option value="">
+                {loading ? "Loading..." : "Pilih Item"}
+              </option>
+              {products.map((p: any) => (
+                <option key={p.id_item} value={p.id_item}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            {errors.items?.[index]?.id_item && (
+              <p className="text-sm text-red-500">{errors.items[index]?.id_item?.message}</p>
             )}
           </div>
 

@@ -91,7 +91,7 @@ const navMain = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { role } = useAuth();
-  console.log('Role dari useAuth:', role); 
+  // console.log('Role dari useAuth:', role); 
 
   // Filter nav berdasarkan role user
   const filteredNav = navMain.filter(item => 

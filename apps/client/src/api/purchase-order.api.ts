@@ -4,6 +4,7 @@ import type { OrderPayload } from "@/schemas/schema"
 // Get All Orders
 export const fetchOrders = async (): Promise<OrderPayload[]> => {
   const response = await api.get("/purchase-order")
+
   return response.data.orders
 }
 

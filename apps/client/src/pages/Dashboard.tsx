@@ -18,7 +18,7 @@ export default function Page() {
 
   const fetchDataActivity = async () => {
     const logs = await fetchActivityLogs();
-    console.log("Logs: ",logs);
+    // console.log("Logs: ",logs);
     setData(logs);
   }
 
