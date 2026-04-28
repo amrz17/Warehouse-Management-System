@@ -46,10 +46,6 @@ export const columnsInbound = (
     },
   },
   {
-    accessorKey: "supplierName.name",
-    header: "Company Supplier",
-  },
-  {
     accessorKey: "items.qty_received",
     header: "Quantity Received",
     cell: ({ row }) => {

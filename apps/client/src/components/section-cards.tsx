@@ -66,6 +66,7 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
@@ -83,6 +84,7 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
@@ -99,15 +101,16 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Low Stock / Expiring</CardDescription>
-          {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {/* <ProductCountCard /> */}
-          {/* </CardTitle> */}
+          </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
           </CardTitle>
@@ -118,6 +121,7 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
@@ -137,15 +141,16 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Sale Order</CardDescription>
-          {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> 
             {/* <ProductCountCard /> */}
-          {/* </CardTitle> */}
+           </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
           </CardTitle>
@@ -156,15 +161,16 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Pending Task</CardDescription>
-          {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {/* <ProductCountCard /> */}
-          {/* </CardTitle> */}
+          </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
           </CardTitle>
@@ -175,15 +181,16 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Inventory Value</CardDescription>
-          {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
-            {/* <ProductCountCard /> */}
-          {/* </CardTitle> */}
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> 
+            {/* <ProductCountCard />  */}
+           </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
           </CardTitle>

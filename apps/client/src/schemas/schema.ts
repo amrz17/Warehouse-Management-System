@@ -56,7 +56,7 @@ export const orderSchema = z.object({
   supplier: z.object({
     name: z.string().optional()
   }).optional(),
-  id_user: z.string().min(1, "Company is required"),
+  id_user: z.string().optional(),
   createdBy: z.object({
     name: z.string().optional()
   }).optional(),
@@ -68,7 +68,7 @@ export const orderSchema = z.object({
       id_item: z.string().min(1, "Item ID is required"),
       qty_ordered: z.number().min(1, "Quantity must be at least 1"),
       qty_received: z.number().optional(),
-      price_per_unit: z.number().min(0, "Price must be at least 0"),
+      price_per_unit: z.number().optional(),
       total_price: z.number().optional(),  
       item: z.object({
         name: z.string().optional()
@@ -85,7 +85,7 @@ export type OrderPayload = z.infer<typeof orderSchema>
 export const saleOrderSchema = z.object({
   id_so: z.string().optional(),
   so_number: z.string().optional().or(z.literal("")),
-  id_user: z.string().min(1, "User ID is required"),
+  id_user: z.string().optional(),
   createdBy: z.object({
     name: z.string().optional()
   }).optional(),
@@ -101,7 +101,7 @@ export const saleOrderSchema = z.object({
       id_item: z.string().min(1, "Item ID is required"),
       qty_ordered: z.number().min(1, "Quantity must be at least 1"),
       qty_shipped: z.number().optional(),
-      price_per_unit: z.number().min(0, "Price must be at least 0"),
+      price_per_unit: z.number().optional(),
       item: z.object({
         name: z.string().optional()
       }).optional(),
@@ -169,12 +169,9 @@ export const inboundSchema = z.object({
   purchaseOrder: z.object({
     po_number: z.string().optional()
   }).optional(),
-  id_user: z.string().min(1, "User ID is required"),
+  poi_number: z.string().optional(),
+  id_user: z.string().optional(),
   receivedBy: z.object({
-    name: z.string().optional()
-  }).optional(),
-  id_supplier: z.string().min(1, "Supplier ID is required"),
-  supplierName: z.object({
     name: z.string().optional()
   }).optional(),
   received_at: z.string().min(1, "Received date is required"),
@@ -203,18 +200,15 @@ export const OutboundSchema = z.object({
   sales_order: z.object({
     so_number: z.string().optional()
   }).optional(),
-  id_user: z.string().min(1, "User ID is required"),
+  id_user: z.string().optional(),
+  soi_number: z.string().optional(),
   shipped_by: z.object({
     name: z.string().optional()
-  }).optional(),
-  id_customer: z.string().min(1, "Customer ID is required"),
-  customer: z.object({
-    customer_name: z.string().optional()
   }).optional(),
   shipped_at: z.string().min(1, "Shipped date is required"),
   carrier_name: z.string().min(1, "Carrier name is required"),
   tracking_number: z.string().min(1, "Tracking number is required"),
-  status_outbound: z.enum(['CANCELED', 'OPEN', 'SHIPPED']).optional(),
+  status_outbound: z.enum(['OPEN', 'PICKING', 'PACKING', 'SHIPPED', 'COMPLETED', 'CANCELED']).optional(),
   note: z.string().optional(),
   items: z.array(
     z.object({

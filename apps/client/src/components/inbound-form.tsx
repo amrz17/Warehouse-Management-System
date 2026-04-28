@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useInbound } from "@/hooks/use-inbound"
 import { useDropdownOptions } from "./order-form"
+import { usePOItems } from "@/hooks/use-po-items"
 
 type Props = {
   mode: "create" | "edit"
@@ -31,10 +32,7 @@ export function InboundForm({
   const form = useForm<InboundPayload>({
     resolver: zodResolver(inboundSchema),
     defaultValues: {
-      inbound_number: "",
       id_po: "",
-      id_supplier: "",
-      id_user: "",
       received_at: "",
       note: "",
       items: [
@@ -99,59 +97,57 @@ export function InboundForm({
   }
 
 
-  const { products, supplier, loading } = useDropdownOptions() 
+  const { products, supplier, poNumber, loading } = useDropdownOptions() 
+  const [selectedPO, setSelectedPO] = useState('');
+  const { poItems, loadingItems } = usePOItems(selectedPO); 
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-      <div>
+      {/* <div>
         <Label className="mb-2">Inbound Number</Label>
         <Input
           {...register("inbound_number")}
           disabled={mode === "edit"}
+          placeholder="IB - Tanggal - No Urut"
         />
         {errors.inbound_number && (
           <p className="text-sm text-red-500">
             {errors.inbound_number.message}
           </p>
         )}
-      </div>
+      </div> */}
 
       <div>
-        <Label className="mb-2">Purchase Order</Label>
-        <Input {...register("id_po")} />
-      </div>
-
-      <div>
-        <Label className="mb-2">Company Supplier</Label>
-        {/* <Input {...register("id_supplier")} /> */}
+        <Label className="mb-2">PO Number</Label>
         <select
-          {...register("id_supplier")}
+          {...register("id_po")}
           className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          value={selectedPO}
+                    onChange={(e) => {
+                        setSelectedPO(e.target.value);
+                        // Reset item yang dipilih saat PO berubah
+                    }}
           disabled={loading}
         >
           <option value="">
-            {loading ? "Loading..." : "Pilih Supplier"}
+            {loading ? "Loading..." : "Pilih PO Number"}
           </option>
-          {supplier.map((s: any) => (
-            <option key={s.id_supplier} value={s.id_supplier}>
-              {s.name}
+          {poNumber.map((po: any) => (
+            <option key={po.id_po} value={po.id_po}>
+              {po.po_number}
             </option>
           ))}
         </select>
-        {errors.id_supplier && (
-          <p className="text-sm text-red-500">{errors.id_supplier.message}</p>
+        {errors.id_po && (
+          <p className="text-sm text-red-500">{errors.id_po.message}</p>
         )}
-      </div>
-
-      <div>
-        <Label className="mb-2">Created By</Label>
-        <Input {...register("id_user")} />
       </div>
 
       <div>
         <Label className="mb-2">Received At</Label>
         <Input type="date" {...register("received_at")} />
-      </div>
+      </div> 
 
       <div>
         <Label className="mb-2">Status</Label>
@@ -179,14 +175,42 @@ export function InboundForm({
       <div>
         <Label>Item Detail</Label>
       </div>
+
       {fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
+          {/* <div>
+            <Label className="mb-2">PO Item</Label>
+            <Input {...register(`items.${index}.id_poi` as const)} />
+            {errors.items?.[index]?.id_poi && (
+              <p className="text-red-500 text-sm">{errors.items[index]?.id_poi?.message}</p>
+            )}
+          </div> */}
+
+          <div>
+                <label>PO Item</label>
+                <select 
+                  {...register(`items.${index}.id_poi`)}
+                  disabled={!selectedPO || loadingItems}
+                  className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+                >
+                    <option value="">
+                        {!selectedPO
+                            ? 'Pilih PO dulu'
+                            : loadingItems
+                            ? 'Loading...'
+                            : 'Pilih Item'}
+                    </option>
+                    {poItems.map((item: any) => (
+                        <option key={item.id_poi} value={item.id_poi}>
+                            {item.poi_number}
+                        </option>
+                    ))}
+                </select>
+          </div>
+
+          
           <div>
             <Label className="mb-2">Item</Label>
-            {/* <Input {...register(`items.${index}.id_item` as const)} />
-            {errors.items?.[index]?.id_item && (
-              <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
-            )} */}
             <select
               {...register(`items.${index}.id_item` as const)}
               className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -207,20 +231,13 @@ export function InboundForm({
           </div>
 
           <div>
-            <Label className="mb-2">PO Item</Label>
-            <Input {...register(`items.${index}.id_poi` as const)} />
-            {errors.items?.[index]?.id_poi && (
-              <p className="text-red-500 text-sm">{errors.items[index]?.id_poi?.message}</p>
-            )}
-          </div>
-
-          <div>
             <Label className="mb-2">Quantity</Label>
             <Input 
               type="number"
               {...register(`items.${index}.qty_received` as const, { valueAsNumber: true })} 
             />
           </div>
+
           
           <div className="col-span-3 flex justify-end gap-2">
             <Button 

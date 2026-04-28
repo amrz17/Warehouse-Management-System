@@ -13,8 +13,10 @@ import { toast } from "sonner"
 
 import { fetchItems } from '@/api/item.api';
 import { fetchSuppliers } from "@/api/supplier.api"
+import { fetchOrders } from "@/api/purchase-order.api"
 
 export const useDropdownOptions = () => {
+    const [poNumber, setPONumber] = useState([]);
     const [products, setProducts] = useState([]);
     const [supplier, SetSupplier] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,12 +24,14 @@ export const useDropdownOptions = () => {
     useEffect(() => {
         const fetchAll = async () => {
             try {
-                const [p, c] = await Promise.all([
+                const [p, c, o] = await Promise.all([
                     fetchItems(),
                     fetchSuppliers(),
+                    fetchOrders(),
                 ]);
                 setProducts(p);
                 SetSupplier(c);
+                setPONumber(o);
             } catch (err) {
                 console.error('Gagal fetch dropdown:', err);
             } finally {
@@ -38,7 +42,7 @@ export const useDropdownOptions = () => {
         fetchAll();
     }, []);
 
-    return { products, supplier, loading };
+    return { products, supplier, poNumber, loading };
 };
 
 type Props = {
@@ -61,7 +65,6 @@ export function OrderForm({
     defaultValues: {
       po_number: "",
       id_supplier: "",
-      id_user: "",
       expected_delivery_date: "",
       po_status: "",
       note: "",
@@ -69,7 +72,6 @@ export function OrderForm({
         {
           id_item: "",
           qty_ordered: 1,
-          price_per_unit: 0,
         }
       ],
     },
@@ -124,7 +126,7 @@ export function OrderForm({
     }
   }
 
-  const { products, supplier, loading } = useDropdownOptions() // ← tambahkan
+  const { products, supplier, poNumber, loading } = useDropdownOptions() // ← tambahkan
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
@@ -150,18 +152,12 @@ export function OrderForm({
       </div>
 
       <div>
-        <Label className="mb-2">Created By</Label>
-        <Input {...register("id_user")} />
-      </div>
-
-      <div>
         <Label className="mb-2">Expected Delivery Date</Label>
         <Input type="date" {...register("expected_delivery_date")} />
       </div>
 
       <div className="flex flex-col gap-1">
         <Label>Status</Label>
-        {/* <Input {...register("po_status")} /> */}
         <select 
           {...register("po_status")}
           className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -220,13 +216,13 @@ export function OrderForm({
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Price</Label>
             <Input 
               type="number"
               {...register(`items.${index}.price_per_unit` as const, { valueAsNumber: true })} 
             />
-          </div>
+          </div> */}
           
           <div className="col-span-3 flex justify-end gap-2">
             <Button 

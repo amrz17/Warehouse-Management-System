@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 // TODO : Add sales chart
 // TODO : Add recent activities
-// TODO : Make line chart tren inbound vs outbound
+// TODO : Make line chart tren inbound vs outbound use data from database
 // TODO : Make docunt chart inventory info
 export default function Page() {
 

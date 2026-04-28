@@ -23,9 +23,13 @@ export const columnsOrders = (
     header: "Company Supplier",
   },
   {
-    accessorKey: "createdBy.full_name",
-    header: "Created By",
+    accessorKey: "po_number",
+    header: "PO Number",
   },
+  // {
+  //   accessorKey: "createdBy.full_name",
+  //   header: "Created By",
+  // },
   {
     accessorKey: "id_item",
     header: "Item IDs",

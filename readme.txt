@@ -15,6 +15,9 @@ install for jwt token :
 npm i --workspace api jsonwebtoken @nestjs/config
 
 migration database cmd : 
-npm run db:drop 
-npm run migration:generate --name=namaPerubahannya
-npm run migration:run
+npm run db:drop --workspace api 
+npm run migration:generate --name=namaPerubahannya --workspace api  
+npm run migration:run --workspace api 
+
+seed master data : 
+npm run seed --workspace api

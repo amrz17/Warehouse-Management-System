@@ -31,7 +31,7 @@ export const columnsSaleOrders = (
         const extraItems = items.length - 1;
 
         return (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center justify-center gap-1">
                 <Badge variant="secondary" className="text-xs">
                     {firstItem || "No Items"}
                 </Badge>
@@ -47,6 +47,10 @@ export const columnsSaleOrders = (
     {
         accessorKey: "so_status",
         header: "Status",
+        cell: ({ row }) => {
+            const status = row.original.so_status;
+            return <Badge variant={status === "COMPLETED" ? "default" : "secondary"}>{status}</Badge>;
+        }
     },
     {
         accessorKey: "date_shipped",

@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 type ResponsiveDialogDrawerProps = {
-  trigger: React.ReactNode
+  trigger?: React.ReactNode
   title: string
   description?: string
   children: React.ReactNode

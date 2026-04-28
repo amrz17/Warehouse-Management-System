@@ -1,5 +1,7 @@
 import DahsboardLayout from "@/layout/DashboardLayout"
 
+// TODO : Make feature settings page, where user can change their password, and other settings
+
 export default function Settings() {
   return (
     <DahsboardLayout>

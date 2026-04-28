@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import DahsboardLayout from "@/layout/DashboardLayout"
 import { DataTable } from "@/components/data-table"
 
@@ -11,9 +11,11 @@ import { OrderForm  } from "@/components/order-form"
 import { fetchOrders } from "@/api/purchase-order.api"
 import { toast } from "sonner"
 import { useOrders } from "@/hooks/use-orders"
-import { PlusCircle, SearchIcon } from "lucide-react"
+import { FilterIcon, PlusCircle, SearchIcon, SortAscIcon, Table } from "lucide-react"
 import type { OrderPayload } from "@/schemas/schema"
 import { ConfirmCancelDialog } from "@/components/dialog-cancel"
+import { IconFileExport, IconPackage, IconPackageOff, IconPackages } from "@tabler/icons-react"
+import { SectionCards } from "@/components/section-cards"
 
 
 const PurchasePage = () => {
@@ -71,8 +73,53 @@ const PurchasePage = () => {
                 />
             </div>
         </div> */}
-        <Card className="@container/card mx-4 lg:mt-4 flex lg:flex-row p-4">
-            <div className="lg:w-3/4">
+        {/* <Card className="@container/card flex lg:flex-row mx-4 lg:mt-4 p-4"> */}
+        <div className="flex flex-row w-full py-4 ">
+            <div className="flex-1 items-center justify-start gap-3 mx-4 hidden lg:flex">
+              <Button 
+                size="lg"
+              >
+                <Table />
+                Table View
+              </Button>
+              <Button 
+                size="lg"
+              >
+                <FilterIcon />
+                Filter
+              </Button>
+              <Button 
+                size="lg"
+              >
+                <SortAscIcon />
+                Sort
+              </Button>
+              </div>
+            <div className="flex flex-1 items-center justify-end gap-4 mx-4">
+              <Button 
+                className="hidden lg:flex"
+                size="lg"
+              >
+                <IconFileExport />
+                Export
+              </Button>
+              <Button 
+                className="w-full lg:w-fit"
+                size="lg"
+                onClick={() => {
+                  setMode("create")
+                  setSelectedOrder(null)
+                  setOpen(true)
+                }}
+              >
+                <PlusCircle />
+                Add New Purchase Order
+              </Button>
+              </div>
+        </div>
+
+        <div className="flex lg:flex-row">
+            {/* <div className="lg:w-3/4">
                 <CardHeader>
                   <CardDescription className="text-xl w-full lg:text-3xl font-extrabold">
                     Purchase Order
@@ -81,25 +128,25 @@ const PurchasePage = () => {
                 <CardFooter className="flex-col items-start lg:gap-1.5 text-sm">
                       Create your purchase order by adding supplier information, selecting products, and setting quantities. Easily manage and track every order from here
                 </CardFooter>
-            </div>
+            </div> */}
             <div className="flex lg:w-1/4 items-center justify-end">
               <ResponsiveDialogDrawer
                 open={open}
                 onOpenChange={setOpen}
-                trigger={
-                  <Button 
-                    className="w-full mx-auto lg:ml-4"
-                    size="lg"
-                    onClick={() => {
-                      setMode("create")
-                      setSelectedOrder(null)
-                      setOpen(true)
-                    }}
-                  >
-                    <PlusCircle />
-                    Create New Purchase Order
-                  </Button>
-                }
+                // trigger={
+                //   <Button 
+                //     className="w-full mx-auto lg:ml-4"
+                //     size="lg"
+                //     onClick={() => {
+                //       setMode("create")
+                //       setSelectedOrder(null)
+                //       setOpen(true)
+                //     }}
+                //   >
+                //     <PlusCircle />
+                //     Create New Purchase Order
+                //   </Button>
+                // }
                 title={
                   mode === "create"
                     ? "Create New Purchase Order"
@@ -124,7 +171,7 @@ const PurchasePage = () => {
               </ResponsiveDialogDrawer>
 
             </div>
-        </Card>
+        </div>
         <div className="w-full flex-col justify-start gap-6"> 
             <DataTable 
               columns={columnsOrders(handleCancel)} 

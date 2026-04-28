@@ -12,8 +12,10 @@ import { toast } from "sonner"
 import { useSaleOrders } from "@/hooks/use-sale-order"
 import { fetchCust } from "@/api/customer.api"
 import { fetchItems } from "@/api/item.api"
+import { fetchSaleOrders } from "@/api/sale-order.api"
 
 export const useDropdownOptions = () => {
+    const [soNumber, setSONumber] = useState([]);
     const [products, setProducts] = useState([]);
     const [customer, SetCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,12 +23,14 @@ export const useDropdownOptions = () => {
     useEffect(() => {
         const fetchAll = async () => {
             try {
-                const [p, c] = await Promise.all([
+                const [p, c, s] = await Promise.all([
                     fetchItems(),
                     fetchCust(),
+                    fetchSaleOrders()
                 ]);
                 setProducts(p);
                 SetCustomer(c);
+                setSONumber(s);
             } catch (err) {
                 console.error('Gagal fetch dropdown:', err);
             } finally {
@@ -37,7 +41,7 @@ export const useDropdownOptions = () => {
         fetchAll();
     }, []);
 
-    return { products, customer, loading };
+    return { products, customer, soNumber, loading };
 };
 
 type Props = {
@@ -60,7 +64,6 @@ export function SaleForm({
     defaultValues: {
       so_number: "",
       id_customer: "",
-      id_user: "",
       date_shipped: "",
       so_status: "",
       note: "",
@@ -69,7 +72,6 @@ export function SaleForm({
           id_item: "",
           qty_ordered: 1,
           qty_shipped: 0,
-          price_per_unit: 0,
         }
       ],
     },
@@ -141,18 +143,13 @@ export function SaleForm({
           </option>
           {customer.map((c: any) => (
             <option key={c.id_customer} value={c.id_customer}>
-              {c.name}
+              {c.customer_name}
             </option>
           ))}
         </select>
         {errors.id_customer && (
           <p className="text-sm text-red-500">{errors.id_customer.message}</p>
         )}
-      </div>
-
-      <div>
-        <Label className="mb-2">Created By</Label>
-        <Input {...register("id_user")} />
       </div>
 
       <div>
@@ -185,13 +182,9 @@ export function SaleForm({
         <Label>Item Detail</Label>
       </div>
       {fields.map((field, index) => (
-        <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
+        <div key={field.id} className="grid grid-cols-2 gap-2 border p-4 rounded-lg mb-1">
           <div>
             <Label>Item Name</Label>
-            {/* <Input {...register(`items.${index}.id_item` as const)} />
-            {errors.items?.[index]?.id_item && (
-              <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
-            )} */}
             <select
               {...register(`items.${index}.id_item` as const)}
               className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -216,14 +209,6 @@ export function SaleForm({
             <Input 
               type="number"
               {...register(`items.${index}.qty_ordered` as const, { valueAsNumber: true })} 
-            />
-          </div>
-
-          <div>
-            <Label>Price</Label>
-            <Input 
-              type="number"
-              {...register(`items.${index}.price_per_unit` as const, { valueAsNumber: true })} 
             />
           </div>
           

@@ -1,5 +1,7 @@
 import DahsboardLayout from "@/layout/DashboardLayout"
 
+// TODO : Make feature support page, where user can submit support ticket, and view their support history
+
 export default function Support() {
   return (
     <DahsboardLayout>

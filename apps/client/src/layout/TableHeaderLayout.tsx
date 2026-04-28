@@ -51,12 +51,11 @@ export const baseInventoryColumns: ColumnDef<InventoryPayload>[] = [
     header: "Item Name",
     cell: ({ row }) => {
       const items = row.original || [];
-      console.log("item",items.item.name)
       const firstitem = items.item?.name;
       // const extraitems = items.length - 1;
 
       return (
-        <div className="flex items-center gap-1">
+        <div className="justify-center">
             {firstitem || "no items"}
           {/* {extraitems > 0 && (
             <p>
@@ -85,7 +84,7 @@ export const baseInventoryColumns: ColumnDef<InventoryPayload>[] = [
       // const extraitems = items.length - 1;
 
       return (
-        <div className="flex items-center gap-1">
+        <div className="justify-center">
           <Badge>
             {firstitem || "no items"}
           </Badge>

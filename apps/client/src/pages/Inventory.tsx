@@ -13,6 +13,7 @@ export default function InventoryPage() {
   return (
     <DahsboardLayout>
       <div className="flex flex-1 flex-col lg:p-4 md:p-6">
+
         <div className="flex flex-col gap-4">
           
           <TableTabsList>

@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useOutbound } from "@/hooks/use-outbound"
 import { useDropdownOptions } from "./sale-form"
+import { useSOItems } from "@/hooks/use-so-items"
 
 type Props = {
   mode: "create" | "edit"
@@ -30,8 +31,6 @@ export function OutboundForm({
     defaultValues: {
       outbound_number: "",
       id_so: "",
-      id_customer: "",
-      id_user: "",
       shipped_at: "",
       note: "",
       items: [
@@ -94,11 +93,13 @@ export function OutboundForm({
     }
   }
 
-  const { products, customer, loading } = useDropdownOptions() 
+  const { products, customer, soNumber, loading } = useDropdownOptions() 
+  const [selectedSO, setSelectedSO] = useState('');
+  const { soItems, loadingItems } = useSOItems(selectedSO); 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-      <div>
+      {/* <div>
         <Label className="mb-2">Outbound Number</Label>
         <Input
           {...register("outbound_number")}
@@ -109,37 +110,29 @@ export function OutboundForm({
             {errors.outbound_number.message}
           </p>
         )}
-      </div>
+      </div> */}
 
       <div>
         <Label className="mb-2">Sale Order</Label>
-        <Input {...register("id_so")} />
-      </div>
-
-      <div>
-        <Label className="mb-2">Company Customer</Label>
         <select
-          {...register("id_customer")}
+          {...register("id_so")}
           className="w-full bg-background border rounded-md px-3 py-2 text-sm"
+          value={selectedSO}
+          onChange={(e) => {
+              setSelectedSO(e.target.value);
+              // Reset item yang dipilih saat PO berubah
+          }}
           disabled={loading}
         >
           <option value="">
-            {loading ? "Loading..." : "Pilih Customer"}
+            {loading ? "Loading..." : "Pilih Sale Order"}
           </option>
-          {customer.map((c: any) => (
-            <option key={c.id_customer} value={c.id_customer}>
-              {c.name}
+          {soNumber.map((so: any) => (
+            <option key={so.id_so} value={so.id_so}>
+              {so.so_number}
             </option>
           ))}
         </select>
-        {errors.id_customer && (
-          <p className="text-sm text-red-500">{errors.id_customer.message}</p>
-        )}
-      </div>
-
-      <div>
-        <Label className="mb-2">Created By</Label>
-        <Input {...register("id_user")} />
       </div>
 
       <div>
@@ -159,7 +152,6 @@ export function OutboundForm({
 
       <div>
         <Label className="mb-2">Status</Label>
-        {/* <Input {...register("status_outbound")} /> */}
         <select 
           {...register("status_outbound")}
           className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -185,12 +177,31 @@ export function OutboundForm({
       </div>
       {fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-3 gap-2 border p-4 rounded-lg mb-1">
+
+          <div>
+            <Label className="mb-2">SO Item</Label>
+            <select 
+              {...register(`items.${index}.id_soi`)}
+              disabled={!selectedSO || loadingItems}
+              className="w-full bg-background border text-white rounded-md px-3 py-2 text-sm"
+            >
+                <option value="">
+                    {!selectedSO
+                        ? 'Pilih PO dulu'
+                        : loadingItems
+                        ? 'Loading...'
+                        : 'Pilih Item'}
+                </option>
+                {soItems.map((item: any) => (
+                    <option key={item.id_soi} value={item.id_soi}>
+                        {item.soi_number}
+                    </option>
+                ))}
+            </select>
+          </div>
+
           <div>
             <Label className="mb-2">Item</Label>
-            {/* <Input {...register(`items.${index}.id_item` as const)} />
-            {errors.items?.[index]?.id_item && (
-              <p className="text-red-500 text-sm">{errors.items[index]?.id_item?.message}</p>
-            )} */}
             <select
               {...register(`items.${index}.id_item` as const)}
               className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -211,13 +222,6 @@ export function OutboundForm({
           </div>
 
 
-          <div>
-            <Label className="mb-2">SO Item</Label>
-            <Input {...register(`items.${index}.id_soi` as const)} />
-            {errors.items?.[index]?.id_soi && (
-              <p className="text-red-500 text-sm">{errors.items[index]?.id_soi?.message}</p>
-            )}
-          </div>
 
           <div>
             <Label className="mb-2">Quantity</Label>

@@ -17,3 +17,10 @@ export const createOrderApi = (
 export const cancelPurchaseOrderApi = (
   id: string,
 ): Promise<void> => api.post(`/purchase-order/cancel/${id}`)
+
+// Get PO Items
+export const fetchPOItems = async (id: string): Promise<OrderPayload[]> => {
+  const response = await api.get(`/purchase-order/${id}/items`)
+
+  return response.data.items
+}

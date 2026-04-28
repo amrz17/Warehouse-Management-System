@@ -29,7 +29,7 @@ export const columnsOutbound = (
       const extraItems = items.length - 1;
 
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1">
             <p>
               {firstItem || "No Items"}
             </p>
@@ -41,10 +41,6 @@ export const columnsOutbound = (
         </div>
       );
     },
-  },
-  {
-    accessorKey: "customer.customer_name",
-    header: "Customer",
   },
   {
     accessorKey: "items.qty_shipped",

@@ -35,7 +35,7 @@ export function LoginForm({
             {...register("email", { required: true })}
             id="email" 
             type="email" 
-            placeholder="m@example.com" 
+            placeholder="admin@warehouse.com" 
           />
         </Field>
         <Field>
@@ -52,6 +52,7 @@ export function LoginForm({
             {...register("password", { required: true })}
             id="password" 
             type="password"  
+            placeholder="Admin123"
           />
         </Field>
         <Field>
