@@ -12,31 +12,38 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useEffect, useState } from "react";
-import { fetchItems } from "@/api/item.api";
 import { fetchInventory } from "@/api/inventory.api";
 import { fetchOrders } from "@/api/purchase-order.api";
+import { fetchSaleOrders } from "@/api/sale-order.api";
 
 // import { useEffect, useState } from "react";
 
 
 export function SectionCards() {
-  const [totalProducts, setTotalProducts] = useState(0);
   const [totalStock, setTotalStock] = useState(0);
   const [totalOutStock, setTotalOutStock] = useState(0);
   const [totalPO, setTotalPO] = useState(0);
+  const [totalSO, setTotalSO] = useState(0);
+  const [totalInv, setTotalInv] = useState(0);
+  const [totalValues, setTotalValues] = useState();
+  console.log('total nilai barang: ', totalValues)
 
   useEffect(() => {
     async function fetchTotalProducts() {
       try {
-        const products = await fetchItems(); // ambil data dari fungsi async
-        setTotalProducts(products.length); // contoh: menampilkan jumlah produk
+        // const products = await fetchItems(); // fetch data items
         const stock = await fetchInventory();
+        setTotalInv(stock.length)
         const total = stock.reduce((sum: number, item: any) => sum + item.qty_available, 0);
         const totalOutStock = stock.filter((item: any) => item.qty_available <= 0).length;
+        const prices = stock.reduce((sum: number, item: any) => sum + Number(item.item.price), 0);
         setTotalStock(total);
         setTotalOutStock(totalOutStock);
+        setTotalValues(prices);
         const po = await fetchOrders();
         setTotalPO(po.length);
+        const so = await fetchSaleOrders();
+        setTotalSO(so.length);
       } catch (error) {
         console.error("Error fetching total products:", error);
       }
@@ -47,17 +54,18 @@ export function SectionCards() {
 
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card px-4">
+
+      {/* <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Total Product</CardDescription>
-          {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
-            {/* <ProductCountCard /> */}
-          {/* </CardTitle> */}
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> 
+            <ProductCountCard />
+          </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totalProducts}
+            {totalInv}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -65,14 +73,14 @@ export function SectionCards() {
             Total stock keeping unit shows the numbers of unique product types in the warehouse
           </div>
         </CardFooter>
-      </Card>
-
+      </Card> */}
+      
       <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackages />
           </CardAction>
-          <CardDescription>Total Stock</CardDescription>
+          <CardDescription>Total Inventory</CardDescription>
           {/* <StockCountCard /> */}
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalStock}
@@ -80,12 +88,14 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
-            Total Stock shows the total quantity of all items
+            Total Stock shows the total quantity of all items. With {totalInv} product.
           </div>
         </CardFooter>
       </Card>
 
-      <Card className="@container/card px-4">
+
+
+      {/* <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackageOff />
@@ -100,16 +110,16 @@ export function SectionCards() {
             Out of stock show the number of products with zero available quantity
           </div>
         </CardFooter>
-      </Card>
+      </Card> */}
 
-      <Card className="@container/card px-4">
+      {/* <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Low Stock / Expiring</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {/* <ProductCountCard /> */}
+            <ProductCountCard />
           </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
@@ -120,7 +130,7 @@ export function SectionCards() {
             Total low stock / expiring products in the warehouse
           </div>
         </CardFooter>
-      </Card>
+      </Card> */}
 
       <Card className="@container/card px-4">
         <CardHeader>
@@ -152,7 +162,7 @@ export function SectionCards() {
             {/* <ProductCountCard /> */}
            </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            {totalSO}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -162,14 +172,14 @@ export function SectionCards() {
         </CardFooter>
       </Card>
 
-      <Card className="@container/card px-4">
+      {/* <Card className="@container/card px-4">
         <CardHeader>
           <CardAction>
             <IconPackage />
           </CardAction>
           <CardDescription>Pending Task</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {/* <ProductCountCard /> */}
+            <ProductCountCard />
           </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             0
@@ -180,7 +190,7 @@ export function SectionCards() {
             Total pending task shows the numbers of pending tasks in the warehouse
           </div>
         </CardFooter>
-      </Card>
+      </Card> */}
 
       <Card className="@container/card px-4">
         <CardHeader>
@@ -192,7 +202,7 @@ export function SectionCards() {
             {/* <ProductCountCard />  */}
            </CardTitle>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            0
+            Rp.{totalValues}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">

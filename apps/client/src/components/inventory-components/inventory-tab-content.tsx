@@ -15,6 +15,7 @@ import { InventoryForm } from "./inventory-form"
 import type { InventoryPayload } from "@/schemas/schema"
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { IconFileExport, IconPackage, IconPackageOff, IconPackages } from "@tabler/icons-react"
+import { fetchItems } from "@/api/item.api"
 
 export default function InventoryTabContent() {
   const [data, setData] = useState<any[]>([])
@@ -26,11 +27,16 @@ export default function InventoryTabContent() {
   const [openDelete, setOpenDelete] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalStock, setTotalStock] = useState(0);
+  const [totalOutStock, setTotalOutStock] = useState(0);
+
   const loadDataInventory = async () => {  
 
     const items = await fetchInventory()
     setData(items)
   }
+
 
   // ... (handleEdit, handleDelete, confirmDelete logic sama seperti kode Anda)
   // Handle Edit item
@@ -77,7 +83,24 @@ export default function InventoryTabContent() {
     }
   }
 
-  useEffect(() => { loadDataInventory() }, [])
+  useEffect(() => {
+    async function fetchTotalProducts() {
+      try {
+          const products = await fetchItems(); // ambil data dari fungsi async
+          setTotalProducts(products.length); // contoh: menampilkan jumlah produk
+          const stock = await fetchInventory();
+          const total = stock.reduce((sum: number, item: any) => sum + item.qty_available, 0);
+          const totalOutStock = stock.filter((item: any) => item.qty_available <= 0).length;
+          setTotalStock(total);
+          setTotalOutStock(totalOutStock);
+      } catch (error) {
+        console.error("Error fetching total products:", error);
+      }
+    } 
+
+    loadDataInventory(); 
+    fetchTotalProducts();
+  }, [])
 
   return (
     <div className="flex flex-col gap-2 lg:gap-4">
@@ -125,7 +148,7 @@ export default function InventoryTabContent() {
               {/* <ProductCountCard /> */}
             {/* </CardTitle> */}
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {0}
+              {totalProducts}
             </CardTitle>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -143,7 +166,7 @@ export default function InventoryTabContent() {
             <CardDescription>Total Stock</CardDescription>
             {/* <StockCountCard /> */}
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {0}
+              {totalStock}
             </CardTitle>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -160,7 +183,7 @@ export default function InventoryTabContent() {
             </CardAction>
             <CardDescription>Out Of Stock</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {0}
+              {totalOutStock}
             </CardTitle>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
