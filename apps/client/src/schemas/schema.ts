@@ -8,8 +8,6 @@ export type UserRole = z.infer<typeof UserRoleEnum>;
 
 export const PurchaseStatusEnum = z.enum([
   'PENDING',
-  'APPROVED',
-  'SHIPPED',
   'RECEIVED',
   'CANCELED',
   'COMPLETED'
@@ -29,7 +27,6 @@ export const SaleStatusEnum = z.enum([
 export type SaleStatus = z.infer<typeof SaleStatusEnum>;
 
 export const InboundStatusEnum = z.enum([
-  'DRAFT',
   'PARTIAL',
   'RECEIVED',
   'CANCELED'
@@ -40,7 +37,6 @@ export type InboundStatus = z.infer<typeof InboundStatusEnum>;
 export const OutboundStatusEnum = z.enum([
     "OPEN",
     "PICKING",
-    "PACKING",
     "SHIPPED",
     "COMPLETED",
     "CANCELED"
@@ -61,7 +57,7 @@ export const orderSchema = z.object({
     name: z.string().optional()
   }).optional(),
   expected_delivery_date: z.string().min(1, "Date is required"),
-  po_status: z.string().min(1, "Status is required"),
+  po_status: z.string().optional(),
   note: z.string().optional(),
   items: z.array(
     z.object({
@@ -93,7 +89,7 @@ export const saleOrderSchema = z.object({
   customer: z.object({
     name: z.string().optional()
   }).optional(),
-  so_status: z.string().min(1, "Status is required"),
+  so_status: z.string().optional(),
   date_shipped: z.string().optional().or(z.literal("")),
   note: z.string().optional(),
   items: z.array(
@@ -175,7 +171,7 @@ export const inboundSchema = z.object({
     name: z.string().optional()
   }).optional(),
   received_at: z.string().min(1, "Received date is required"),
-  status_inbound: z.enum(['CANCELED', 'DRAFT', 'PARTIAL', 'RECEIVED']).optional(),
+  status_inbound: z.enum(['CANCELED', 'PENDING', 'COMPLETED']).optional(),
   note: z.string().optional(),
   items: z.array(
     z.object({
@@ -208,7 +204,7 @@ export const OutboundSchema = z.object({
   shipped_at: z.string().min(1, "Shipped date is required"),
   carrier_name: z.string().min(1, "Carrier name is required"),
   tracking_number: z.string().min(1, "Tracking number is required"),
-  status_outbound: z.enum(['OPEN', 'PICKING', 'PACKING', 'SHIPPED', 'COMPLETED', 'CANCELED']).optional(),
+  status_outbound: z.enum(['OPEN', 'PICKING', 'SHIPPED', 'COMPLETED', 'CANCELED']).optional(),
   note: z.string().optional(),
   items: z.array(
     z.object({

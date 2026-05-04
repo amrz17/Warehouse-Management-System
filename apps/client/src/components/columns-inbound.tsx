@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Ban, MoreHorizontal } from "lucide-react"
+import { Ban, ClipboardCheck, MoreHorizontal } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +16,7 @@ import type { InboundPayload } from "@/schemas/schema"
 
 // Define the columns for the data table.
 export const columnsInbound = ( 
+  onComplete: (id_inbound: string) => void,
   onCancel: (id_inbound: string) => void
 ): ColumnDef<InboundPayload>[] => [
   {
@@ -76,7 +77,7 @@ export const columnsInbound = (
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status_inbound;
-      return <Badge variant={status === "RECEIVED" ? "default" : "secondary"}>{status}</Badge>;
+      return <Badge variant={status === "PENDING" ? "default" : "secondary"}>{status}</Badge>;
     }
   },
   {
@@ -111,6 +112,10 @@ export const columnsInbound = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onComplete(inbound.id_inbound!)}>
+                <ClipboardCheck className="h-4 w-4 text-green-500"/>
+                Complete Inbound
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onCancel(inbound.id_inbound!)}>
                 <Ban className="h-4 w-4 text-red-500"/>
                 Cancel Inbound

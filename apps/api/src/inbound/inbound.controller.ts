@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { InboundService } from './inbound.service';
 import { CreateInboundDto } from './dto/create-inbound.dto';
 import { IInboundResponse } from './types/inboundResponse.interface';
@@ -37,6 +37,17 @@ export class InboundController {
         const newInbound = await this.inboundService.createInbound(createInboundDto, userId);
 
         return await this.inboundService.generatedOrderResponse(newInbound);
+    }
+
+    // PATCH /inbound/:id/complete
+    @Patch(':id/complete')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF_GUDANG)
+    async completeInbound(
+        @Param('id') id: string,
+        @Req() req: AuthRequest
+    ) {
+        return this.inboundService.completeInbound(id, req.user.id_user);
     }
 
     //

@@ -1,4 +1,4 @@
-import { cancelInboundApi, createInboundApi } from "@/api/inbound.api";
+import { cancelInboundApi, completeInboundApi, createInboundApi } from "@/api/inbound.api";
 import type { InboundPayload } from "@/schemas/schema";
 import { useState } from "react";
 
@@ -36,10 +36,25 @@ export function useInbound() {
         }
     }
 
+    // Complete Inbound Shipment
+    const completeInbound = async (id: string) => {
+        setIsLoading(true);
+
+        try {
+            await completeInboundApi(id);
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Failed to complete inbound shipment";
+            throw new Error(message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
 
     return {
         createInbound,
         isLoading,
-        cancelInbound
+        cancelInbound,
+        completeInbound
     };
 }

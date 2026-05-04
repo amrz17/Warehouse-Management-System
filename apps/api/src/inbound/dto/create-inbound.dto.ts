@@ -11,9 +11,6 @@ export class CreateInboundDto {
     received_at: Date;
 
     @IsString()
-    status_inbound: string;
-
-    @IsString()
     note: string;
     
     @IsArray()

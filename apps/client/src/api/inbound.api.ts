@@ -13,6 +13,11 @@ export const createInboundApi = (
     payload: InboundPayload
 ): Promise<InboundPayload> => api.post("/inbound", payload);
 
+// Complete Inbound Shipment
+export const completeInboundApi = (
+    id: string,
+): Promise<void> => api.patch(`/inbound/${id}/complete`);
+
 // Cancel Inbound Shipment
 export const cancelInboundApi = (
     id: string,

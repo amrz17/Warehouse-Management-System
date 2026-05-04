@@ -5,10 +5,9 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 import { InboundItemEntity } from "./inbound-item.entity";
 
 export enum StatusInbound {
-    CANCELED = 'CANCELED',
-    DRAFT = 'DRAFT',
-    PARTIAL = 'PARTIAL',
-    RECEIVED = 'RECEIVED'
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+    CANCELED = 'CANCELED'
 }
 
 @Entity({ name: 'inbounds' })
@@ -45,7 +44,7 @@ export class InboundEntity {
     @Column({
         type: 'enum',
         enum: StatusInbound,
-        default: StatusInbound.RECEIVED,
+        default: StatusInbound.PENDING,
         nullable: false
     })
     status_inbound: StatusInbound;

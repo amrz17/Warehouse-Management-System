@@ -40,6 +40,7 @@ export class InboundService {
             // Save Header 
             const inboundHeader = queryRunner.manager.create(InboundEntity, {
                 inbound_number: inboundNumber,
+                status_inbound: StatusInbound.PENDING,
                 purchaseOrder: { id_po: createInboundDto.id_po },
                 id_user:  userId,
                 received_at: createInboundDto.received_at,
@@ -87,6 +88,13 @@ export class InboundService {
                 });
                 await queryRunner.manager.save(inboundItem);
 
+                // update progress PO Item
+                await queryRunner.manager.increment(PurchaseOrderItemsEntity, 
+                    { id_poi: itemDto.id_poi }, 
+                    "qty_received", 
+                    itemDto.qty_received
+                );
+
                 // Ambil ID PO Item dari DTO untuk mencari ID PO Header-nya
                 const poiId = itemDto.id_poi;
 
@@ -103,37 +111,28 @@ export class InboundService {
                         where: { id_po: targetPoId }
                     });
 
-                    // Hitung apakah seluruh item sudah terpenuhi
-                    const isFullyReceived = allPoItems.every(item => 
+                    // Cek qty
+                    const isQtyFullyReceived = allPoItems.every(item => 
                         Number(item.qty_received) >= Number(item.qty_ordered)
                     );
 
-                    // Update status di tabel PO Header
+                    // Cek status inbound juga
+                    const isInboundCompleted = saveInbound.status_inbound === StatusInbound.COMPLETED;
+
+                    // PO COMPLETED hanya kalau keduanya terpenuhi
+                    let newPoStatus: PurchaseOrderStatus;
+                    if (isQtyFullyReceived && isInboundCompleted) {
+                        newPoStatus = PurchaseOrderStatus.COMPLETED;
+                    } else {
+                        newPoStatus = PurchaseOrderStatus.RECEIVED;
+                    }
+
                     await queryRunner.manager.update(OrderEntity, 
                         { id_po: targetPoId }, 
-                        { po_status: isFullyReceived ? PurchaseOrderStatus.COMPLETED : PurchaseOrderStatus.RECEIVED }
+                        { po_status: newPoStatus }
                     );
+
                 }
-
-                // // Update Inventory berdasarkan id item
-                // let inventory = await queryRunner.manager.findOne(InventoryEntity, {
-                //     where: { 
-                //         id_item: itemDto.id_item, 
-                //     }
-                // });
-
-                // if (inventory) {
-                //     // Update stok yang ada
-                //     inventory.qty_available = Number(inventory.qty_available) + Number(itemDto.qty_received);
-                // } else {
-                //     // Buat baris baru jika barang belum pernah ada di lokasi tersebut
-                //     inventory = queryRunner.manager.create(InventoryEntity, {
-                //         id_item: itemDto.id_item,
-                //         qty_available: Number(itemDto.qty_received),
-                //     });
-                // }
-                // await queryRunner.manager.save(inventory);
-
 
                 // Update Inventory berdasarkan id item
                 const inventory = await queryRunner.manager.findOne(InventoryEntity, {
@@ -142,7 +141,6 @@ export class InboundService {
                     }
                 });
 
-                // ✅ Validasi inventory harus sudah ada
                 if (!inventory) {
                     throw new BadRequestException(
                         `Item "${itemExists.name}" belum terdaftar di inventory. Tambahkan ke inventory terlebih dahulu sebelum melakukan inbound.`
@@ -154,12 +152,6 @@ export class InboundService {
                 inventory.qty_ordered = Math.max(0, Number(inventory.qty_ordered) - Number(itemDto.qty_received));
                 await queryRunner.manager.save(inventory);
 
-                // update progress PO Item
-                await queryRunner.manager.increment(PurchaseOrderItemsEntity, 
-                    { id_poi: itemDto.id_poi }, 
-                    "qty_received", 
-                    itemDto.qty_received
-                );
             }
 
             // simpan logs
@@ -186,7 +178,7 @@ export class InboundService {
         } catch (err) {
             // 
             await queryRunner.rollbackTransaction();
-            throw new BadRequestException('Failed make new inbound: ' + err.message);
+            throw new BadRequestException('Failed make new inbound: ' + (err as Error).message);
         } finally {
             // Disconnect DB
             await queryRunner.release();
@@ -202,6 +194,90 @@ export class InboundService {
             }
         });
     }
+
+    async completeInbound(id_inbound: string, userId: string) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const inbound = await queryRunner.manager.findOne(InboundEntity, { 
+                where: { id_inbound },
+                relations: ['items']
+            });
+
+            if (!inbound) throw new NotFoundException('Inbound tidak ditemukan');
+            
+            if (inbound.status_inbound !== StatusInbound.PENDING) {
+                throw new BadRequestException('Hanya inbound PENDING yang bisa di-complete');
+            }
+
+            // Update status inbound
+            await queryRunner.manager.update(InboundEntity,
+                { id_inbound }, 
+                { status_inbound: StatusInbound.COMPLETED }
+            );
+
+            const allPoItems = await queryRunner.manager.find(PurchaseOrderItemsEntity, {
+                where: { id_po: inbound.id_po }
+            });
+
+            // Debug log
+            console.log('allPoItems:', allPoItems);
+            console.log('isQtyFullyReceived:', allPoItems.every(item => 
+                Number(item.qty_received) >= Number(item.qty_ordered)
+            ));
+
+            const isQtyFullyReceived = allPoItems.every(item => 
+                Number(item.qty_received) >= Number(item.qty_ordered)
+            );
+
+            if (isQtyFullyReceived) {
+                await queryRunner.manager.update(OrderEntity,
+                    { id_po: inbound.id_po },
+                    { po_status: PurchaseOrderStatus.COMPLETED }
+                );
+            }
+
+            // Simpan activity log
+            await this.activityLogsService.createLogs(queryRunner.manager, {
+                id_user: userId,
+                action: 'UPDATE',
+                module: 'INBOUND',
+                resource_id: id_inbound,
+                description: `Inbound completed, PO status: ${isQtyFullyReceived ? 'COMPLETED' : 'RECEIVED'}`,
+                metadata: { id_po: inbound.id_po, isQtyFullyReceived }
+            });
+
+            await queryRunner.commitTransaction();
+
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            throw new BadRequestException('Gagal complete inbound: ' + message);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+    
+    // 
+    // async completeInbound(id_inbound: string, userId: string) {
+    //     const inbound = await this.inboundRepo.findOne({ 
+    //         where: { id_inbound },
+    //         relations: ['items']
+    //     });
+
+    //     if (!inbound) throw new NotFoundException('Inbound tidak ditemukan');
+        
+    //     if (inbound.status_inbound !== StatusInbound.PENDING) {
+    //         throw new BadRequestException('Hanya inbound PENDING yang bisa di-complete');
+    //     }
+
+    //     await this.inboundRepo.update(
+    //         { id_inbound }, 
+    //         { status_inbound: StatusInbound.COMPLETED }
+    //     );
+    // }
 
     // 
     async cancelInbound(

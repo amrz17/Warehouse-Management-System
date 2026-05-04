@@ -1,10 +1,9 @@
 import DashboarLayout from "@/layout/DashboardLayout"
 import { DataTable } from "@/components/data-table"
-import { ConfirmCancelDialog } from "@/components/dialog-cancel"
 import { ResponsiveDialogDrawer } from "@/components/drawer-form"
 import { Button } from "@/components/ui/button"
 import type { InboundPayload } from "@/schemas/schema"
-import { Car, PlusCircle } from "lucide-react"
+import { PlusCircle } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { fetchInbound } from "@/api/inbound.api"
@@ -12,6 +11,7 @@ import { columnsInbound } from "@/components/columns-inbound"
 import { InboundForm } from "@/components/inbound-form"
 import { useInbound } from "@/hooks/use-inbound"
 import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
+import { ConfirmDialog } from "@/components/dialog-confirm"
 
 const Inbound = () => {
 
@@ -19,10 +19,32 @@ const Inbound = () => {
   const [open, setOpen] = useState(false)
   const [selectedInbound, setSelectedInbound] = useState<InboundPayload | null>(null)
   const [mode, setMode] = useState<"create" | "edit">("create")
-  const { cancelInbound } = useInbound()
+  const { cancelInbound, completeInbound } = useInbound()
 
   const [openCancel, setOpenCancel] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [openComplete, setOpenComplete] = useState(false)
+  const [completeId, setCompleteId] = useState<string | null>(null)
+
+  const handleComplete = (id: string) => {
+    setCompleteId(id)
+    setOpenComplete(true)
+  }
+
+  const confirmComplete = async () => {
+    if (!completeId) return
+
+    try {
+      await completeInbound(completeId)
+      toast.success("Inbound completed successfully")
+      loadInbounds()
+    } catch (error) {
+      toast.error("Failed to complete inbound")
+    } finally {
+      setOpenComplete(false)
+      setCompleteId(null)
+    }
+  }
 
   const handleCancel = (id: string) => {
     setDeleteId(id)
@@ -114,13 +136,26 @@ const Inbound = () => {
 
         <div className="w-full flex-col justify-start gap-6"> 
             <DataTable 
-              columns={columnsInbound(handleCancel)} 
+              columns={columnsInbound(handleComplete, handleCancel)} 
               data={data} 
             />
-            <ConfirmCancelDialog
+            <ConfirmDialog 
               open={openCancel}
               onOpenChange={setOpenCancel}
               onConfirm={confirmCancel}
+              title="Cancel Inbound Order"
+              description="This action cannot be undone. This will permanently cancel the order."
+              confirmLabel="Yes, Cancel Order"
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-500" 
+            />
+            <ConfirmDialog 
+              open={openComplete}
+              onOpenChange={setOpenComplete}
+              onConfirm={confirmComplete}
+              title="Complete Inbound Order"
+              description="This action cannot be undone. This will permanently complete the order."
+              confirmLabel="Yes, Complete Order"
+              className="bg-green-600 hover:bg-green-700 focus:ring-green-500" 
             />
         </div>
         </section>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { inboundSchema, InboundStatusEnum, type InboundPayload } from "@/schemas/schema"
+import { inboundSchema, type InboundPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -148,24 +148,6 @@ export function InboundForm({
         <Label className="mb-2">Received At</Label>
         <Input type="date" {...register("received_at")} />
       </div> 
-
-      <div>
-        <Label className="mb-2">Status</Label>
-        {/* <Input {...register("status_inbound")} /> */}
-        <select 
-          {...register("status_inbound")}
-          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
-          >
-          <option value="">
-            {loading ? "Loading..." : "Pilih Status"}
-          </option>
-            {InboundStatusEnum.options.map((status) => (
-                <option key={status} value={status}>
-                    {status}
-                </option>
-            ))}
-        </select>
-      </div>
 
       <div>
         <Label className="mb-2">Note</Label>
