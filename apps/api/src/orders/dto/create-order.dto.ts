@@ -14,9 +14,6 @@ export class CreateOrderDto {
     @IsUUID()
     id_supplier: string;
 
-    @IsString()
-    po_status: string;
-    
     @IsOptional()
     @IsString()
     note: string;

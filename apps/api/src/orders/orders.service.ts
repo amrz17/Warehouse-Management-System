@@ -8,6 +8,7 @@ import { PurchaseOrderItemsEntity } from './entities/order-items.entity';
 import { InventoryEntity } from '../inventory/inventory.entity';
 import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { ItemsEntity } from '../items/items.entity';
+import { SalesOrderStatus } from 'src/sales/entities/sales-order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -38,7 +39,7 @@ export class OrdersService {
             po_number : poNumber,
             id_user: userId,
             supplier: { id_supplier: createOrderDto.id_supplier},
-            status: PurchaseOrderStatus.PENDING,
+            po_status: PurchaseOrderStatus.PENDING,
             expected_delivery_date: createOrderDto.expected_delivery_date,
             note: createOrderDto.note
          } as any);
@@ -102,7 +103,7 @@ export class OrdersService {
       } catch (err) {
          // rollback if error 
          await queryRunner.rollbackTransaction();
-         throw new BadRequestException('Failed make new Purchase Order: ' + err.message);
+         throw new BadRequestException('Failed make new Purchase Order: ' + (err as Error).message);
       } finally {
          // Disconnect queryRunner
          await queryRunner.release();

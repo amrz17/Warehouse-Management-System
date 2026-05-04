@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { orderSchema, PurchaseStatusEnum, type OrderPayload } from "@/schemas/schema"
+import { orderSchema, type OrderPayload } from "@/schemas/schema"
 import { useOrders } from "@/hooks/use-orders"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ import { fetchSuppliers } from "@/api/supplier.api"
 import { fetchOrders } from "@/api/purchase-order.api"
 
 export const useDropdownOptions = () => {
-    const [poNumber, setPONumber] = useState([]);
+    const [poNumber, setPONumber] = useState<OrderPayload[]>([]);
     const [products, setProducts] = useState([]);
     const [supplier, SetSupplier] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -66,7 +66,6 @@ export function OrderForm({
       po_number: "",
       id_supplier: "",
       expected_delivery_date: "",
-      po_status: "",
       note: "",
       items: [
         {
@@ -156,7 +155,7 @@ export function OrderForm({
         <Input type="date" {...register("expected_delivery_date")} />
       </div>
 
-      <div className="flex flex-col gap-1">
+      {/* <div className="flex flex-col gap-1">
         <Label>Status</Label>
         <select 
           {...register("po_status")}
@@ -171,7 +170,7 @@ export function OrderForm({
                 </option>
             ))}
         </select>
-      </div>
+      </div> */}
 
       <div>
         <Label className="mb-2">Note</Label>

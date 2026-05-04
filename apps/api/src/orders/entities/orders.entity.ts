@@ -5,12 +5,10 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 import { InboundEntity } from "../../inbound/entities/inbound.entity";
 
 export enum PurchaseOrderStatus {
-  PENDING = 'PENDING',     // Baru dibuat, menunggu persetujuan manager
-  APPROVED = 'APPROVED',   // Sudah oke, sudah dikirim ke supplier
-  SHIPPED = 'SHIPPED',     // Supplier sudah kirim, barang di jalan
-  RECEIVED = 'RECEIVED',   // Barang sudah sampai di gudang & di-input ke stok
-  CANCELED = 'CANCELED',   // Batal Pesan
-  COMPLETED = 'COMPLETED', // Selesai 
+  PENDING = 'PENDING',     
+  RECEIVED = 'RECEIVED',   
+  CANCELED = 'CANCELED',   
+  COMPLETED = 'COMPLETED', 
 }
 
 @Entity({name: 'purchase_orders'})

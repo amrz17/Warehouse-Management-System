@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Ban, MoreHorizontal, NotebookPenIcon, TrashIcon } from "lucide-react"
+import { Ban, MoreHorizontal } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +20,7 @@ export const columnsOrders = (
 ): ColumnDef<OrderPayload>[] => [
   {
     accessorKey: "supplier.name",
-    header: "Company Supplier",
+    header: "Supplier",
   },
   {
     accessorKey: "po_number",

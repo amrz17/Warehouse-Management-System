@@ -39,6 +39,6 @@ export function useOrders() {
   return {
     createOrder,
     isLoading,
-    cancelOrder
+    cancelOrder,
   }
 }
