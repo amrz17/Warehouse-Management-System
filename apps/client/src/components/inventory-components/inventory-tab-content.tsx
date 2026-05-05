@@ -1,6 +1,6 @@
 // contents/InventoryTabContent.tsx
 import { useEffect, useState } from "react"
-import { FilterIcon, NotebookPenIcon, PlusCircle, SortAscIcon, Table, TrashIcon } from "lucide-react"
+import { ActivityIcon, FilterIcon, NotebookPenIcon, PlusCircle, Settings2, SortAscIcon, Table, TrashIcon } from "lucide-react"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import { ResponsiveDialogDrawer } from "@/components/drawer-form"
@@ -137,8 +137,8 @@ export default function InventoryTabContent() {
         </ResponsiveDialogDrawer>
       </div>
       </div>
-      <div className="grid grid-cols-3 gap-4 lg:px-4 @xl/main:grid-cols-2">
-        <Card className="@container/card">
+      <div className="grid lg:grid-cols-3 gap-4 @xl/main:grid-cols-2 mx-4">
+        <Card className="@container/card p-4">
           <CardHeader>
             <CardAction>
               <IconPackage />
@@ -158,7 +158,7 @@ export default function InventoryTabContent() {
           </CardFooter>
         </Card>
 
-        <Card className="@container/card px-4">
+        <Card className="@container/card p-4">
           <CardHeader>
             <CardAction>
               <IconPackages />
@@ -176,7 +176,7 @@ export default function InventoryTabContent() {
           </CardFooter>
         </Card>
 
-        <Card className="@container/card px-4">
+        <Card className="@container/card p-4">
           <CardHeader>
             <CardAction>
               <IconPackageOff />
@@ -200,7 +200,7 @@ export default function InventoryTabContent() {
         </Button>
       </div> */}
 
-        <div className="flex flex-row w-full">
+        <div className="flex flex-row w-full justify-between">
             <div className="flex-1 items-center justify-start gap-3 mx-4 hidden lg:flex">
               <Button 
                 size="lg"
@@ -221,6 +221,13 @@ export default function InventoryTabContent() {
                 Sort
               </Button>
               </div>
+
+            <div className="mx-4">
+              <Button className="item-center p-4 w-fit">
+                <Settings2 />
+                Action
+              </Button>
+            </div>
             <div className="flex flex-1 items-center justify-end gap-4 mx-4">
               <Button 
                 className="hidden lg:flex"
@@ -230,8 +237,9 @@ export default function InventoryTabContent() {
                 Export
               </Button>
               <Button onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-                className="item-center p-4 w-full lg:w-fit">
-                <PlusCircle className="h-4 w-full lg:w-4" /> Create New Inventory
+                className="item-center p-4 w-fit">
+                <PlusCircle className="h-4 w-full lg:w-4" /> 
+                Create New Inventory
               </Button>
             </div>
         </div>

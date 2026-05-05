@@ -17,7 +17,9 @@ export default function DahsboardLayout({ children }: {children: React.ReactNode
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset>
+      {/* <SidebarInset> */}
+      <SidebarInset className="min-w-0 overflow-hidden"> {/* ← tambahkan ini */}
+
         <SiteHeader />
             {children}
       </SidebarInset>
