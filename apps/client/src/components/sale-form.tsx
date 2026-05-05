@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { saleOrderSchema, SaleStatusEnum, type SaleOrderPayload } from "@/schemas/schema"
+import { saleOrderSchema, type SaleOrderPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -15,7 +15,7 @@ import { fetchItems } from "@/api/item.api"
 import { fetchSaleOrders } from "@/api/sale-order.api"
 
 export const useDropdownOptions = () => {
-    const [soNumber, setSONumber] = useState([]);
+    const [soNumber, setSONumber] = useState<SaleOrderPayload[]>([]);
     const [products, setProducts] = useState([]);
     const [customer, SetCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -65,7 +65,6 @@ export function SaleForm({
       so_number: "",
       id_customer: "",
       date_shipped: "",
-      so_status: "",
       note: "",
       items: [
         {
@@ -157,9 +156,8 @@ export function SaleForm({
         <Input type="date" {...register("date_shipped")} />
       </div>
 
-      <div>
+      {/* <div>
         <Label className="mb-2">Status</Label>
-        {/* <Input {...register("so_status")} /> */}
         <select 
           {...register("so_status")}
           className="w-full bg-background border rounded-md px-3 py-2 text-sm"
@@ -171,7 +169,7 @@ export function SaleForm({
                 </option>
             ))}
         </select>
-      </div>
+      </div> */}
 
       <div>
         <Label className="mb-2">Note</Label>

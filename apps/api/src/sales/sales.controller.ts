@@ -32,6 +32,30 @@ export class SalesController {
         return await this.saleOrderService.generateSaleOrderResponse(newSale);
     }
 
+    @Post('/approve/:id_so')
+    @UseGuards(AuthGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    async approveSO(
+        @Param('id_so', new ParseUUIDPipe()) id_so: string,
+        @Req() req: AuthRequest
+    ): Promise<ISaleResponse> {
+        const userId = req.user.id_user;
+        const so = await this.saleOrderService.approveSO(id_so, userId);
+        return await this.saleOrderService.generateSaleOrderResponse(so);
+    }
+
+    @Post('/complete/:id_so')
+    @UseGuards(AuthGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF_GUDANG)
+    async completeSO(
+        @Param('id_so', new ParseUUIDPipe()) id_so: string,
+        @Req() req: AuthRequest
+    ): Promise<ISaleResponse> {
+        const userId = req.user.id_user;
+        const so = await this.saleOrderService.completeSO(id_so, userId);
+        return await this.saleOrderService.generateSaleOrderResponse(so);
+    }
+
     @Post('/cancel/:id_so')
     @UseGuards(AuthGuard)
     @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF_GUDANG)

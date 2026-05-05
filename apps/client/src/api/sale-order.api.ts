@@ -18,4 +18,13 @@ export const cancelSaleOrderApi = (
     id: string,
 ): Promise<void> => api.post(`/sale-order/cancel/${id}`);
 
+// Approve Sale Order
+export const approveSaleOrderApi = (
+    id: string,
+): Promise<void> => api.post(`/sale-order/approve/${id}`);
+
+// Complete Sale Order
+export const completeSaleOrderApi = (
+    id: string,
+): Promise<void> => api.post(`/sale-order/complete/${id}`);
 

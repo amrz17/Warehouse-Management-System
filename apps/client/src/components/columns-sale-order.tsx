@@ -2,12 +2,15 @@ import type { SaleOrderPayload } from "@/schemas/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Ban, MoreHorizontal } from "lucide-react";
+import { Ban, ClipboardCheck, MoreHorizontal, ReceiptText } from "lucide-react";
 import { DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Badge } from "./ui/badge";
+import { IconChecklist } from "@tabler/icons-react";
 
 export const columnsSaleOrders = ( 
-  onCancel: (id_so: string) => void
+  onApprove: (id_so: string) => void,
+  onComplete: (id_so: string) => void,
+  onCancel: (id_so: string) => void,
 ): ColumnDef<SaleOrderPayload>[] => [
     {
         accessorKey: "so_number",
@@ -15,11 +18,11 @@ export const columnsSaleOrders = (
     },
     {
         accessorKey: "createdBy.full_name",
-        header: "Created By",
+        header: "User",
     },
     {
         accessorKey: "customer.customer_name",
-        header: "Customer Name",
+        header: "Customer",
     },
     {
         accessorKey: "id_item",
@@ -83,6 +86,14 @@ export const columnsSaleOrders = (
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onApprove(saleOrder.id_so!)}>
+                        <ReceiptText className="h-4 w-4 text-blue-500"/>
+                        Approve Order
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onComplete(saleOrder.id_so!)}>
+                        <ClipboardCheck className="h-4 w-4 text-green-500"/>
+                        Complete Order
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onCancel(saleOrder.id_so!)}>
                         <Ban className="h-4 w-4 text-red-500"/>
                         Cancel Order

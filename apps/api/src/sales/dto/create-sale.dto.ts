@@ -6,9 +6,6 @@ export class CreateSaleDTO {
     @IsOptional()
     @IsString()
     so_number: string;
-
-    @IsString()
-    so_status: string;
     
     @Type(() => Date)
     @IsDate()

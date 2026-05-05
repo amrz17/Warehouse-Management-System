@@ -25,7 +25,9 @@ export class SalesService {
                 'customer', 
                 'createdBy', 
                 'items.item'
-            ] });
+            ],
+            order: { created_at: 'DESC' }
+         });
     }
 
     // Create Sale Order
@@ -47,7 +49,7 @@ export class SalesService {
             // save header
             const soHeader = queryRunner.manager.create(SalesOrderEntity, {
                 so_number: soNumber,
-                so_status: createSaleDTO.so_status,
+                so_status: SalesOrderStatus.PENDING,
                 date_shipped: createSaleDTO.date_shipped,
                 customer: { id_customer: createSaleDTO.id_customer},
                 id_user: userId,
@@ -133,7 +135,7 @@ export class SalesService {
         } catch (err) {
             // rollback
             await queryRunner.rollbackTransaction();
-            throw new BadRequestException('Failed make new Sale Order: ' + err.message);
+            throw new BadRequestException('Failed make new Sale Order: ' + (err as Error).message);
         } finally {
             // disconnect db
             await queryRunner.release();
@@ -193,6 +195,89 @@ export class SalesService {
         } catch (err) {
             await queryRunner.rollbackTransaction()
             throw err;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async approveSO(
+        id_so: string,
+        userId: string
+    ): Promise<any> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const so = await this.saleRepo.findOne({ where: { id_so } });
+
+            if (!so) throw new NotFoundException('Sale Order tidak ditemukan');
+
+            if (so.so_status !== SalesOrderStatus.PENDING) {
+                throw new BadRequestException('Hanya SO dengan status PENDING yang bisa di APPROVED');
+            }
+
+            // simpan logs
+            await this.activityLogsService.createLogs(queryRunner.manager, {
+                id_user: userId,
+                action: "UPDATE",
+                module: "SALE ORDER",
+                resource_id: so.id_so,
+                description: so.so_number,
+                metadata: {
+                    createdBy: so.createdBy,
+                    customer: so.id_customer,
+                    date_shipped: so.date_shipped,
+                    so_status: so.so_status,
+                    note: so.note,
+                }
+            })
+
+            await this.saleRepo.update({ id_so }, { so_status: SalesOrderStatus.APPROVED });
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction()
+            throw err;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async completeSO(id_so: string, userId: string): Promise<any> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const so = await this.saleRepo.findOne({ where: { id_so } });
+
+            if (!so) throw new NotFoundException('Sale Order tidak ditemukan');
+
+            if (so.so_status !== SalesOrderStatus.SHIPPED) {
+                throw new BadRequestException('Hanya SO dengan status SHIPPED yang bisa COMPLETED');
+            }
+
+            // simpan logs
+            await this.activityLogsService.createLogs(queryRunner.manager, {
+                id_user: userId,
+                action: "UPDATE",
+                module: "SALE ORDER",
+                resource_id: so.id_so,
+                description: so.so_number,
+                metadata: {
+                    createdBy: so.createdBy,
+                    customer: so.id_customer,
+                    date_shipped: so.date_shipped,
+                    so_status: so.so_status,
+                    note: so.note,
+                }
+            })
+
+            await this.saleRepo.update({ id_so }, { so_status: SalesOrderStatus.COMPLETED });
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
         } finally {
             await queryRunner.release();
         }
