@@ -162,7 +162,7 @@ const PurchasePage = () => {
                 </Button>
                 </div>
               <div className="mx-4">
-                <Button className="item-center p-4 flex md:hidden w-fit">
+                <Button className="item-center p-4 flex lg:hidden w-fit">
                   <Settings2 />
                   Action
                 </Button>
@@ -176,7 +176,7 @@ const PurchasePage = () => {
                   Export
                 </Button>
                 <Button 
-                  className="w-full lg:w-fit"
+                  className="item-center p-4 w-fit"
                   size="lg"
                   onClick={() => {
                     setMode("create")

@@ -11,10 +11,4 @@ export class CreateInventoryDto {
 
     @IsNumber()
     qty_available: number;
-
-    @IsNumber()
-    qty_reserved: number;
-
-    @IsNumber()
-    qty_ordered: number;
 }

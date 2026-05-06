@@ -131,22 +131,6 @@ export function InventoryForm({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label>Quantity Ordered</Label>
-        <Input type="number" {...register("qty_ordered", { valueAsNumber: true })} />
-        {errors.qty_ordered && (
-          <p className="text-sm text-red-500">{errors.qty_ordered.message}</p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label>Quantity Reserved</Label>
-        <Input type="number" {...register("qty_reserved", { valueAsNumber: true })} />
-        {errors.qty_reserved && (
-          <p className="text-sm text-red-500">{errors.qty_reserved.message}</p>
-        )}
-      </div>
-
       <Button type="submit" disabled={isSubmitting || loading}>
         {mode === "create" ? "Create Inventory" : "Update Inventory"}
       </Button>

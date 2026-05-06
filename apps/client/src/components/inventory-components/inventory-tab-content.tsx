@@ -223,7 +223,7 @@ export default function InventoryTabContent() {
               </div>
 
             <div className="mx-4">
-              <Button className="item-center p-4 w-fit">
+                <Button className="item-center p-4 flex lg:hidden w-fit">
                 <Settings2 />
                 Action
               </Button>
@@ -236,9 +236,13 @@ export default function InventoryTabContent() {
                 <IconFileExport />
                 Export
               </Button>
-              <Button onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-                className="item-center p-4 w-fit">
-                <PlusCircle className="h-4 w-full lg:w-4" /> 
+              <Button 
+                size="lg"
+                onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
+                className="item-center p-4 w-fit"
+              >
+
+                <PlusCircle /> 
                 Create New Inventory
               </Button>
             </div>

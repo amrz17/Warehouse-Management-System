@@ -138,9 +138,9 @@ export const inventorySchema = z.object({
   location: z.object({
     bin_code: z.string().optional()
   }).optional(),
-  qty_available: z.number().optional(),
-  qty_ordered: z.number().optional(),
-  qty_reserved: z.number().optional(),
+  qty_available: z.number().min(0, "Quantity available cannot be negative"),
+  qty_ordered: z.number().min(0, "Quantity ordered cannot be negative").optional(),
+  qty_reserved: z.number().min(0, "Quantity reserved cannot be negative").optional(),
   last_update: z.string().optional(),
   created_at: z.string().optional(),
 })
@@ -202,8 +202,8 @@ export const OutboundSchema = z.object({
     name: z.string().optional()
   }).optional(),
   shipped_at: z.string().min(1, "Shipped date is required"),
-  carrier_name: z.string().min(1, "Carrier name is required"),
-  tracking_number: z.string().min(1, "Tracking number is required"),
+  carrier_name: z.string().optional(),
+  tracking_number: z.string().optional(),
   status_outbound: z.enum(['OPEN', 'PICKING', 'SHIPPED', 'COMPLETED', 'CANCELED']).optional(),
   note: z.string().optional(),
   items: z.array(
@@ -221,6 +221,14 @@ export const OutboundSchema = z.object({
 })
 
 export type OutboundPayload = z.infer<typeof OutboundSchema>
+
+// 
+export const ShipOutboundSchema = z.object({
+    tracking_number: z.string().min(1, 'Tracking number wajib diisi'),
+    carrier_name: z.string().min(1, 'Ekspedisi wajib diisi'),
+});
+
+export type ShipOutboundPayload = z.infer<typeof ShipOutboundSchema>;
 
 // 
 export const ActivityLogsSchema = z.object({
