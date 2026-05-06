@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import { Ban, MoreHorizontal } from "lucide-react"
+import { Ban, Car, MoreHorizontal } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -11,9 +11,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "./ui/badge"
 import type { OutboundPayload } from "@/schemas/schema"
+import { IconChecklist } from "@tabler/icons-react"
 
 // Define the columns for the data table.
 export const columnsOutbound = ( 
+  onShipped: (id_outbound: string) => void,
+  onComplete: (id_outbound: string) => void,
   onCancel: (id_outbound: string) => void
 ): ColumnDef<OutboundPayload>[] => [
   {
@@ -108,6 +111,14 @@ export const columnsOutbound = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onShipped(outbound.id_outbound!)}>
+                <Car className="h-4 w-4 text-blue-500"/>
+                Shipped Outbound
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onComplete(outbound.id_outbound!)}>
+                <IconChecklist className="h-4 w-4 text-green-500"/>
+                Complete Outbound
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onCancel(outbound.id_outbound!)}>
                 <Ban className="h-4 w-4 text-red-500"/>
                 Cancel Outbound

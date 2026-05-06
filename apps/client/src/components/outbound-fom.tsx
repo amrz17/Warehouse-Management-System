@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { OutboundSchema, OutboundStatusEnum, type OutboundPayload } from "@/schemas/schema"
+import { OutboundSchema, type OutboundPayload } from "@/schemas/schema"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -99,19 +99,6 @@ export function OutboundForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-      {/* <div>
-        <Label className="mb-2">Outbound Number</Label>
-        <Input
-          {...register("outbound_number")}
-          disabled={mode === "edit"}
-        />
-        {errors.outbound_number && (
-          <p className="text-sm text-red-500">
-            {errors.outbound_number.message}
-          </p>
-        )}
-      </div> */}
-
       <div>
         <Label className="mb-2">Sale Order</Label>
         <select
@@ -127,44 +114,20 @@ export function OutboundForm({
           <option value="">
             {loading ? "Loading..." : "Pilih Sale Order"}
           </option>
-          {soNumber.map((so: any) => (
-            <option key={so.id_so} value={so.id_so}>
-              {so.so_number}
-            </option>
-          ))}
+          {soNumber
+            .filter((so: any) => so.so_status === 'APPROVED' || so.so_status === 'SHIPPED') 
+            .map((so: any) => (
+              <option key={so.id_so} value={so.id_so}>
+                {so.so_number}
+              </option>
+            ))
+          }
         </select>
       </div>
 
       <div>
         <Label className="mb-2">Shipped At</Label>
         <Input type="date" {...register("shipped_at")} />
-      </div>
-
-      <div>
-        <Label className="mb-2">Carrier Name</Label>
-        <Input {...register("carrier_name")} />
-      </div>
-
-      <div>
-        <Label className="mb-2">Tracking Number</Label>
-        <Input {...register("tracking_number")} />
-      </div>
-
-      <div>
-        <Label className="mb-2">Status</Label>
-        <select 
-          {...register("status_outbound")}
-          className="w-full bg-background border rounded-md px-3 py-2 text-sm"
-          >
-          <option value="">
-            {loading ? "Loading..." : "Pilih Status"}
-          </option>
-            {OutboundStatusEnum.options.map((status) => (
-                <option key={status} value={status}>
-                    {status}
-                </option>
-            ))}
-        </select>
       </div>
 
       <div>

@@ -9,7 +9,7 @@ import { SalesOrderEntity, SalesOrderStatus } from '../sales/entities/sales-orde
 import { InventoryEntity } from '../inventory/inventory.entity';
 import { IOutboundResponse } from './types/outboundResponse.Interface';
 import { ActivityLogsService } from '../activity-logs/activity-logs.service';
-import { PurchaseOrderItemsEntity } from 'src/orders/entities/order-items.entity';
+import { ShipOutboundDto } from './dto/ship-outbound.dto';
 
 @Injectable()
 export class OutboundService {
@@ -40,9 +40,7 @@ export class OutboundService {
                 sales_order: { id_so: createOutboundDto.id_so },
                 shipped_by: { id_user: userId },
                 shipped_at: createOutboundDto.shipped_at,
-                carrier_name: createOutboundDto.carrier_name,
-                tracking_number: createOutboundDto.tracking_number,
-                status_outbound: createOutboundDto.status_outbound,
+                status_outbound: StatusOutbound.PICKING,
                 note: createOutboundDto.note
             })
 
@@ -66,18 +64,29 @@ export class OutboundService {
                     }
                 })
 
-                if (!inventory || Number(inventory.qty_reserved) < Number(itemDto.qty_shipped)) {
-                    throw new BadRequestException(`Stok di lokasi tersebut tidak mencukupi atau tidak ditemukan!`);
+                // Validasi stok cukup
+                if (!inventory || Number(inventory.qty_available) < Number(itemDto.qty_shipped)) {
+                    throw new BadRequestException(
+                        `Stok tidak mencukupi! Tersedia: ${inventory?.qty_available ?? 0}, Dibutuhkan: ${itemDto.qty_shipped}`
+                    );
                 }
 
-                // Update qty_shipped di SaleOrderItems dan Inventory
+                // Update qty_shipped di SaleOrderItems
                 await queryRunner.manager.increment(SaleOrderItemsEntity, 
                     { id_soi: itemDto.id_soi },
                     "qty_shipped",
                     itemDto.qty_shipped
                 );
 
+                // Kurangi qty_available
                 await queryRunner.manager.decrement(InventoryEntity, 
+                    { id_inventory: inventory.id_inventory },
+                    "qty_available",
+                    itemDto.qty_shipped
+                );
+
+                // Tambah qty_reserved
+                await queryRunner.manager.increment(InventoryEntity, 
                     { id_inventory: inventory.id_inventory },
                     "qty_reserved",
                     itemDto.qty_shipped
@@ -131,12 +140,146 @@ export class OutboundService {
 
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            throw new BadRequestException('Failed make new Outbound: ', error.message); 
+            throw new BadRequestException('Failed make new Outbound: ', (error as Error).message); 
         } finally {
             await queryRunner.release();
         }
     }
 
+    // 
+    async shipOutbound(
+        id_outbound: string,
+        dto: ShipOutboundDto,
+        userId: string
+    ): Promise<OutboundEntity> {
+
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const outbound = await queryRunner.manager.findOne(OutboundEntity, {
+                where: { id_outbound },
+                relations: ['items']
+            });
+
+            if (!outbound) throw new NotFoundException('Outbound tidak ditemukan');
+
+            if (outbound.status_outbound !== StatusOutbound.PICKING) {
+                throw new BadRequestException(
+                    'Hanya outbound dengan status PICKING yang bisa di-ship'
+                );
+            }
+
+            // Update status outbound
+            await queryRunner.manager.update(OutboundEntity,
+                { id_outbound },
+                {
+                    status_outbound: StatusOutbound.SHIPPED,
+                    tracking_number: dto.tracking_number,
+                    carrier_name: dto.carrier_name,
+                    shipped_at: new Date(),
+                }
+            );
+
+            // Update qty_reserved di inventory — kurangi karena barang sudah keluar
+            for (const item of outbound.items) {
+                await queryRunner.manager.decrement(InventoryEntity,
+                    { id_item: item.id_item },
+                    'qty_reserved',
+                    item.qty_shipped
+                );
+            }
+
+            // Update status SO
+            await this.updateSoStatus(outbound.id_so, queryRunner);
+
+            // Simpan activity log
+            await this.activityLogsService.createLogs(queryRunner.manager, {
+                id_user: userId,
+                action: 'UPDATE',
+                module: 'OUTBOUND',
+                resource_id: id_outbound,
+                description: `Outbound ${outbound.outbound_number} shipped via ${dto.carrier_name}`,
+                metadata: {
+                    tracking_number: dto.tracking_number,
+                    carrier_name: dto.carrier_name,
+                    shipped_at: new Date(),
+                }
+            });
+
+            await queryRunner.commitTransaction();
+
+            const updatedOutbound = await queryRunner.manager.findOne(OutboundEntity, {
+                where: { id_outbound }
+            });
+
+            if (!updatedOutbound) throw new NotFoundException('Outbound tidak ditemukan setelah update');
+
+            return updatedOutbound;
+
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            throw new BadRequestException('Gagal ship outbound: ' + message);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    // 
+    async completeOutbound(id_outbound: string, userId: string): Promise<void> {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const outbound = await queryRunner.manager.findOne(OutboundEntity, {
+                where: { id_outbound }
+            });
+
+            if (!outbound) throw new NotFoundException('Outbound tidak ditemukan');
+
+            if (outbound.status_outbound !== StatusOutbound.SHIPPED) {
+                throw new BadRequestException(
+                    'Hanya outbound dengan status SHIPPED yang bisa di-complete'
+                );
+            }
+
+            // Update status outbound
+            await queryRunner.manager.update(OutboundEntity,
+                { id_outbound },
+                { status_outbound: StatusOutbound.COMPLETED }
+            );
+
+            // Update SO status ke COMPLETED
+            await queryRunner.manager.update(SalesOrderEntity,
+                { id_so: outbound.id_so },
+                { so_status: SalesOrderStatus.COMPLETED }
+            );
+
+            // Simpan activity log
+            await this.activityLogsService.createLogs(queryRunner.manager, {
+                id_user: userId,
+                action: 'UPDATE',
+                module: 'OUTBOUND',
+                resource_id: id_outbound,
+                description: `Outbound ${outbound.outbound_number} completed`,
+                metadata: { id_so: outbound.id_so }
+            });
+
+            await queryRunner.commitTransaction();
+
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            throw new BadRequestException('Gagal complete outbound: ' + message);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    // 
     async cancelOutbound(
         id_outbound: string,
         userId: string
@@ -217,11 +360,11 @@ export class OutboundService {
             totalShipped += Number(item.qty_shipped);
         });
 
-        let newStatus = SalesOrderStatus.PENDING;
+        let newStatus = SalesOrderStatus.APPROVED;
         if (totalShipped >= totalOrdered) {
-            newStatus = SalesOrderStatus.COMPLETED;
-        } else if (totalShipped > 0) {
             newStatus = SalesOrderStatus.SHIPPED;
+        } else if (totalShipped > 0) {
+            newStatus = SalesOrderStatus.PICKING;
         }
 
         // Update status ke tabel SO Header
@@ -231,10 +374,12 @@ export class OutboundService {
         );
     }
 
+
     //
     async getAllOutbound(): Promise<OutboundEntity[]> {
         return await this.outboundRepo.find({
-            relations: ['items.item', 'shipped_by', 'sales_order']
+            relations: ['items.item', 'shipped_by', 'sales_order'],
+            order: { created_at: 'DESC' }
         });
     }
 

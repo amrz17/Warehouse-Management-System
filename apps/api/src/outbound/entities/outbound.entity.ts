@@ -6,7 +6,6 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 export enum StatusOutbound {
     OPEN = "OPEN",
     PICKING = "PICKING",
-    PACKING = "PACKING",
     SHIPPED = "SHIPPED",
     COMPLETED = "COMPLETED",
     CANCELED = "CANCELED"
@@ -36,10 +35,10 @@ export class OutboundEntity {
     @Column()
     shipped_at: Date;
 
-    @Column()
+    @Column({ nullable: true })
     carrier_name: string;
 
-    @Column()
+    @Column({ nullable: true })
     tracking_number: string;
 
     @Column({
