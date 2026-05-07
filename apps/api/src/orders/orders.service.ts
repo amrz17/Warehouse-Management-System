@@ -8,7 +8,6 @@ import { PurchaseOrderItemsEntity } from './entities/order-items.entity';
 import { InventoryEntity } from '../inventory/inventory.entity';
 import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { ItemsEntity } from '../items/items.entity';
-import { SalesOrderStatus } from 'src/sales/entities/sales-order.entity';
 
 @Injectable()
 export class OrdersService {

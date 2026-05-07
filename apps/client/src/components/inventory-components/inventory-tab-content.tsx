@@ -1,6 +1,6 @@
 // contents/InventoryTabContent.tsx
 import { useEffect, useState } from "react"
-import { ActivityIcon, FilterIcon, NotebookPenIcon, PlusCircle, Settings2, SortAscIcon, Table, TrashIcon } from "lucide-react"
+import { FilterIcon, NotebookPenIcon, PlusCircle, Settings2, SortAscIcon, Table, TrashIcon } from "lucide-react"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import { ResponsiveDialogDrawer } from "@/components/drawer-form"
