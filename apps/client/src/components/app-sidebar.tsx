@@ -29,6 +29,9 @@ import {
 import { useAuth } from '../hooks/useAuth.ts'
 import { UserRoleEnum } from '../schemas/schema.ts'
 
+import { getToken } from "@/services/auth.service"
+import axios from "axios"
+
 const { ADMIN, MANAGER, STAFF_GUDANG, PICKER } = UserRoleEnum.enum;
 
 const navMain = [
@@ -69,8 +72,8 @@ const navMain = [
     roles: [ADMIN, MANAGER, PICKER],
   },
   {
-    title: "Reporting",
-    url: "/reporting",
+    title: "Reporg",
+    url: "/report",
     icon: IconChartBar,
     roles: [ADMIN, MANAGER],
   },
@@ -98,10 +101,48 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     role ? item.roles.includes(role) : false
   );
 
+  const [userName, setUserName] = React.useState(null);
+  const [userEmail, setUserEmail] = React.useState(null);
+
+  React.useEffect(() => {
+  const fetchUserData = async (token: string) => {
+    try {
+      // Membuat objek Axios
+      const instance = axios.create({
+        baseURL: 'http://localhost:3000/api',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Mengirim GET request ke API
+      const response = await instance.get('/user');
+
+      // Mengambil data dari respons
+      const userData = response.data.user.username;
+      const userEmail = response.data.user.email;
+      console.log('res user sidebar: ', userData);
+      setUserName(userData);
+      setUserEmail(userEmail);
+
+      return userData;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+  const tokenNum = getToken()
+  fetchUserData(tokenNum);
+}, []);
+
+
+  // const { getCurrentUser, isLoading } = useUser();
+
+  // TODO : Get data current user
   const data = {
     user: {
-      name: "admin",
-      email: "admin@example.com",
+      name: userName,
+      email: userEmail,
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: filteredNav,
