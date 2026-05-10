@@ -22,3 +22,9 @@ export const registerApi = (data: {
     password: string,
     role: string,
 }) => api.post("/users", data);
+
+// get current user
+export const getCurrentUserApi = (token: string) => 
+    api.get("/user", {
+        headers: { Authorization: `Bearer ${token}` }
+    });

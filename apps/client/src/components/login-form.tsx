@@ -69,9 +69,10 @@ export function LoginForm({
         <Field>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="underline underline-offset-4">
+            {/* <a href="/signup" className="underline underline-offset-4">
               Sign up
-            </a>
+            </a> */}
+            Tell Admin
           </FieldDescription>
         </Field>
       </FieldGroup>

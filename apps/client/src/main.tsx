@@ -94,7 +94,7 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: "/reporting",
+    path: "/report",
     element: (
       <Protected>
          <Reporting />

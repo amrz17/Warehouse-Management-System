@@ -29,6 +29,9 @@ import {
 import { useAuth } from '../hooks/useAuth.ts'
 import { UserRoleEnum } from '../schemas/schema.ts'
 
+import { getToken } from "@/services/auth.service"
+import axios from "axios"
+
 const { ADMIN, MANAGER, STAFF_GUDANG, PICKER } = UserRoleEnum.enum;
 
 const navMain = [
@@ -69,8 +72,8 @@ const navMain = [
     roles: [ADMIN, MANAGER, PICKER],
   },
   {
-    title: "Reporting",
-    url: "/reporting",
+    title: "Reporg",
+    url: "/report",
     icon: IconChartBar,
     roles: [ADMIN, MANAGER],
   },
