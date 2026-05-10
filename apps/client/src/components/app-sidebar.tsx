@@ -98,10 +98,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     role ? item.roles.includes(role) : false
   );
 
+  const username = localStorage.getItem('username') || '';
+  const email = localStorage.getItem('email') || '';
+
   const data = {
     user: {
-      name: "admin",
-      email: "admin@example.com",
+      name: username,
+      email: email,
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: filteredNav,
