@@ -101,48 +101,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     role ? item.roles.includes(role) : false
   );
 
-  const [userName, setUserName] = React.useState(null);
-  const [userEmail, setUserEmail] = React.useState(null);
+  const username = localStorage.getItem('username') || '';
+  const email = localStorage.getItem('email') || '';
 
-  React.useEffect(() => {
-  const fetchUserData = async (token: string) => {
-    try {
-      // Membuat objek Axios
-      const instance = axios.create({
-        baseURL: 'http://localhost:3000/api',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // Mengirim GET request ke API
-      const response = await instance.get('/user');
-
-      // Mengambil data dari respons
-      const userData = response.data.user.username;
-      const userEmail = response.data.user.email;
-      console.log('res user sidebar: ', userData);
-      setUserName(userData);
-      setUserEmail(userEmail);
-
-      return userData;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
-  const tokenNum = getToken()
-  fetchUserData(tokenNum);
-}, []);
-
-
-  // const { getCurrentUser, isLoading } = useUser();
-
-  // TODO : Get data current user
   const data = {
     user: {
-      name: userName,
-      email: userEmail,
+      name: username,
+      email: email,
       avatar: "/avatars/shadcn.jpg",
     },
     navMain: filteredNav,

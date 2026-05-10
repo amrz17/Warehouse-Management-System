@@ -1,6 +1,8 @@
 import { UserRoleEnum ,type UserRole } from '../schemas/schema';
 
 export const TOKEN_KEY = "access_token";
+export const EMAIL_KEY = "email";
+export const USERNAME_KEY = "username";
 
 // Helper untuk SSR compatibility
 const isBrowser = typeof window !== 'undefined';
@@ -22,6 +24,8 @@ export function getToken(): string | null {
 export function removeToken(): void {
     if (isBrowser) {
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(EMAIL_KEY);
+        localStorage.removeItem(USERNAME_KEY);
     }
 }
 
@@ -127,4 +131,21 @@ export function saveAuth(token: string): void {
 
 export function clearAuth(): void {
     removeToken();
+}
+
+// Save email & username
+export function saveUserInfo(email: string, username: string): void {
+    if (isBrowser) {
+        localStorage.setItem(EMAIL_KEY, email);
+        localStorage.setItem(USERNAME_KEY, username);
+    }
+}
+
+// Get email & username
+export function getEmail(): string | null {
+    return isBrowser ? localStorage.getItem(EMAIL_KEY) : null;
+}
+
+export function getUsername(): string | null {
+    return isBrowser ? localStorage.getItem(USERNAME_KEY) : null;
 }

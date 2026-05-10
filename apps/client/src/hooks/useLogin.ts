@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { loginApi } from "@/api/auth.api"
 import { useAuthStore } from "@/store/auth.store"
 import { useNavigate } from "react-router-dom"
+import { saveUserInfo } from "@/services/auth.service"
 
 type LoginFormValues = {
   email: string
@@ -23,7 +24,8 @@ export function useLogin() {
     try {
       const res = await loginApi(data)
       console.log("Login successful")
-      // const userName = login(
+      saveUserInfo(res.data.user.email, res.data.user.username); // ← tambahkan
+      login(res.data.user.token)
       navigate("/")
     } catch (error) {
       console.error("Login failed", error)
