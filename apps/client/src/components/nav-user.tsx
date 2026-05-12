@@ -5,6 +5,9 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { toast } from "sonner"
+import { logoutApi } from "@/api/auth.api"
+import { getToken, removeToken } from "@/services/auth.service"
 
 import {
   Avatar,
@@ -37,6 +40,21 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+  const handleLogout = async () => {
+    try {
+      const token = getToken();
+      if (token) {
+        await logoutApi(token);
+      }
+    } catch (error) {
+      console.error("Gagal mencatat log logout di server:", error);
+    } finally {
+      removeToken();
+      toast.info("Berhasil logout.");
+      window.location.href = "/login";
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -96,7 +114,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -25,7 +25,7 @@ export function LogoutButton() {
       removeToken();
       toast.info("Berhasil logout.");
       
-      navigate('/login', { replace: true });
+      window.location.href = '/login';
       setLoading(false);
     }
   };

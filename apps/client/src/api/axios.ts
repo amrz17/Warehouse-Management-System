@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getToken } from "@/services/auth.service"
+import { getToken, removeToken } from "@/services/auth.service"
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -23,7 +23,7 @@ api.interceptors.response.use(
 
       // jangan paksa refresh jika sedang memanggil API logout
       if (!originalRequestUrl.includes('/logout')) {
-        localStorage.removeItem('token');
+        removeToken();
         window.location.href = '/login'; 
       }
     }
