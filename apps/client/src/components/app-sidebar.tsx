@@ -72,7 +72,7 @@ const navMain = [
     roles: [ADMIN, MANAGER, PICKER],
   },
   {
-    title: "Reporg",
+    title: "Report",
     url: "/report",
     icon: IconChartBar,
     roles: [ADMIN, MANAGER],
@@ -97,18 +97,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // console.log('Role dari useAuth:', role); 
 
   // Filter nav berdasarkan role user
-  const filteredNav = navMain.filter(item => 
+  const filteredNav = navMain.filter(item =>
     role ? item.roles.includes(role) : false
   );
 
   const username = localStorage.getItem('username') || '';
   const email = localStorage.getItem('email') || '';
+  const avatarUrl = localStorage.getItem('avatar_url');
+  const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, "") || "http://localhost:3000";
+  const avatarFullUrl = avatarUrl ? `${API_BASE}${avatarUrl}` : "";
 
   const data = {
     user: {
       name: username,
       email: email,
-      avatar: "/avatars/shadcn.jpg",
+      avatar: avatarFullUrl,
     },
     navMain: filteredNav,
   }

@@ -44,6 +44,12 @@ export class UserEntity {
     })
     password?: string;
 
+    @Column({
+        type: "varchar",
+        nullable: true
+    })
+    avatar_url: string | null;
+
     @BeforeInsert()
     async hashPassword() {
         if(this.password) {

@@ -1,4 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe, UseInterceptors, UploadedFile, BadRequestException } from "@nestjs/common";
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { IUserResponse } from "./types/userResponse.interface";
@@ -43,10 +47,36 @@ export class UserContainerOptions {
 
     @Put('user')
     @UseGuards(AuthGuard)
-    async updateUser(@User('id_user') userId: string, @Body('user') updateUserDto: UpdateUserDto): Promise<IUserResponse> {
+    @UseInterceptors(
+        FileInterceptor('avatar', {
+            storage: diskStorage({
+                destination: join(__dirname, '..', '..', '..', 'uploads', 'avatars'),
+                filename: (_req, file, cb) => {
+                    const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
+                    cb(null, uniqueName);
+                },
+            }),
+            limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+            fileFilter: (_req, file, cb) => {
+                const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
+                if (!allowed.includes(file.mimetype)) {
+                    return cb(new BadRequestException('Only PNG, JPG, WebP, and SVG images are allowed'), false);
+                }
+                cb(null, true);
+            },
+        })
+    )
+    async updateUser(
+        @User('id_user') userId: string, 
+        @Body() updateUserDto: UpdateUserDto,
+        @UploadedFile() file: Express.Multer.File | undefined,
+    ): Promise<IUserResponse> {
+        const avatarUrl = file ? `/uploads/avatars/${file.filename}` : undefined;
+        
         const updatedUser = await this.userService.updateUser(
             userId,
-            updateUserDto
+            updateUserDto,
+            avatarUrl
         );
 
         return this.userService.generatedUserResponse(updatedUser);

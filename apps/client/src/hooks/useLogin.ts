@@ -24,7 +24,7 @@ export function useLogin() {
     try {
       const res = await loginApi(data)
       console.log("Login successful")
-      saveUserInfo(res.data.user.email, res.data.user.username); // ← tambahkan
+      saveUserInfo(res.data.user.email, res.data.user.username, res.data.user.avatar_url || ""); // ← tambahkan
       login(res.data.user.token)
       navigate("/")
     } catch (error) {

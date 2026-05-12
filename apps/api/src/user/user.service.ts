@@ -7,7 +7,7 @@ import { IUserResponse } from './types/userResponse.interface';
 import { sign } from 'jsonwebtoken';
 import { LoginDto } from './dto/loginUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { compare } from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { ActivityLogsService  } from '../activity-logs/activity-logs.service';
 
 @Injectable()
@@ -70,7 +70,7 @@ export class UserService {
             );
         }
 
-        const matchPassword = await compare(loginUserDto.password, user.password as string);
+        const matchPassword = await bcrypt.compare(loginUserDto.password, user.password as string);
 
         if(!matchPassword) {
             throw new HttpException(
@@ -108,9 +108,22 @@ export class UserService {
    }
 
    // Update User
-   async updateUser(id_user: string, updateUserDto: UpdateUserDto) {
+   async updateUser(id_user: string, updateUserDto: UpdateUserDto, avatarUrl?: string | null) {
     const user = await this.findById(id_user);
-    Object.assign(user, updateUserDto);
+    
+    if (updateUserDto.name) user.full_name = updateUserDto.name;
+    if (updateUserDto.username) user.username = updateUserDto.username;
+    if (updateUserDto.email) user.email = updateUserDto.email;
+    if (updateUserDto.role) user.role = updateUserDto.role as any;
+    
+    if (updateUserDto.password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(updateUserDto.password, salt);
+    }
+
+    if (avatarUrl !== undefined) {
+        user.avatar_url = avatarUrl;
+    }
 
     return await this.userRepository.save(user);
    }

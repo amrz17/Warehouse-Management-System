@@ -3,6 +3,7 @@ import { UserRoleEnum ,type UserRole } from '../schemas/schema';
 export const TOKEN_KEY = "access_token";
 export const EMAIL_KEY = "email";
 export const USERNAME_KEY = "username";
+export const AVATAR_KEY = "avatar_url";
 
 // Helper untuk SSR compatibility
 const isBrowser = typeof window !== 'undefined';
@@ -26,6 +27,7 @@ export function removeToken(): void {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(EMAIL_KEY);
         localStorage.removeItem(USERNAME_KEY);
+        localStorage.removeItem(AVATAR_KEY);
     }
 }
 
@@ -133,11 +135,16 @@ export function clearAuth(): void {
     removeToken();
 }
 
-// Save email & username
-export function saveUserInfo(email: string, username: string): void {
+// Save email & username & avatar
+export function saveUserInfo(email: string, username: string, avatar: string | null = null): void {
     if (isBrowser) {
         localStorage.setItem(EMAIL_KEY, email);
         localStorage.setItem(USERNAME_KEY, username);
+        if (avatar) {
+            localStorage.setItem(AVATAR_KEY, avatar);
+        } else {
+            localStorage.removeItem(AVATAR_KEY);
+        }
     }
 }
 
@@ -148,4 +155,8 @@ export function getEmail(): string | null {
 
 export function getUsername(): string | null {
     return isBrowser ? localStorage.getItem(USERNAME_KEY) : null;
+}
+
+export function getAvatar(): string | null {
+    return isBrowser ? localStorage.getItem(AVATAR_KEY) : null;
 }

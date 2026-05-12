@@ -256,3 +256,15 @@ export const settingsSchema = z.object({
 })
 
 export type SettingsPayload = z.infer<typeof settingsSchema>
+
+// Profile Schema
+export const profileSchema = z.object({
+  username: z.string().min(1, "Username is required").max(50),
+  email: z.string().email("Invalid email format"),
+  password: z.string().optional().refine((val) => !val || val.length >= 6, {
+    message: "Password must be at least 6 characters if provided",
+  }),
+  avatar: z.any().optional(),
+})
+
+export type ProfilePayload = z.infer<typeof profileSchema>

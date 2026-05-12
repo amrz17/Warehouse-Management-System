@@ -28,3 +28,13 @@ export const getCurrentUserApi = (token: string) =>
     api.get("/user", {
         headers: { Authorization: `Bearer ${token}` }
     });
+
+// update user profile
+export const updateProfileApi = async (formData: FormData) => {
+    const response = await api.put("/user", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data.user;
+};
