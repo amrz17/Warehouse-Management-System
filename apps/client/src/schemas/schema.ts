@@ -246,3 +246,13 @@ export const ActivityLogsSchema = z.object({
 });
 
 export type ActivityLogsPayload = z.infer<typeof ActivityLogsSchema>
+
+// Settings Schema
+export const settingsSchema = z.object({
+  company_name: z.string().min(1, "Company name is required").max(255),
+  warehouse_address: z.string().min(1, "Warehouse address is required"),
+  timezone: z.string().min(1, "Timezone is required"),
+  logo: z.any().optional(),
+})
+
+export type SettingsPayload = z.infer<typeof settingsSchema>

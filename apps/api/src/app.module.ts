@@ -16,6 +16,7 @@ import { SuppliersModule } from './suppliers/suppliers.module';
 import { SalesModule } from './sales/sales.module';
 import { ItemsModule } from './items/items.module';
 import { ActivityLogsModule } from './activity-logs/activity-logs.module';
+import { SettingsModule } from './settings/settings.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './user/guards/roles.guard';
 
@@ -54,7 +55,8 @@ import { RolesGuard } from './user/guards/roles.guard';
     CustomersModule,
     SuppliersModule,
     SalesModule,
-    ActivityLogsModule
+    ActivityLogsModule,
+    SettingsModule
   ],
   controllers: [AppController],
   providers: [
