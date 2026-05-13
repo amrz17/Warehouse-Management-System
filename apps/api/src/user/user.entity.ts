@@ -6,15 +6,16 @@ import { SalesOrderEntity } from "../sales/entities/sales-order.entity";
 import { OutboundEntity } from "../outbound/entities/outbound.entity";
 import { InventoryEntity } from "../inventory/inventory.entity";
 import { ActivityLogsEntity } from "../activity-logs/entities/activity-logs.entity";
+import { SupportTicketEntity } from "../support/entities/support.entity";
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  STAFF_GUDANG = 'STAFF_GUDANG', 
-  PICKER = 'PICKER',             
+    ADMIN = 'ADMIN',
+    MANAGER = 'MANAGER',
+    STAFF_GUDANG = 'STAFF_GUDANG',
+    PICKER = 'PICKER',
 }
 
-@Entity({name: 'users'})
+@Entity({ name: 'users' })
 export class UserEntity {
     @PrimaryGeneratedColumn('uuid')
     id_user: string;
@@ -52,7 +53,7 @@ export class UserEntity {
 
     @BeforeInsert()
     async hashPassword() {
-        if(this.password) {
+        if (this.password) {
             const salt = await bcrypt.genSalt(10);
             this.password = await bcrypt.hash(this.password, salt);
         }
@@ -72,20 +73,23 @@ export class UserEntity {
     created_at: Date;
 
     @OneToMany(() => InventoryEntity, (inv) => inv.createdBy)
-    invs: InventoryEntity[];  
-    
+    invs: InventoryEntity[];
+
     @OneToMany(() => OrderEntity, (order) => order.createdBy)
-    order: OrderEntity[];  
+    order: OrderEntity[];
 
     @OneToMany(() => InboundEntity, (inbound) => inbound.receivedBy)
-    inbounds: InboundEntity[];  
+    inbounds: InboundEntity[];
 
     @OneToMany(() => SalesOrderEntity, (sale) => sale.createdBy)
-    sales: SalesOrderEntity[];  
+    sales: SalesOrderEntity[];
 
     @OneToMany(() => OutboundEntity, (outbound) => outbound.shipped_by)
-    outbounds: OutboundEntity[];  
+    outbounds: OutboundEntity[];
 
     @OneToMany(() => ActivityLogsEntity, (log) => log.createdBy)
-    logs: ActivityLogsEntity[];  
+    logs: ActivityLogsEntity[];
+
+    @OneToMany(() => SupportTicketEntity, (ticket) => ticket.user)
+    supportTickets: SupportTicketEntity[];
 }

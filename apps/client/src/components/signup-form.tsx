@@ -20,8 +20,8 @@ export function SignupForm({
   const password = watch("password")
 
   return (
-    <form 
-      className={cn("flex flex-col gap-6", className)} 
+    <form
+      className={cn("flex flex-col gap-6", className)}
       onSubmit={handleSubmit(onSubmit)}
       {...props}
     >
@@ -34,29 +34,29 @@ export function SignupForm({
         </div>
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input 
-            id="name" 
-            type="text"  
+          <Input
+            id="name"
+            type="text"
             {...register("full_name", { required: "Name is required" })}
-            placeholder="John Doe" 
+            placeholder="John Doe"
           />
         </Field>
         <Field>
           <FieldLabel htmlFor="username">Username</FieldLabel>
-          <Input 
-            id="username" 
-            type="text"  
+          <Input
+            id="username"
+            type="text"
             {...register("username", { required: "Username is required" })}
-            placeholder="Username" 
+            placeholder="Username"
           />
         </Field>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input 
-            id="email" 
-            type="email" 
+          <Input
+            id="email"
+            type="email"
             {...register("email", { required: "Email is required" })}
-            placeholder="m@example.com" 
+            placeholder="m@example.com"
           />
           {/* <FieldDescription>
             We&apos;ll use this to contact you. We will not share your email
@@ -83,9 +83,9 @@ export function SignupForm({
 
         <Field>
           <FieldLabel htmlFor="password">Password</FieldLabel>
-          <Input 
-            id="password"  
-            type="password" 
+          <Input
+            id="password"
+            type="password"
             {...register("password", { required: "Password is required", minLength: { value: 8, message: "Password must be at least 8 characters long" } })}
             placeholder="********"
           />
@@ -95,13 +95,15 @@ export function SignupForm({
         </Field>
         <Field>
           <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-          <Input 
-            id="confirm-password" 
-            type="password" 
-            {...register("confirmPassword", { required: "Please confirm your password",
-              minLength: { value: 8, message: "Password must be at least 8 characters long" },  
+          <Input
+            id="confirm-password"
+            type="password"
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+              minLength: { value: 8, message: "Password must be at least 8 characters long" },
               validate: value =>
-                value === password || "Password tidak sama", })}
+                value === password || "Password tidak sama",
+            })}
             placeholder="********"
           />
           {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
@@ -109,7 +111,7 @@ export function SignupForm({
           <FieldDescription>Please confirm your password.</FieldDescription>
         </Field>
         <Field>
-          <Button 
+          <Button
             type="submit"
             disabled={formState.isSubmitting}
           >
