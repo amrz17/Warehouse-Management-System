@@ -1,11 +1,13 @@
+import { useState } from "react"
 import DahsboardLayout from "@/layout/DashboardLayout"
 import { SettingsForm } from "@/components/settings-form"
 import { ProfileForm } from "@/components/profile-form"
 import { useAuth } from "@/hooks/useAuth"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TableTabsList, TableTabTrigger } from "@/components/ui/table"
 
 export default function Settings() {
   const { isAdmin } = useAuth()
+  const [activeTab, setActiveTab] = useState<"profile" | "company">("profile")
 
   return (
     <DahsboardLayout>
@@ -21,28 +23,37 @@ export default function Settings() {
             </div>
 
             {/* Content */}
-            <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="mb-4">
-                <TabsTrigger value="profile">My Profile</TabsTrigger>
-                {isAdmin && <TabsTrigger value="company">Company Settings</TabsTrigger>}
-              </TabsList>
+            <TableTabsList>
+              <TableTabTrigger
+                isActive={activeTab === "profile"}
+                onClick={() => setActiveTab("profile")}
+              >
+                My Profile
+              </TableTabTrigger>
+              {isAdmin && (
+                <TableTabTrigger
+                  isActive={activeTab === "company"}
+                  onClick={() => setActiveTab("company")}
+                >
+                  Company Settings
+                </TableTabTrigger>
+              )}
+            </TableTabsList>
 
-              <TabsContent value="profile" className="focus-visible:outline-none focus-visible:ring-0">
+            <div className="lg:mt-2 transition-all">
+              {activeTab === "profile" && (
                 <div className="rounded-lg border bg-card p-6 shadow-sm">
                   <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
                   <ProfileForm />
                 </div>
-              </TabsContent>
-
-              {isAdmin && (
-                <TabsContent value="company" className="focus-visible:outline-none focus-visible:ring-0">
-                  <div className="rounded-lg border bg-card p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold mb-4">Company Profile</h2>
-                    <SettingsForm />
-                  </div>
-                </TabsContent>
               )}
-            </Tabs>
+              {isAdmin && activeTab === "company" && (
+                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                  <h2 className="text-lg font-semibold mb-4">Company Profile</h2>
+                  <SettingsForm />
+                </div>
+              )}
+            </div>
 
           </div>
         </div>

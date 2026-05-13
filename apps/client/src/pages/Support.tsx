@@ -12,13 +12,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { SupportForm } from "@/components/support-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TableTabsList, TableTabTrigger } from "@/components/ui/table";
 import { FAQSection } from "@/components/faq-section";
 import { PlusCircle, Loader2, LifeBuoy, HelpCircle } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 export default function Support() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"tickets" | "faq">("tickets");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -70,19 +71,29 @@ export default function Support() {
           </Dialog>
         </div>
 
-        <Tabs defaultValue="tickets" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="tickets" className="flex items-center gap-2">
+        <TableTabsList>
+          <TableTabTrigger
+            isActive={activeTab === "tickets"}
+            onClick={() => setActiveTab("tickets")}
+          >
+            <span className="flex items-center gap-2">
               <LifeBuoy className="h-4 w-4" />
               My Tickets
-            </TabsTrigger>
-            <TabsTrigger value="faq" className="flex items-center gap-2">
+            </span>
+          </TableTabTrigger>
+          <TableTabTrigger
+            isActive={activeTab === "faq"}
+            onClick={() => setActiveTab("faq")}
+          >
+            <span className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
               FAQ
-            </TabsTrigger>
-          </TabsList>
+            </span>
+          </TableTabTrigger>
+        </TableTabsList>
 
-          <TabsContent value="tickets" className="space-y-4">
+        <div className="lg:mt-2 transition-all">
+          {activeTab === "tickets" && (
             <div className="bg-background rounded-xl border shadow-sm overflow-hidden">
               {isLoading ? (
                 <div className="flex h-64 items-center justify-center">
@@ -96,14 +107,13 @@ export default function Support() {
                 <DataTable columns={columnsSupport(fetchTickets)} data={tickets} />
               )}
             </div>
-          </TabsContent>
-
-          <TabsContent value="faq">
+          )}
+          {activeTab === "faq" && (
             <div className="max-w-4xl mx-auto">
               <FAQSection />
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </DahsboardLayout>
   );
