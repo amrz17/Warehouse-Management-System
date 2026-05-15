@@ -1,40 +1,49 @@
 import { useForm } from "react-hook-form"
 import { registerApi } from "@/api/auth.api"
 import { useNavigate } from "react-router-dom"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { registerSchema, type RegisterPayload } from "@/schemas/schema"
+import { toast } from "sonner"
 
-type RegisterFormValues = {
-    full_name: string,
-    username: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-    role: string,
-}
-
-export function useRegister() {
+export function useRegister(onSuccess?: () => void) {
     const navigate = useNavigate()
 
     const {
         register,
         handleSubmit,
         watch,
+        reset,
         formState,
-    } = useForm<RegisterFormValues>()
+    } = useForm<RegisterPayload>({
+        resolver: zodResolver(registerSchema),
+        defaultValues: {
+            full_name: "",
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            role: "STAFF_GUDANG",
+        }
+    })
 
-    const onSubmit = async (data: RegisterFormValues) => {
-
+    const onSubmit = async (data: RegisterPayload) => {
         try {
-            const res = await registerApi({
+            await registerApi({
                 full_name: data.full_name,
                 username: data.username,
                 email: data.email,
-                password: data.confirmPassword,
+                password: data.password,
                 role: data.role,
             })
-            console.log("Registration successful", res.data)
-            // registerUser(res.data.access_token)
-            navigate("/login")
-        } catch (error) {
+            
+            toast.success("Account created successfully")
+            reset()
+            if (onSuccess) {
+                onSuccess()
+            }
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Registration failed"
+            toast.error(Array.isArray(message) ? message[0] : message)
             console.error("Registration failed", error)
         }
     }
@@ -43,6 +52,7 @@ export function useRegister() {
         register,
         handleSubmit,
         watch,
+        reset,
         formState,
         onSubmit,
     }

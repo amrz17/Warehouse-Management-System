@@ -2,12 +2,15 @@ import { useState } from "react"
 import DahsboardLayout from "@/layout/DashboardLayout"
 import { SettingsForm } from "@/components/settings-form"
 import { ProfileForm } from "@/components/profile-form"
+import { SignupForm } from "@/components/signup-form"
 import { useAuth } from "@/hooks/useAuth"
 import { TableTabsList, TableTabTrigger } from "@/components/ui/table"
 
 export default function Settings() {
-  const { isAdmin } = useAuth()
-  const [activeTab, setActiveTab] = useState<"profile" | "company">("profile")
+  const { isAdmin, isManager } = useAuth()
+  const [activeTab, setActiveTab] = useState<"profile" | "company" | "accounts">("profile")
+
+  const canManageAccounts = isAdmin || isManager
 
   return (
     <DahsboardLayout>
@@ -38,6 +41,14 @@ export default function Settings() {
                   Company Settings
                 </TableTabTrigger>
               )}
+              {canManageAccounts && (
+                <TableTabTrigger
+                  isActive={activeTab === "accounts"}
+                  onClick={() => setActiveTab("accounts")}
+                >
+                  Add Account
+                </TableTabTrigger>
+              )}
             </TableTabsList>
 
             <div className="lg:mt-2 transition-all">
@@ -51,6 +62,13 @@ export default function Settings() {
                 <div className="rounded-lg border bg-card p-6 shadow-sm">
                   <h2 className="text-lg font-semibold mb-4">Company Profile</h2>
                   <SettingsForm />
+                </div>
+              )}
+              {canManageAccounts && activeTab === "accounts" && (
+                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                  <div className="max-w-md mx-auto">
+                    <SignupForm mode="admin" onSuccess={() => {}} />
+                  </div>
                 </div>
               )}
             </div>

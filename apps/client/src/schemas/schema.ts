@@ -268,3 +268,18 @@ export const profileSchema = z.object({
 })
 
 export type ProfilePayload = z.infer<typeof profileSchema>
+
+// Register Schema
+export const registerSchema = z.object({
+  full_name: z.string().min(1, "Full name is required"),
+  username: z.string().min(1, "Username is required").max(50),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+  confirmPassword: z.string().min(8, "Please confirm your password"),
+  role: UserRoleEnum,
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+})
+
+export type RegisterPayload = z.infer<typeof registerSchema>
