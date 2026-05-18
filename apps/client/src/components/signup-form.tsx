@@ -23,7 +23,7 @@ export function SignupForm({
   onSuccess,
   ...props
 }: SignupFormProps) {
-  const { register, handleSubmit, onSubmit, watch, formState, formState: { errors } } = useRegister(onSuccess)
+  const { register, handleSubmit, onSubmit, formState, formState: { errors } } = useRegister(onSuccess)
   const { isAdmin, isManager } = useAuth()
 
 

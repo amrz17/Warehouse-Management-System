@@ -1,4 +1,4 @@
-import { IconListDetails, IconPackage, IconPackageOff, IconPackages, IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import { IconListDetails, IconPackage, IconPackageOff, IconPackages, IconTrendingDown } from "@tabler/icons-react"
 
 // import { getTotalProducts } from '../app/api/routes'
 // import { ProductCountCard, StockCountCard } from "./count";
