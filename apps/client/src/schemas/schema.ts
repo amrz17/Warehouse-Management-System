@@ -141,6 +141,8 @@ export const inventorySchema = z.object({
   qty_available: z.number().min(0, "Quantity available cannot be negative"),
   qty_ordered: z.number().min(0, "Quantity ordered cannot be negative").optional(),
   qty_reserved: z.number().min(0, "Quantity reserved cannot be negative").optional(),
+  min_stock: z.number().min(0, "Min stock cannot be negative").optional(),
+  max_stock: z.number().min(0, "Max stock cannot be negative").optional(),
   last_update: z.string().optional(),
   created_at: z.string().optional(),
 })

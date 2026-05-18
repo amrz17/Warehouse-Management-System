@@ -40,6 +40,12 @@ export class InventoryEntity {
     @Column({ type: 'int', default: 0 })
     qty_ordered: number;
 
+    @Column({ type: 'int', default: 0 })
+    min_stock: number;
+
+    @Column({ type: 'int', default: 0 })
+    max_stock: number;
+
     @UpdateDateColumn()
     last_updated: Date;
 

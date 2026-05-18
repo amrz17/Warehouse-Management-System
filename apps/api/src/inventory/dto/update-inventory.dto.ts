@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUUID } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class UpdateInventoryDto {
     @IsUUID()
@@ -17,4 +17,12 @@ export class UpdateInventoryDto {
 
     @IsNumber()
     readonly qty_ordered: number;
+
+    @IsNumber()
+    @IsOptional()
+    readonly min_stock?: number;
+
+    @IsNumber()
+    @IsOptional()
+    readonly max_stock?: number;
 }

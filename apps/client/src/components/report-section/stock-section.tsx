@@ -13,13 +13,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IconSearch, IconPackage, IconLoader2 } from "@tabler/icons-react";
+import { IconSearch, IconPackage, IconLoader2, IconAlertTriangle } from "@tabler/icons-react";
 
 const stockExportColumns: ExportColumn[] = [
   { header: "No", accessor: "_rowNum" },
   { header: "Item Name", accessor: "item.name" },
   { header: "Location (Bin)", accessor: "location.bin_code" },
   { header: "Qty Available", accessor: "qty_available" },
+  { header: "Min Stock", accessor: "min_stock" },
+  { header: "Max Stock", accessor: "max_stock" },
   { header: "Qty Ordered", accessor: "qty_ordered" },
   { header: "Qty Reserved", accessor: "qty_reserved" },
   { header: "Last Updated", accessor: "_lastUpdate" },
@@ -131,6 +133,8 @@ const StockTabContent = () => {
               <TableHead>Item Name</TableHead>
               <TableHead className="text-center">Location</TableHead>
               <TableHead className="text-center">Qty Available</TableHead>
+              <TableHead className="text-center">Min Stock</TableHead>
+              <TableHead className="text-center">Max Stock</TableHead>
               <TableHead className="text-center">Qty Ordered</TableHead>
               <TableHead className="text-center">Qty Reserved</TableHead>
               <TableHead className="text-center">Last Updated</TableHead>
@@ -152,17 +156,21 @@ const StockTabContent = () => {
                     </span>
                   </TableCell>
                   <TableCell className="text-center">
-                    <span
-                      className={`font-semibold ${
-                        (item.qty_available ?? 0) <= 0
-                          ? "text-red-600"
-                          : (item.qty_available ?? 0) < 10
-                          ? "text-amber-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {item.qty_available ?? 0}
-                    </span>
+                    {(() => {
+                      const qty = item.qty_available ?? 0;
+                      const minS = item.min_stock ?? 0;
+                      let color = "text-green-600";
+                      if (qty <= 0) color = "text-red-600";
+                      else if (minS > 0 && qty <= minS) color = "text-amber-600";
+                      else if (qty < 10) color = "text-amber-600";
+                      return <span className={`font-semibold ${color}`}>{qty}</span>;
+                    })()}
+                  </TableCell>
+                  <TableCell className="text-center text-sm">
+                    {item.min_stock ?? 0}
+                  </TableCell>
+                  <TableCell className="text-center text-sm">
+                    {item.max_stock ?? 0}
                   </TableCell>
                   <TableCell className="text-center">
                     {item.qty_ordered ?? 0}
@@ -183,7 +191,7 @@ const StockTabContent = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
                   {search ? `No results found for "${search}"` : "No stock data available."}
                 </TableCell>
               </TableRow>
@@ -223,6 +231,106 @@ const StockTabContent = () => {
           </div>
         </div>
       )}
+
+      {/* Low Stock Alert Table */}
+      {(() => {
+        const DEFAULT_THRESHOLD = 10;
+        const lowStockItems = inventory.filter((item) => {
+          const qty = item.qty_available ?? 0;
+          const minS = item.min_stock ?? 0;
+          const threshold = minS > 0 ? minS : DEFAULT_THRESHOLD;
+          return qty < threshold;
+        });
+
+        if (lowStockItems.length === 0) return null;
+
+        const getSeverity = (qty: number, minS: number) => {
+          if (qty <= 0) return { label: "Out of Stock", color: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 ring-red-600/20 dark:ring-red-400/30" };
+          const threshold = minS > 0 ? minS : DEFAULT_THRESHOLD;
+          if (qty <= threshold * 0.5) return { label: "Critical", color: "bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 ring-orange-600/20 dark:ring-orange-400/30" };
+          return { label: "Low", color: "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 ring-amber-600/20 dark:ring-amber-400/30" };
+        };
+
+        return (
+          <div className="space-y-3 mt-6 pt-6 border-t border-border">
+            {/* Header */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center size-8 rounded-lg bg-red-100 dark:bg-red-950">
+                <IconAlertTriangle className="size-4 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h4 className="text-base font-semibold">Low Stock Alert</h4>
+                <p className="text-xs text-muted-foreground">
+                  {lowStockItems.length} item{lowStockItems.length !== 1 ? "s" : ""} below minimum stock level
+                </p>
+              </div>
+            </div>
+
+            {/* Alert Table */}
+            <div className="overflow-hidden rounded-md border border-red-200 dark:border-red-900/50">
+              <Table>
+                <TableHeader className="bg-red-50 dark:bg-red-950/50">
+                  <TableRow>
+                    <TableHead className="text-center w-14">No</TableHead>
+                    <TableHead>Item Name</TableHead>
+                    <TableHead className="text-center">Location</TableHead>
+                    <TableHead className="text-center">Qty Available</TableHead>
+                    <TableHead className="text-center">Min Stock</TableHead>
+                    <TableHead className="text-center">Severity</TableHead>
+                    <TableHead className="text-center">Last Updated</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lowStockItems
+                    .sort((a, b) => (a.qty_available ?? 0) - (b.qty_available ?? 0))
+                    .map((item, index) => {
+                      const qty = item.qty_available ?? 0;
+                      const minS = item.min_stock ?? 0;
+                      const severity = getSeverity(qty, minS);
+                      return (
+                        <TableRow key={item.id_inventory ?? `low-${index}`} className="bg-red-50/30 dark:bg-red-950/20">
+                          <TableCell className="text-center text-muted-foreground">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {item.item?.name ?? "-"}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-950 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-300/20">
+                              {item.location?.bin_code ?? "-"}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className={`font-bold text-lg ${qty <= 0 ? "text-red-600" : "text-amber-600"}`}>
+                              {qty}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center text-sm">
+                            {minS > 0 ? minS : "-"}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${severity.color}`}>
+                              {severity.label}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center text-sm text-muted-foreground">
+                            {item.last_update
+                              ? new Date(item.last_update).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
+                              : "-"}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
