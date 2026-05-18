@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner"
 import { logoutApi } from "@/api/auth.api"
 import { getToken, removeToken } from "@/services/auth.service"
+import { Link } from "react-router-dom"
 
 import {
   Avatar,
@@ -100,9 +101,11 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
+              <DropdownMenuItem asChild>
+                <Link to="/settings">
+                  <IconUserCircle />
+                  Account
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />
