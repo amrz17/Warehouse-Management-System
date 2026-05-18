@@ -5,13 +5,13 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 import { InboundEntity } from "../../inbound/entities/inbound.entity";
 
 export enum PurchaseOrderStatus {
-  PENDING = 'PENDING',     
-  RECEIVED = 'RECEIVED',   
-  CANCELED = 'CANCELED',   
-  COMPLETED = 'COMPLETED', 
+    PENDING = 'PENDING',
+    RECEIVED = 'RECEIVED',
+    CANCELED = 'CANCELED',
+    COMPLETED = 'COMPLETED',
 }
 
-@Entity({name: 'purchase_orders'})
+@Entity({ name: 'purchase_orders' })
 export class OrderEntity {
     // Define order entity columns and relations here
     @PrimaryGeneratedColumn('uuid')
@@ -59,6 +59,6 @@ export class OrderEntity {
     items: PurchaseOrderItemsEntity[];
 
     // Di dalam OrderEntity
-    @OneToMany(() => InboundEntity, (inbound) => inbound.purchaseOrder)
+    @OneToMany(() => InboundEntity, (inbound) => inbound.purchaseOrder, { cascade: true })
     inbound_shipments: InboundEntity[];
 }

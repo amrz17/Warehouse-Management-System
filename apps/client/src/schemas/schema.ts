@@ -35,11 +35,11 @@ export const InboundStatusEnum = z.enum([
 export type InboundStatus = z.infer<typeof InboundStatusEnum>;
 
 export const OutboundStatusEnum = z.enum([
-    "OPEN",
-    "PICKING",
-    "SHIPPED",
-    "COMPLETED",
-    "CANCELED"
+  "OPEN",
+  "PICKING",
+  "SHIPPED",
+  "COMPLETED",
+  "CANCELED"
 ])
 
 export type OutboundStatus = z.infer<typeof OutboundStatusEnum>;
@@ -65,7 +65,7 @@ export const orderSchema = z.object({
       qty_ordered: z.number().min(1, "Quantity must be at least 1"),
       qty_received: z.number().optional(),
       price_per_unit: z.number().optional(),
-      total_price: z.number().optional(),  
+      total_price: z.number().optional(),
       item: z.object({
         name: z.string().optional()
       }).optional()
@@ -224,8 +224,8 @@ export type OutboundPayload = z.infer<typeof OutboundSchema>
 
 // 
 export const ShipOutboundSchema = z.object({
-    tracking_number: z.string().min(1, 'Tracking number wajib diisi'),
-    carrier_name: z.string().min(1, 'Ekspedisi wajib diisi'),
+  tracking_number: z.string().min(1, 'Tracking number wajib diisi'),
+  carrier_name: z.string().min(1, 'Ekspedisi wajib diisi'),
 });
 
 export type ShipOutboundPayload = z.infer<typeof ShipOutboundSchema>;
@@ -237,7 +237,7 @@ export const ActivityLogsSchema = z.object({
   createdBy: z.object({
     name: z.string().optional()
   }).optional(),
-  action: z.enum(['CREATE', 'UPDATE', 'DELETE', 'CANCEL', 'LOGIN', 'LOGOUT' ]).optional(),
+  action: z.enum(['CREATE', 'UPDATE', 'DELETE', 'CANCEL', 'LOGIN', 'LOGOUT']).optional(),
   module: z.string().optional(),
   resource_id: z.string().optional(),
   description: z.string().optional(),
