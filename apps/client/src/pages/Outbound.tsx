@@ -145,59 +145,59 @@ const Outbound = () => {
                       Create your outbound order by adding customer information, selecting products, and setting quantities.
                 </CardFooter>
             </div>
-          <div className="flex lg:w-1/4 items-center justify-end gap-2 lg:mr-4">
-              <ExportButton
-                fileName="outbound-orders"
-                title="Outbound Orders Report"
-                sheetName="Outbound Orders"
-                columns={outboundExportColumns}
-                data={exportData as unknown as Record<string, unknown>[]}
-              />
-              <ResponsiveDialogDrawer
-              open={open}
-              onOpenChange={setOpen}
-              trigger={
-                  <Button
+        </Card>
+        
+        <ResponsiveDialogDrawer
+          open={open}
+          onOpenChange={setOpen}
+          title={
+              mode === "create"
+              ? "Create New Outbound"
+              : "Edit Outbound"
+          }
+          description={
+            mode === "create"
+              ? "This form is to create a new outbound."
+              : "Update the selected outbound."
+          }
+        >
+          <OutboundForm
+              mode={mode}
+              initialData={selectedOutbound}
+              outboundId={selectedOutbound ? selectedOutbound.id_outbound : undefined}
+              onSuccess={() => {
+              loadOutbounds()
+              setOpen(false)
+              }}
+          />
+        </ResponsiveDialogDrawer>
+
+        <div className="w-full flex-col justify-start gap-6 mt-4"> 
+            <DataTable 
+              columns={columnsOutbound(handleShip, handleComplete, handleCancel)} 
+              data={data} 
+              exportComponent={
+                <ExportButton
+                  fileName="outbound-orders"
+                  title="Outbound Orders Report"
+                  sheetName="Outbound Orders"
+                  columns={outboundExportColumns}
+                  data={exportData as unknown as Record<string, unknown>[]}
+                />
+              }
+              actionComponent={
+                <Button
                   className="w-full"
                   onClick={() => {
                       setMode("create")
                       setSelectedOutbound(null)
                       setOpen(true)
                   }}
-                  >
+                >
                   <PlusCircle />
                   Create New Outbound
-                  </Button>
+                </Button>
               }
-              title={
-                  mode === "create"
-                  ? "Create New Outbound"
-                  : "Edit Outbound"
-              }
-              description={
-                mode === "create"
-                  ? "This form is to create a new outbound."
-                  : "Update the selected outbound."
-              }
-              >
-              <OutboundForm
-                  mode={mode}
-                  initialData={selectedOutbound}
-                  outboundId={selectedOutbound ? selectedOutbound.id_outbound : undefined}
-                  onSuccess={() => {
-                  loadOutbounds()
-                  setOpen(false)
-                  }}
-              />
-
-              </ResponsiveDialogDrawer>
-
-          </div>
-        </Card>
-        <div className="w-full flex-col justify-start gap-6"> 
-            <DataTable 
-              columns={columnsOutbound(handleShip, handleComplete, handleCancel)} 
-              data={data} 
             />
             <ShipDialog
                 open={shipOpen}

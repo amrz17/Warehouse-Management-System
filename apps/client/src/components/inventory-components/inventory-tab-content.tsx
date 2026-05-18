@@ -1,6 +1,6 @@
 // contents/InventoryTabContent.tsx
 import { useEffect, useState } from "react"
-import { FilterIcon, NotebookPenIcon, PlusCircle, Settings2, SortAscIcon, Table, TrashIcon } from "lucide-react"
+import { NotebookPenIcon, PlusCircle, Settings2, TrashIcon } from "lucide-react"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import { ResponsiveDialogDrawer } from "@/components/drawer-form"
@@ -34,8 +34,8 @@ export default function InventoryTabContent() {
   const [open, setOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<InventoryPayload | null>(null)
   const [mode, setMode] = useState<"create" | "edit">("create")
-  
-  const { deleteInventory } = useInventory() 
+
+  const { deleteInventory } = useInventory()
   const [openDelete, setOpenDelete] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
@@ -43,7 +43,7 @@ export default function InventoryTabContent() {
   const [totalStock, setTotalStock] = useState(0);
   const [totalOutStock, setTotalOutStock] = useState(0);
 
-  const loadDataInventory = async () => {  
+  const loadDataInventory = async () => {
 
     const items = await fetchInventory()
     setData(items)
@@ -98,19 +98,19 @@ export default function InventoryTabContent() {
   useEffect(() => {
     async function fetchTotalProducts() {
       try {
-          const products = await fetchItems(); // ambil data dari fungsi async
-          setTotalProducts(products.length); // contoh: menampilkan jumlah produk
-          const stock = await fetchInventory();
-          const total = stock.reduce((sum: number, item: any) => sum + item.qty_available, 0);
-          const totalOutStock = stock.filter((item: any) => item.qty_available <= 0).length;
-          setTotalStock(total);
-          setTotalOutStock(totalOutStock);
+        const products = await fetchItems(); // ambil data dari fungsi async
+        setTotalProducts(products.length); // contoh: menampilkan jumlah produk
+        const stock = await fetchInventory();
+        const total = stock.reduce((sum: number, item: any) => sum + item.qty_available, 0);
+        const totalOutStock = stock.filter((item: any) => item.qty_available <= 0).length;
+        setTotalStock(total);
+        setTotalOutStock(totalOutStock);
       } catch (error) {
         console.error("Error fetching total products:", error);
       }
-    } 
+    }
 
-    loadDataInventory(); 
+    loadDataInventory();
     fetchTotalProducts();
   }, [])
 
@@ -118,7 +118,7 @@ export default function InventoryTabContent() {
     <div className="flex flex-col gap-2 lg:gap-4">
       {/* <Card className="@container/card mx-4 lg:mt-4 flex lg:flex-row p-4"> */}
       <div className="mx-4 flex lg:flex-row">
-            {/* <div className="lg:w-3/4">
+        {/* <div className="lg:w-3/4">
                 <CardHeader>
                   <CardDescription className="text-xl w-full lg:text-3xl font-extrabold">
                     Inventory 
@@ -128,26 +128,26 @@ export default function InventoryTabContent() {
                       Easily manage and track every order from here
                 </CardFooter>
             </div> */}
-      <div className="flex justify-end">
-        <ResponsiveDialogDrawer
-          open={open}
-          onOpenChange={setOpen}
-          // trigger={
-          //   <Button onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-          //   className="item-center p-4 w-full">
-          //     <PlusCircle className="lg:mr-2 h-4 w-full lg:w-4" /> Create New Inventory
-          //   </Button>
-          // }
-          title={mode === "create" ? "Add Inventory" : "Edit Inventory"}
-        >
-          <InventoryForm 
-            mode={mode} 
-            initialData={selectedItem} 
-            invId={selectedItem?.id_inventory}
-            onSuccess={() => { loadDataInventory(); setOpen(false); }} 
-          />
-        </ResponsiveDialogDrawer>
-      </div>
+        <div className="flex justify-end">
+          <ResponsiveDialogDrawer
+            open={open}
+            onOpenChange={setOpen}
+            // trigger={
+            //   <Button onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
+            //   className="item-center p-4 w-full">
+            //     <PlusCircle className="lg:mr-2 h-4 w-full lg:w-4" /> Create New Inventory
+            //   </Button>
+            // }
+            title={mode === "create" ? "Add Inventory" : "Edit Inventory"}
+          >
+            <InventoryForm
+              mode={mode}
+              initialData={selectedItem}
+              invId={selectedItem?.id_inventory}
+              onSuccess={() => { loadDataInventory(); setOpen(false); }}
+            />
+          </ResponsiveDialogDrawer>
+        </div>
       </div>
       <div className="grid lg:grid-cols-3 gap-4 @xl/main:grid-cols-2 mx-4">
         <Card className="@container/card p-4">
@@ -157,7 +157,7 @@ export default function InventoryTabContent() {
             </CardAction>
             <CardDescription>Total Product</CardDescription>
             {/* <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl"> */}
-              {/* <ProductCountCard /> */}
+            {/* <ProductCountCard /> */}
             {/* </CardTitle> */}
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {totalProducts}
@@ -212,55 +212,38 @@ export default function InventoryTabContent() {
         </Button>
       </div> */}
 
-        <div className="flex flex-row w-full justify-between">
-            <div className="flex-1 items-center justify-start gap-3 mx-4 hidden lg:flex">
-              <Button 
-                size="lg"
-              >
-                <Table />
-                Table View
-              </Button>
-              <Button 
-                size="lg"
-              >
-                <FilterIcon />
-                Filter
-              </Button>
-              <Button 
-                size="lg"
-              >
-                <SortAscIcon />
-                Sort
-              </Button>
-              </div>
+      <DataTable 
+        columns={columns} 
+        data={data}
 
-            <div className="mx-4">
-                <Button className="item-center p-4 flex lg:hidden w-fit">
-                <Settings2 />
-                Action
-              </Button>
-            </div>
-            <div className="flex flex-1 items-center justify-end gap-4 mx-4">
-              <ExportButton
-                fileName="inventory"
-                title="Inventory"
-                sheetName="Inventory"
-                columns={inventoryExportColumns}
-                data={data as unknown as Record<string, unknown>[]}
-              />
-              <Button 
-                size="lg"
-                onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-                className="item-center p-4 w-fit"
-              >
-
-                <PlusCircle /> 
-                Create New Inventory
-              </Button>
-            </div>
-        </div>
-
-      <DataTable columns={columns} data={data} />
+        exportComponent={
+          <div className="hidden lg:flex">
+            <ExportButton
+              fileName="inventory"
+              title="Inventory"
+              sheetName="Inventory"
+              columns={inventoryExportColumns}
+              data={data as unknown as Record<string, unknown>[]}
+            />
+          </div>
+        }
+        actionComponent={
+          <>
+            <Button className="item-center p-4 flex lg:hidden w-fit">
+              <Settings2 />
+              Action
+            </Button>
+            <Button
+              size="lg"
+              onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
+              className="item-center p-4 w-fit"
+            >
+              <PlusCircle />
+              Create New Inventory
+            </Button>
+          </>
+        }
+      />
 
       <ConfirmDeleteDialog
         open={openDelete}

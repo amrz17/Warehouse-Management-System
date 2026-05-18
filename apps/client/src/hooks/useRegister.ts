@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form"
 import { registerApi } from "@/api/auth.api"
-import { useNavigate } from "react-router-dom"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterPayload } from "@/schemas/schema"
 import { toast } from "sonner"
 
 export function useRegister(onSuccess?: () => void) {
-    const navigate = useNavigate()
+// removed unused navigate
 
     const {
         register,

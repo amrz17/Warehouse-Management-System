@@ -119,41 +119,17 @@ const Inbound = () => {
                       Create your inbound order by adding supplier information, selecting products, and setting quantities. Easily manage and track every inbound from here.
                 </CardFooter>
             </div>
-        <div className="flex lg:w-1/4 items-center lg:mx-4 justify-end gap-2">
-            <ExportButton
-              fileName="inbound-orders"
-              title="Inbound Orders Report"
-              sheetName="Inbound Orders"
-              columns={inboundExportColumns}
-              data={exportData as unknown as Record<string, unknown>[]}
-            />
-            <ResponsiveDialogDrawer
+          </Card>
+          
+          <ResponsiveDialogDrawer
             open={open}
             onOpenChange={setOpen}
-            trigger={
-                <Button 
-                className="mx-auto w-full"
-                onClick={() => {
-                    setMode("create")
-                    setSelectedInbound(null)
-                    setOpen(true)
-                }}
-                >
-                <PlusCircle />
-                Create New Inbound
-                </Button>
-            }
             title={
                 mode === "create"
                 ? "Create New Inbound"
                 : "Edit Inbound"
             }
-            // description={
-            //   mode === "create"
-            //     ? "This form is to create a new inbound."
-            //     : "Update the selected inbound."
-            // }
-            >
+          >
             <InboundForm
                 mode={mode}
                 initialData={selectedInbound}
@@ -163,15 +139,34 @@ const Inbound = () => {
                 setOpen(false)
                 }}
             />
+          </ResponsiveDialogDrawer>
 
-            </ResponsiveDialogDrawer>
-        </div>
-          </Card>
-
-        <div className="w-full flex-col justify-start gap-6"> 
+        <div className="w-full flex-col justify-start gap-6 mt-4"> 
             <DataTable 
               columns={columnsInbound(handleComplete, handleCancel)} 
               data={data} 
+              exportComponent={
+                <ExportButton
+                  fileName="inbound-orders"
+                  title="Inbound Orders Report"
+                  sheetName="Inbound Orders"
+                  columns={inboundExportColumns}
+                  data={exportData as unknown as Record<string, unknown>[]}
+                />
+              }
+              actionComponent={
+                <Button 
+                  className="mx-auto w-full"
+                  onClick={() => {
+                      setMode("create")
+                      setSelectedInbound(null)
+                      setOpen(true)
+                  }}
+                >
+                  <PlusCircle />
+                  Create New Inbound
+                </Button>
+              }
             />
             <ConfirmDialog 
               open={openCancel}

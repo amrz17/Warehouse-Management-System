@@ -86,32 +86,34 @@ export default function ItemsTabContent() {
                   Easily manage and track every items here.
             </CardFooter>
         </div>
-        <div className="flex lg:justify-end">
-          <ResponsiveDialogDrawer
-            open={open}
-            onOpenChange={setOpen}
-            trigger={
-              <Button 
-                onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-                className="w-full"
-                size="lg"
-              >
-                <PlusCircle className="lg:mr-2 h-4 w-4" /> Create New Item
-              </Button>
-            }
-            title={mode === "create" ? "Add Item" : "Edit Item"}
-          >
-            <ItemForm 
-              mode={mode} 
-              initialData={selectedItem} 
-              itemId={selectedItem?.id_item}
-              onSuccess={() => { loadDataItem(); setOpen(false); }} 
-            />
-          </ResponsiveDialogDrawer>
-        </div>
       </Card>
 
-      <DataTable columns={columns} data={data} />
+      <ResponsiveDialogDrawer
+        open={open}
+        onOpenChange={setOpen}
+        title={mode === "create" ? "Add Item" : "Edit Item"}
+      >
+        <ItemForm 
+          mode={mode} 
+          initialData={selectedItem} 
+          itemId={selectedItem?.id_item}
+          onSuccess={() => { loadDataItem(); setOpen(false); }} 
+        />
+      </ResponsiveDialogDrawer>
+
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        actionComponent={
+          <Button 
+            onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
+            className="w-full"
+            size="lg"
+          >
+            <PlusCircle className="lg:mr-2 h-4 w-4" /> Create New Item
+          </Button>
+        }
+      />
 
       <ConfirmDeleteDialog
         open={openDelete}

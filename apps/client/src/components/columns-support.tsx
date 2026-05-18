@@ -17,6 +17,11 @@ import { toast } from "sonner";
 
 export const columnsSupport = (refresh: () => void): ColumnDef<SupportTicket>[] => [
   {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
+  {
     accessorKey: "title",
     header: "Subject",
   },

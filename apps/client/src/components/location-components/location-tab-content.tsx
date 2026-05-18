@@ -91,32 +91,34 @@ export default function LocationTabContent() {
                       Easily manage and track every location here.
                 </CardFooter>
             </div>
-        <div className="flex justify-end">
-          <ResponsiveDialogDrawer
-            open={open}
-            onOpenChange={setOpen}
-            trigger={
-              <Button 
-                onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
-                size="lg"
-                className="w-full"
-                >
-                <PlusCircle className="lg:mr-2 h-4 w-4" /> Create New Location
-              </Button>
-            }
-            title={mode === "create" ? "Add Location" : "Edit Location"}
-          >
-            <LocationForm 
-              mode={mode} 
-              initialData={selectedItem} 
-              locId={selectedItem?.id_location}
-              onSuccess={() => { loadDataLocation(); setOpen(false); }} 
-            />
-          </ResponsiveDialogDrawer>
-        </div>
       </Card>
+      
+      <ResponsiveDialogDrawer
+        open={open}
+        onOpenChange={setOpen}
+        title={mode === "create" ? "Add Location" : "Edit Location"}
+      >
+        <LocationForm 
+          mode={mode} 
+          initialData={selectedItem} 
+          locId={selectedItem?.id_location}
+          onSuccess={() => { loadDataLocation(); setOpen(false); }} 
+        />
+      </ResponsiveDialogDrawer>
 
-      <DataTable columns={columns} data={data} />
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        actionComponent={
+          <Button 
+            onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
+            size="lg"
+            className="w-full"
+            >
+            <PlusCircle className="lg:mr-2 h-4 w-4" /> Create New Location
+          </Button>
+        }
+      />
 
       <ConfirmDeleteDialog
         open={openDelete}

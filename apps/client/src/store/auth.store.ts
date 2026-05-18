@@ -6,7 +6,7 @@ type AuthState = {
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>(() => ({
   login: (token) => {
     saveToken(token)
   },

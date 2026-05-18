@@ -10,7 +10,7 @@ import { OrderForm  } from "@/components/order-form"
 import { fetchOrders } from "@/api/purchase-order.api"
 import { toast } from "sonner"
 import { useOrders } from "@/hooks/use-orders"
-import { FilterIcon, PlusCircle, Settings2, SortAscIcon, Table } from "lucide-react"
+import { PlusCircle, Settings2 } from "lucide-react"
 import type { OrderPayload } from "@/schemas/schema"
 import { IconPackage } from "@tabler/icons-react"
 import { ConfirmDialog } from "@/components/dialog-confirm"
@@ -171,103 +171,62 @@ const PurchasePage = () => {
             </Card>
           </div>
 
-          <div className="flex flex-row w-full pt-4">
-              <div className="flex-1 items-center justify-start gap-3 mx-4 hidden lg:flex">
-                <Button 
-                  size="lg"
-                >
-                  <Table />
-                  Table View
-                </Button>
-                <Button 
-                  size="lg"
-                >
-                  <FilterIcon />
-                  Filter
-                </Button>
-                <Button 
-                  size="lg"
-                >
-                  <SortAscIcon />
-                  Sort
-                </Button>
-                </div>
-              <div className="mx-4">
-                <Button className="item-center p-4 flex lg:hidden w-fit">
-                  <Settings2 />
-                  Action
-                </Button>
-              </div>
-              <div className="flex flex-1 items-center justify-end gap-4 mx-4">
-              <ExportButton
-                fileName="purchase-orders"
-                title="Purchase Orders Report"
-                sheetName="Purchase Orders"
-                columns={purchaseExportColumns}
-                data={exportData as unknown as Record<string, unknown>[]}
+            <ResponsiveDialogDrawer
+              open={open}
+              onOpenChange={setOpen}
+              title={
+                mode === "create"
+                  ? "Create New Purchase Order"
+                  : "Edit Purchase Order"
+              }
+            >
+              <OrderForm
+                mode={mode}
+                orderId={selectedOrder ? selectedOrder.id_po : undefined}
+                initialData={selectedOrder}
+                onSuccess={() => {
+                  loadOrders()
+                  setOpen(false)
+                }}
               />
-                <Button 
-                  className="item-center p-4 w-fit"
-                  size="lg"
-                  onClick={() => {
-                    setMode("create")
-                    setSelectedOrder(null)
-                    setOpen(true)
-                  }}
-                >
-                  <PlusCircle />
-                  Add New Purchase Order
-                </Button>
-                </div>
-          </div>
+            </ResponsiveDialogDrawer>
 
-            <div className="flex lg:w-1/4 items-center justify-end">
-              <ResponsiveDialogDrawer
-                open={open}
-                onOpenChange={setOpen}
-                // trigger={
-                //   <Button 
-                //     className="w-full mx-auto lg:ml-4"
-                //     size="lg"
-                //     onClick={() => {
-                //       setMode("create")
-                //       setSelectedOrder(null)
-                //       setOpen(true)
-                //     }}
-                //   >
-                //     <PlusCircle />
-                //     Create New Purchase Order
-                //   </Button>
-                // }
-                title={
-                  mode === "create"
-                    ? "Create New Purchase Order"
-                    : "Edit Purchase Order"
-                }
-                // description={
-                //   mode === "create"
-                //     ? "This form is to create a new purchase order."
-                //     : "Update the selected purchase order."
-                // }
-              >
-                <OrderForm
-                  mode={mode}
-                  orderId={selectedOrder ? selectedOrder.id_po : undefined}
-                  initialData={selectedOrder}
-                  onSuccess={() => {
-                    loadOrders()
-                    setOpen(false)
-                  }}
-                />
-
-              </ResponsiveDialogDrawer>
-
-            </div>
-
-          <div className="w-full flex-col justify-start gap-6"> 
+          <div className="w-full flex-col justify-start gap-6 mt-4"> 
               <DataTable 
                 columns={columnsOrders(handleCancel)} 
                 data={data} 
+
+                exportComponent={
+                  <div className="hidden lg:flex">
+                    <ExportButton
+                      fileName="purchase-orders"
+                      title="Purchase Orders Report"
+                      sheetName="Purchase Orders"
+                      columns={purchaseExportColumns}
+                      data={exportData as unknown as Record<string, unknown>[]}
+                    />
+                  </div>
+                }
+                actionComponent={
+                  <>
+                    <Button className="item-center p-4 flex lg:hidden w-fit">
+                      <Settings2 />
+                      Action
+                    </Button>
+                    <Button 
+                      className="item-center p-4 w-fit"
+                      size="lg"
+                      onClick={() => {
+                        setMode("create")
+                        setSelectedOrder(null)
+                        setOpen(true)
+                      }}
+                    >
+                      <PlusCircle />
+                      Add New Purchase Order
+                    </Button>
+                  </>
+                }
               />
               <ConfirmDialog 
                 open={openCancel}

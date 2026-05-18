@@ -4,6 +4,11 @@ import type { ColumnDef } from "@tanstack/react-table";
 export const columnsActivityLogs = ( 
 ): ColumnDef<ActivityLogsPayload>[] => [
     {
+      id: "no",
+      header: "No",
+      cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+    },
+    {
         accessorKey: "createdBy.full_name",
         header: "Created By",
     },

@@ -22,7 +22,7 @@ import Inbound from './pages/Inbound.tsx'
 import Outbound from './pages/Outbound.tsx'
 import { UserRoleEnum, type UserRole } from './schemas/schema.ts'
 
-const { ADMIN, MANAGER, STAFF_GUDANG, PICKER } = UserRoleEnum.enum;
+const { ADMIN, MANAGER, STAFF_GUDANG } = UserRoleEnum.enum;
 
 function Protected({ children }: { children: ReactNode }) {
 

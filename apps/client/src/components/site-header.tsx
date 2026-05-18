@@ -2,9 +2,6 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { LogoutButton } from "./logout-button"
 import ThemeToggle from "./toggle-mode"
-import React from "react";
-import axios from "axios";
-import { getToken } from "@/services/auth.service";
 
 // TODO : Add title page on navbar
 export function SiteHeader() {

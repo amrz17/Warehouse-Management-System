@@ -5,7 +5,7 @@ import { DataTable } from "@/components/data-table";
 import { SectionCards } from "@/components/section-cards"
 import DahsboardLayout from "@/layout/DashboardLayout"
 import type { ActivityLogsPayload } from "@/schemas/schema";
-import { isAdmin, getToken } from "@/services/auth.service";
+import { isAdmin } from "@/services/auth.service";
 import { useEffect, useState } from "react";
 
 // TODO : Add sales chart

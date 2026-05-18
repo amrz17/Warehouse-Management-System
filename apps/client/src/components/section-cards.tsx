@@ -21,7 +21,7 @@ import { fetchSaleOrders } from "@/api/sale-order.api";
 
 export function SectionCards() {
   const [totalStock, setTotalStock] = useState(0);
-  const [totalOutStock, setTotalOutStock] = useState(0);
+  const [, setTotalOutStock] = useState(0);
   const [totalPO, setTotalPO] = useState(0);
   const [totalSO, setTotalSO] = useState(0);
   const [totalInv, setTotalInv] = useState(0);

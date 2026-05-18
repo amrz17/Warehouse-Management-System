@@ -13,6 +13,11 @@ export const columnsSaleOrders = (
   onCancel: (id_so: string) => void,
 ): ColumnDef<SaleOrderPayload>[] => [
     {
+      id: "no",
+      header: "No",
+      cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+    },
+    {
         accessorKey: "so_number",
         header: "No. Sale Order",
     },

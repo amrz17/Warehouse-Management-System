@@ -26,7 +26,7 @@ export function SignupForm({
   const { register, handleSubmit, onSubmit, watch, formState, formState: { errors } } = useRegister(onSuccess)
   const { isAdmin, isManager } = useAuth()
 
-  const password = watch("password")
+
 
   // Determine available roles based on current user's role
   const getAvailableRoles = () => {

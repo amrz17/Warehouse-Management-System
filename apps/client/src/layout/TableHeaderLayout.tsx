@@ -4,6 +4,11 @@ import type { ColumnDef } from "@tanstack/react-table"
 
 export const baseItemColumns: ColumnDef<ItemPayload>[] = [
   {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
+  {
     accessorKey: "sku",
     header: "SKU",
   },
@@ -46,6 +51,11 @@ export const baseItemColumns: ColumnDef<ItemPayload>[] = [
 ]
 
 export const baseInventoryColumns: ColumnDef<InventoryPayload>[] = [
+  {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
   {
     accessorKey: "id_item",
     header: "Item Name",
@@ -100,6 +110,11 @@ export const baseInventoryColumns: ColumnDef<InventoryPayload>[] = [
 ]
 
 export const baseLocationColumns: ColumnDef<LocationPayload>[] = [
+  {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
   {
     accessorKey: "bin_code",
     header: "Code Location"

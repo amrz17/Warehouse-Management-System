@@ -20,6 +20,11 @@ export const columnsInbound = (
   onCancel: (id_inbound: string) => void
 ): ColumnDef<InboundPayload>[] => [
   {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
+  {
     accessorKey: "inbound_number",
     header: "Inbound Number",
   },

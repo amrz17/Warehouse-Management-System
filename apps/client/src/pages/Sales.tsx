@@ -219,7 +219,33 @@ export default function SalesPage() {
                       Create your sale order by adding customer information, selecting products, and setting quantities.
                 </CardFooter>
             </div>
-            <div className="flex lg:w-1/4 items-center justify-end gap-2 lg:ml-4">
+          </Card>
+
+          <ResponsiveDialogDrawer
+            open={open}
+            onOpenChange={setOpen}
+            title={
+              mode === "create"
+                ? "Create New Sale Order"
+                : "Edit Sale Order"
+            }
+          >
+              <SaleForm
+                mode={mode}
+                orderId={selectedSale ? selectedSale.id_so : undefined}
+                initialData={selectedSale}
+                onSuccess={() => {
+                  fetchDataSales()
+                  setOpen(false)
+                }}
+            />
+          </ResponsiveDialogDrawer>
+
+          <div className="w-full flex-col justify-start gap-6 mt-4"> 
+              <DataTable 
+                columns={columnsSaleOrders( handleApproveOrder, handleCompleteOrder, handleCancelOrder)} 
+                data={data} 
+                exportComponent={
                   <ExportButton
                     fileName="sale-orders"
                     title="Sale Orders Report"
@@ -227,51 +253,20 @@ export default function SalesPage() {
                     columns={salesExportColumns}
                     data={exportData as unknown as Record<string, unknown>[]}
                   />
-                  <ResponsiveDialogDrawer
-                    open={open}
-                    onOpenChange={setOpen}
-                    trigger={
-                      <Button 
-                        className="w-full"
-                        onClick={() => {
-                          setMode("create")
-                          setSelectedSale(null)
-                          setOpen(true)
-                        }}
-                      >
-                        <PlusCircle />
-                        Create New Sale Order
-                      </Button>
-                    }
-                    title={
-                      mode === "create"
-                        ? "Create New Sale Order"
-                        : "Edit Sale Order"
-                    }
-                    // description={
-                    //   mode === "create"
-                    //     ? "This form is to create a new sale order."
-                    //     : "Update the selected sale order."
-                    // }
+                }
+                actionComponent={
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      setMode("create")
+                      setSelectedSale(null)
+                      setOpen(true)
+                    }}
                   >
-                      <SaleForm
-                        mode={mode}
-                        orderId={selectedSale ? selectedSale.id_so : undefined}
-                        initialData={selectedSale}
-                        onSuccess={() => {
-                          fetchDataSales()
-                          setOpen(false)
-                        }}
-                    />
-
-                  </ResponsiveDialogDrawer>
-
-            </div>
-          </Card>
-          <div className="w-full flex-col justify-start gap-6"> 
-              <DataTable 
-                columns={columnsSaleOrders( handleApproveOrder, handleCompleteOrder, handleCancelOrder)} 
-                data={data} 
+                    <PlusCircle />
+                    Create New Sale Order
+                  </Button>
+                }
               />
               <ConfirmDialog 
                 open={openApprove}

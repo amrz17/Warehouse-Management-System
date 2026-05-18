@@ -19,6 +19,11 @@ export const columnsOrders = (
   onCancel: (id_po: string) => void
 ): ColumnDef<OrderPayload>[] => [
   {
+    id: "no",
+    header: "No",
+    cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
+  },
+  {
     accessorKey: "supplier.name",
     header: "Supplier",
   },
