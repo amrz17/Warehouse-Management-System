@@ -13,6 +13,18 @@ import type { OutboundPayload, ShipOutboundPayload } from '@/schemas/schema'
 import { PlusCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { ExportButton } from "@/components/export-button"
+import type { ExportColumn } from "@/lib/export-utils"
+
+const outboundExportColumns: ExportColumn[] = [
+  { header: "No", accessor: "_rowNum" },
+  { header: "Outbound Number", accessor: "outbound_number" },
+  { header: "Items", accessor: "_itemNames" },
+  { header: "Qty Shipped", accessor: "_qtyShipped" },
+  { header: "Shipped At", accessor: "_shippedAt" },
+  { header: "Status", accessor: "status_outbound" },
+  { header: "Last Update", accessor: "_lastUpdate" },
+];
 
 const Outbound = () => {
   const [data, setData] = useState<OutboundPayload[]>([])
@@ -103,6 +115,22 @@ const Outbound = () => {
     loadOutbounds()
   }, [])
 
+  const exportData = data.map((outb, index) => {
+    const items = outb.items || [];
+    return {
+      ...outb,
+      _rowNum: index + 1,
+      _itemNames: items.map(i => i.item?.name || "Unknown").join(", "),
+      _qtyShipped: items.map(i => i.qty_shipped).join(", "),
+      _shippedAt: outb.shipped_at
+        ? new Date(outb.shipped_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+      _lastUpdate: outb.updated_at
+        ? new Date(outb.updated_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+    };
+  });
+
   return (
     <DashboardLayout>
         <section className="flex flex-1 flex-col mt-4">
@@ -117,13 +145,20 @@ const Outbound = () => {
                       Create your outbound order by adding customer information, selecting products, and setting quantities.
                 </CardFooter>
             </div>
-          <div className="flex lg:w-1/4 items-center justify-end">
+          <div className="flex lg:w-1/4 items-center justify-end gap-2 lg:mr-4">
+              <ExportButton
+                fileName="outbound-orders"
+                title="Outbound Orders Report"
+                sheetName="Outbound Orders"
+                columns={outboundExportColumns}
+                data={exportData as unknown as Record<string, unknown>[]}
+              />
               <ResponsiveDialogDrawer
               open={open}
               onOpenChange={setOpen}
               trigger={
                   <Button
-                  className="w-full lg:ml-4"
+                  className="w-full"
                   onClick={() => {
                       setMode("create")
                       setSelectedOutbound(null)

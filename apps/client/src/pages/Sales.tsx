@@ -12,8 +12,18 @@ import { IconPackage } from "@tabler/icons-react";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ExportButton } from "@/components/export-button";
+import type { ExportColumn } from "@/lib/export-utils";
 
-
+const salesExportColumns: ExportColumn[] = [
+  { header: "No", accessor: "_rowNum" },
+  { header: "SO Number", accessor: "so_number" },
+  { header: "User", accessor: "_userName" },
+  { header: "Customer", accessor: "_customerName" },
+  { header: "Items", accessor: "_itemNames" },
+  { header: "Status", accessor: "so_status" },
+  { header: "Date Shipped", accessor: "_dateShipped" },
+];
 export default function SalesPage() {
   const [data, setData] = useState<SaleOrderPayload[]>([]);
   const [openCancel, setOpenCancel] = useState(false)
@@ -119,6 +129,20 @@ export default function SalesPage() {
     fetchDataSales();
   }, []);
 
+  const exportData = data.map((order, index) => {
+    const items = order.items || [];
+    return {
+      ...order,
+      _rowNum: index + 1,
+      _customerName: order.customer?.name || "-",
+      _userName: order.createdBy?.name || "-",
+      _itemNames: items.map(i => i.item?.name || "Unknown").join(", "),
+      _dateShipped: order.date_shipped
+        ? new Date(order.date_shipped).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+    };
+  });
+
   return (
     <DahsboardLayout>
         <section className="flex flex-1 flex-col">
@@ -195,13 +219,20 @@ export default function SalesPage() {
                       Create your sale order by adding customer information, selecting products, and setting quantities.
                 </CardFooter>
             </div>
-            <div className="flex lg:w-1/4 items-center lg:justify-end">
+            <div className="flex lg:w-1/4 items-center justify-end gap-2 lg:ml-4">
+                  <ExportButton
+                    fileName="sale-orders"
+                    title="Sale Orders Report"
+                    sheetName="Sale Orders"
+                    columns={salesExportColumns}
+                    data={exportData as unknown as Record<string, unknown>[]}
+                  />
                   <ResponsiveDialogDrawer
                     open={open}
                     onOpenChange={setOpen}
                     trigger={
                       <Button 
-                        className="w-full lg:ml-4"
+                        className="w-full"
                         onClick={() => {
                           setMode("create")
                           setSelectedSale(null)

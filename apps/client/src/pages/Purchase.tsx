@@ -12,10 +12,23 @@ import { toast } from "sonner"
 import { useOrders } from "@/hooks/use-orders"
 import { FilterIcon, PlusCircle, Settings2, SortAscIcon, Table } from "lucide-react"
 import type { OrderPayload } from "@/schemas/schema"
-import { IconFileExport, IconPackage } from "@tabler/icons-react"
+import { IconPackage } from "@tabler/icons-react"
 import { ConfirmDialog } from "@/components/dialog-confirm"
+import { ExportButton } from "@/components/export-button"
+import type { ExportColumn } from "@/lib/export-utils"
 
-
+const purchaseExportColumns: ExportColumn[] = [
+  { header: "No", accessor: "_rowNum" },
+  { header: "Supplier", accessor: "_supplierName" },
+  { header: "PO Number", accessor: "po_number" },
+  { header: "Items", accessor: "_itemNames" },
+  { header: "Qty Ordered", accessor: "_qtyOrdered" },
+  { header: "Qty Received", accessor: "_qtyReceived" },
+  { header: "Total Price", accessor: "_totalPrice" },
+  { header: "Date PO", accessor: "_date" },
+  { header: "Status", accessor: "po_status" },
+  { header: "Updated At", accessor: "_lastUpdate" },
+];
 const PurchasePage = () => {
 
   const [data, setData] = useState<OrderPayload[]>([])
@@ -74,6 +87,24 @@ const PurchasePage = () => {
     loadOrders()
   }, [])
 
+  const exportData = data.map((order, index) => {
+    const items = order.items || [];
+    return {
+      ...order,
+      _rowNum: index + 1,
+      _supplierName: order.supplier?.name || "-",
+      _itemNames: items.map(i => i.item?.name || "Unknown").join(", "),
+      _qtyOrdered: items.map(i => i.qty_ordered).join(", "),
+      _qtyReceived: items.map(i => i.qty_received).join(", "),
+      _totalPrice: items.map(i => i.total_price).join(", "),
+      _date: order.expected_delivery_date
+        ? new Date(order.expected_delivery_date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+      _lastUpdate: order.last_update
+        ? new Date(order.last_update).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+    };
+  });
   
   return (
     <DahsboardLayout>
@@ -168,13 +199,13 @@ const PurchasePage = () => {
                 </Button>
               </div>
               <div className="flex flex-1 items-center justify-end gap-4 mx-4">
-                <Button 
-                  className="hidden lg:flex"
-                  size="lg"
-                >
-                  <IconFileExport />
-                  Export
-                </Button>
+              <ExportButton
+                fileName="purchase-orders"
+                title="Purchase Orders Report"
+                sheetName="Purchase Orders"
+                columns={purchaseExportColumns}
+                data={exportData as unknown as Record<string, unknown>[]}
+              />
                 <Button 
                   className="item-center p-4 w-fit"
                   size="lg"

@@ -12,7 +12,18 @@ import { InboundForm } from "@/components/inbound-form"
 import { useInbound } from "@/hooks/use-inbound"
 import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/dialog-confirm"
+import { ExportButton } from "@/components/export-button"
+import type { ExportColumn } from "@/lib/export-utils"
 
+const inboundExportColumns: ExportColumn[] = [
+  { header: "No", accessor: "_rowNum" },
+  { header: "Inbound Number", accessor: "inbound_number" },
+  { header: "Items", accessor: "_itemNames" },
+  { header: "Qty Received", accessor: "_qtyReceived" },
+  { header: "Received Date", accessor: "_receivedAt" },
+  { header: "Status", accessor: "status_inbound" },
+  { header: "Last Update", accessor: "_lastUpdate" },
+];
 const Inbound = () => {
 
   const [data, setData] = useState<InboundPayload[]>([])
@@ -78,6 +89,22 @@ const Inbound = () => {
     loadInbounds()
   }, [])
 
+  const exportData = data.map((inb, index) => {
+    const items = inb.items || [];
+    return {
+      ...inb,
+      _rowNum: index + 1,
+      _itemNames: items.map(i => i.item?.name || "Unknown").join(", "),
+      _qtyReceived: items.map(i => i.qty_received).join(", "),
+      _receivedAt: inb.received_at
+        ? new Date(inb.received_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+      _lastUpdate: inb.last_update
+        ? new Date(inb.last_update).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+        : "-",
+    };
+  });
+
   return (
     <DashboarLayout>
         <section className="flex flex-1 flex-col mt-4">
@@ -92,13 +119,20 @@ const Inbound = () => {
                       Create your inbound order by adding supplier information, selecting products, and setting quantities. Easily manage and track every inbound from here.
                 </CardFooter>
             </div>
-        <div className="flex lg:w-1/4 items-center lg:mx-4 justify-end">
+        <div className="flex lg:w-1/4 items-center lg:mx-4 justify-end gap-2">
+            <ExportButton
+              fileName="inbound-orders"
+              title="Inbound Orders Report"
+              sheetName="Inbound Orders"
+              columns={inboundExportColumns}
+              data={exportData as unknown as Record<string, unknown>[]}
+            />
             <ResponsiveDialogDrawer
             open={open}
             onOpenChange={setOpen}
             trigger={
                 <Button 
-                className="mx-auto w-full lg:ml-4"
+                className="mx-auto w-full"
                 onClick={() => {
                     setMode("create")
                     setSelectedInbound(null)

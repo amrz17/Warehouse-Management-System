@@ -14,8 +14,20 @@ import { useInventory } from "@/hooks/use-inventory"
 import { InventoryForm } from "./inventory-form"
 import type { InventoryPayload } from "@/schemas/schema"
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
-import { IconFileExport, IconPackage, IconPackageOff, IconPackages } from "@tabler/icons-react"
+import { IconPackage, IconPackageOff, IconPackages } from "@tabler/icons-react"
 import { fetchItems } from "@/api/item.api"
+import { ExportButton } from "@/components/export-button"
+import type { ExportColumn } from "@/lib/export-utils"
+
+const inventoryExportColumns: ExportColumn[] = [
+  { header: "Item Name", accessor: "item.name" },
+  { header: "Location", accessor: "location.bin_code" },
+  { header: "Qty Available", accessor: "qty_available" },
+  { header: "Qty Reserved", accessor: "qty_reserved" },
+  { header: "Qty Ordered", accessor: "qty_ordered" },
+  { header: "Min Stock", accessor: "min_stock" },
+  { header: "Max Stock", accessor: "max_stock" },
+];
 
 export default function InventoryTabContent() {
   const [data, setData] = useState<any[]>([])
@@ -229,13 +241,13 @@ export default function InventoryTabContent() {
               </Button>
             </div>
             <div className="flex flex-1 items-center justify-end gap-4 mx-4">
-              <Button 
-                className="hidden lg:flex"
-                size="lg"
-              >
-                <IconFileExport />
-                Export
-              </Button>
+              <ExportButton
+                fileName="inventory"
+                title="Inventory"
+                sheetName="Inventory"
+                columns={inventoryExportColumns}
+                data={data as unknown as Record<string, unknown>[]}
+              />
               <Button 
                 size="lg"
                 onClick={() => { setMode("create"); setSelectedItem(null); setOpen(true); }}
