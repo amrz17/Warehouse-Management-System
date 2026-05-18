@@ -14,12 +14,13 @@ import {
 import { SupportForm } from "@/components/support-form";
 import { TableTabsList, TableTabTrigger } from "@/components/ui/table";
 import { FAQSection } from "@/components/faq-section";
-import { PlusCircle, Loader2, LifeBuoy, HelpCircle } from "lucide-react";
+import { ContactSupport } from "@/components/contact-support";
+import { PlusCircle, Loader2, LifeBuoy, HelpCircle, Phone } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 export default function Support() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"tickets" | "faq">("tickets");
+  const [activeTab, setActiveTab] = useState<"tickets" | "faq" | "contact">("tickets");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -90,6 +91,15 @@ export default function Support() {
               FAQ
             </span>
           </TableTabTrigger>
+          <TableTabTrigger
+            isActive={activeTab === "contact"}
+            onClick={() => setActiveTab("contact")}
+          >
+            <span className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              Contact Us
+            </span>
+          </TableTabTrigger>
         </TableTabsList>
 
         <div className="lg:mt-2 transition-all">
@@ -111,6 +121,11 @@ export default function Support() {
           {activeTab === "faq" && (
             <div className="max-w-4xl mx-auto">
               <FAQSection />
+            </div>
+          )}
+          {activeTab === "contact" && (
+            <div className="max-w-4xl mx-auto">
+              <ContactSupport />
             </div>
           )}
         </div>

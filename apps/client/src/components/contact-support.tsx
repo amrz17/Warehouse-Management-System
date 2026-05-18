@@ -1,25 +1,25 @@
-import { Mail, Phone, Clock, MessageSquare, MapPin } from "lucide-react";
+import { Mail, Phone, Clock, MessageSquare, MapPin, Home } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const contactMethods = [
   {
     title: "Email Support",
-    description: "Get in touch via email. We typically respond within 24 hours.",
-    value: "support@warehouse-pro.com",
+    description: "We typically respond within 24 hours.",
+    value: "lumbungdigital@solution.tech",
     icon: Mail,
     action: "Send Email",
-    href: "mailto:support@warehouse-pro.com",
+    href: "mailto:lumbungdigital@solution.tech",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
   },
   {
     title: "Phone Support",
     description: "Speak directly with our technical support team.",
-    value: "+1 (555) 012-3456",
+    value: "+6285882013510",
     icon: Phone,
     action: "Call Now",
-    href: "tel:+15550123456",
+    href: "tel:+6285882013510",
     color: "text-green-500",
     bg: "bg-green-500/10",
   },
@@ -36,8 +36,8 @@ const contactMethods = [
   {
     title: "Office Address",
     description: "Our headquarters for physical correspondence.",
-    value: "123 Logistics Way, Suite 500, Chicago, IL 60601",
-    icon: MapPin,
+    value: "Karawang, Indonesia",
+    icon: Home,
     action: "View Map",
     href: "https://maps.google.com",
     color: "text-orange-500",
@@ -120,7 +120,7 @@ export function ContactSupport() {
               </span>
 
               <span className="text-right text-muted-foreground">
-                9:00 AM - 6:00 PM EST
+                9:00 AM - 5:00 PM WIB
               </span>
             </div>
 
