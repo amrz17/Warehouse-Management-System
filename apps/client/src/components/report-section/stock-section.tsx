@@ -43,10 +43,10 @@ const StockTabContent = () => {
     _rowNum: index + 1,
     _lastUpdate: item.last_update
       ? new Date(item.last_update).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
       : "-",
   }));
 
@@ -81,7 +81,7 @@ const StockTabContent = () => {
             </span>
           </h3>
         </div>
-        
+
         <DataTable
           columns={columnsStockReport}
           data={inventory}
